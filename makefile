@@ -1,0 +1,28 @@
+db:
+	docker compose up db -d
+
+migrate-diff:
+	atlas migrate diff $(name) -c file://database/atlas.hcl --env local
+
+migrate-create:
+	atlas migrate new $(name) -c file://database/atlas.hcl --env local
+
+migrate-apply:
+	atlas migrate apply -c file://database/atlas.hcl --env local
+
+run-local:
+	ENV=development go run main.go
+
+unit:
+		go test -json -v $$(go list ./... | grep -v pkg | grep -v postgres | grep -v e2e) 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+integration:
+		export MIGRATIONS_PATH="file://$(shell pwd)/database/migrations"; \
+		go test -json -v $$(go list ./... | grep -e postgres) 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+e2e:
+		export MIGRATIONS_PATH="file://$(shell pwd)/database/migrations"; \
+		go test -json -v $$(go list ./... | grep -e e2e) 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+test: unit integration e2e

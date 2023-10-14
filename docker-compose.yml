@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: luda_api_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_MULTIPLE_DATABASES: app,dev
+    command: ["postgres", "-c", "log_statement=all"]
+    ports:
+      - "5432:5432/tcp"
+    volumes:
+      - ./database/scripts:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/postgresql/data
