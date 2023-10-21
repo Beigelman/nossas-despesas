@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/controller"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/ludaapi/internal/pkg/api"
 	"log"
 	"log/slog"
 	"net/http"
@@ -27,7 +27,7 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 			ReadTimeout:  5 * time.Second,
 			JSONEncoder:  sonic.Marshal,
 			JSONDecoder:  sonic.Unmarshal,
-			ErrorHandler: errorHandler,
+			ErrorHandler: api.ErrorHandler,
 		})
 
 		server.Use(func(ctx *fiber.Ctx) error {
@@ -62,18 +62,3 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		return nil
 	})
 })
-
-func errorHandler(ctx *fiber.Ctx, err error) error {
-	code := http.StatusInternalServerError
-	message := http.StatusText(code)
-	var e *except.HTTPError
-	if errors.As(err, &e) {
-		code = e.Code
-		message = e.Error()
-	}
-	ctx.Set("Content-Type", "\"text/plain; charset=utf-8\"")
-	return ctx.Status(code).JSON(map[string]any{
-		"code":    code,
-		"message": message,
-	})
-}

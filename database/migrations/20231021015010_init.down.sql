@@ -6,3 +6,5 @@ DROP TABLE "users";
 DROP TABLE "groups";
 -- reverse: create "categories" table
 DROP TABLE "categories";
+-- reverse: create "category_groups" table
+DROP TABLE "category_groups";

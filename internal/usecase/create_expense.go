@@ -56,7 +56,7 @@ func NewCreateExpense(
 			return nil, except.NotFoundError("group not found")
 		}
 
-		if group.ID != *payer.GroupID || group.ID != *receiver.GroupID {
+		if payer.GroupID == nil || receiver.GroupID == nil || group.ID != *payer.GroupID || group.ID != *receiver.GroupID {
 			return nil, except.UnprocessableEntityError("group mismatch")
 		}
 

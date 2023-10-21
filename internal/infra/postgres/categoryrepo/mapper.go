@@ -22,8 +22,9 @@ func toEntity(model CategoryModel) *entity.Category {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
-		Name: model.Name,
-		Icon: model.Icon,
+		Name:            model.Name,
+		Icon:            model.Icon,
+		GroupCategoryID: entity.CategoryGroupID{Value: model.CategoryGroupID},
 	}
 }
 
@@ -36,12 +37,13 @@ func toModel(entity *entity.Category) CategoryModel {
 	}
 
 	return CategoryModel{
-		ID:        entity.ID.Value,
-		Name:      entity.Name,
-		Icon:      entity.Icon,
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-		DeletedAt: deletedAt,
-		Version:   entity.Version,
+		ID:              entity.ID.Value,
+		Name:            entity.Name,
+		Icon:            entity.Icon,
+		CategoryGroupID: entity.GroupCategoryID.Value,
+		CreatedAt:       entity.CreatedAt,
+		UpdatedAt:       entity.UpdatedAt,
+		DeletedAt:       deletedAt,
+		Version:         entity.Version,
 	}
 }

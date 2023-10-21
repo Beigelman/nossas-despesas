@@ -90,19 +90,19 @@ table "groups" {
     type = varchar(255)
     null = false
   }
- 	column "created_at" {
+  column "created_at" {
     type = timestamptz
     null = false
   }
-	column "updated_at" {
+  column "updated_at" {
     type = timestamptz
     null = false
   }
-	column "deleted_at" {
+  column "deleted_at" {
     type = timestamptz
     null = true
   }
-	column "version" {
+  column "version" {
     type = int
     null = false
   } 
@@ -124,24 +124,69 @@ table "categories" {
   }
   column "icon" {
     type = varchar(255)
-    null = true
+    null = false
   }
- 	column "created_at" {
+  column "category_group_id" {
+    type = int
+    null = false
+  }
+  column "created_at" {
     type = timestamptz
     null = false
   }
-	column "updated_at" {
+  column "updated_at" {
     type = timestamptz
     null = false
   }
-	column "deleted_at" {
+  column "deleted_at" {
     type = timestamptz
     null = true
   }
-	column "version" {
+  column "version" {
     type = int
     null = false
   } 
+
+  primary_key  {
+    columns = [column.id]
+  }
+
+  foreign_key "category_group_id_fk" {
+    columns = [column.category_group_id]
+    ref_columns = [table.category_groups.column.id]
+  }
+}
+
+table "category_groups" {
+  schema = schema.public
+  column "id" {
+    type = serial
+    null = false
+  }
+  column "name" {
+    type = varchar(255)
+    null = false
+  }
+  column "icon" {
+    type = varchar(255)
+    null = false
+  }
+  column "created_at" {
+    type = timestamptz
+    null = false
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+  }
+  column "deleted_at" {
+    type = timestamptz
+    null = true
+  }
+  column "version" {
+    type = int
+    null = false
+  }
 
   primary_key  {
     columns = [column.id]
@@ -174,11 +219,11 @@ table "users" {
     type = timestamptz
     null = false
   }
-	column "updated_at" {
+  column "updated_at" {
     type = timestamptz
     null = false
   }
-	column "deleted_at" {
+  column "deleted_at" {
     type = timestamptz
     null = true
   }

@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	"github.com/Beigelman/ludaapi/internal/pkg/validator"
 	"net/http"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
@@ -11,33 +12,40 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type CreateExpense func(ctx *fiber.Ctx) error
+type (
+	CreateExpense func(ctx *fiber.Ctx) error
 
-type CreateExpenseRequest struct {
-	GroupID     int    `json:"group_id"`
-	Name        string `json:"name"`
-	Amount      int    `json:"amount"`
-	Description string `json:"description"`
-	CategoryID  int    `json:"category_id"`
-	SplitRatio  struct {
-		Payer    int `json:"payer"`
-		Receiver int `json:"receiver"`
-	} `json:"split_ratio"`
-	PayerID    int `json:"payer_id"`
-	ReceiverID int `json:"receiver_id"`
-}
+	CreateExpenseRequest struct {
+		GroupID     int    `json:"group_id" validate:"required"`
+		Name        string `json:"name" validate:"required"`
+		Amount      int    `json:"amount" validate:"required"`
+		Description string `json:"description" validate:"required"`
+		CategoryID  int    `json:"category_id" validate:"required"`
+		SplitRatio  struct {
+			Payer    int `json:"payer" validate:"required"`
+			Receiver int `json:"receiver" validate:"required"`
+		} `json:"split_ratio" validate:"required"`
+		PayerID    int `json:"payer_id" validate:"required"`
+		ReceiverID int `json:"receiver_id" validate:"required"`
+	}
 
-type CreateExpenseResponse struct {
-	ID         int     `json:"id"`
-	Amount     float32 `json:"name"`
-	PayerID    int     `json:"payer_id"`
-	ReceiverID int     `json:"receiver_id"`
-}
+	CreateExpenseResponse struct {
+		ID         int     `json:"id"`
+		Amount     float32 `json:"name"`
+		PayerID    int     `json:"payer_id"`
+		ReceiverID int     `json:"receiver_id"`
+	}
+)
 
 func NewCreateExpenseHandler(createExpense usecase.CreateExpense) CreateExpense {
+	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateExpenseRequest
 		if err := ctx.BodyParser(&req); err != nil {
+			return except.UnprocessableEntityError().SetInternal(err)
+		}
+
+		if err := valid.Validate(req); err != nil {
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
@@ -59,7 +67,7 @@ func NewCreateExpenseHandler(createExpense usecase.CreateExpense) CreateExpense 
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse(http.StatusCreated, CreateExpenseResponse{
+			api.NewResponse[CreateExpenseResponse](http.StatusCreated, CreateExpenseResponse{
 				ID:         expense.ID.Value,
 				Amount:     float32(expense.Amount) / 100,
 				PayerID:    expense.PayerID.Value,

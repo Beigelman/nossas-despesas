@@ -2,6 +2,8 @@ package handler
 
 import (
 	"fmt"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/ludaapi/internal/pkg/validator"
 	"net/http"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
@@ -10,10 +12,12 @@ import (
 )
 
 type (
-	CreateGroup        func(ctx *fiber.Ctx) error
+	CreateGroup func(ctx *fiber.Ctx) error
+
 	CreateGroupRequest struct {
-		Name string `json:"name"`
+		Name string `json:"name" validate:"required"`
 	}
+
 	CreateGroupResponse struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -21,10 +25,15 @@ type (
 )
 
 func NewCreateGroupHandler(createGroup usecase.CreateGroup) CreateGroup {
+	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateGroupRequest
 		if err := ctx.BodyParser(&req); err != nil {
-			return fmt.Errorf("ctx.BodyParser: %w", err)
+			return except.UnprocessableEntityError().SetInternal(err)
+		}
+
+		if err := valid.Validate(req); err != nil {
+			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
 		group, err := createGroup(ctx.Context(), req.Name)

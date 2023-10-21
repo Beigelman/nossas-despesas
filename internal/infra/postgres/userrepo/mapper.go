@@ -19,6 +19,11 @@ func toEntity(model UserModel) *entity.User {
 		deletedAt = &model.DeletedAt.Time
 	}
 
+	var groupID *entity.GroupID
+	if model.GroupID.Valid {
+		groupID = &entity.GroupID{Value: int(model.GroupID.Int64)}
+	}
+
 	return &entity.User{
 		Entity: ddd.Entity[entity.UserID]{
 			ID:        entity.UserID{Value: model.ID},
@@ -27,6 +32,7 @@ func toEntity(model UserModel) *entity.User {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
+		GroupID:        groupID,
 		Name:           model.Name,
 		Email:          model.Email,
 		ProfilePicture: profilePicture,
@@ -48,10 +54,18 @@ func toModel(entity *entity.User) UserModel {
 		deletedAt = sql.NullTime{Time: time.Time{}, Valid: false}
 	}
 
+	var groupID sql.NullInt64
+	if entity.GroupID != nil {
+		groupID = sql.NullInt64{Int64: int64(entity.GroupID.Value), Valid: true}
+	} else {
+		groupID = sql.NullInt64{Int64: 0, Valid: false}
+	}
+
 	return UserModel{
 		ID:             entity.ID.Value,
 		Name:           entity.Name,
 		Email:          entity.Email,
+		GroupID:        groupID,
 		ProfilePicture: profilePicture,
 		CreatedAt:      entity.CreatedAt,
 		UpdatedAt:      entity.UpdatedAt,

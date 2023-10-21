@@ -1,4 +1,4 @@
-package categoryrepo
+package categorygrouprepo
 
 import (
 	"context"
@@ -15,26 +15,26 @@ type PGRepository struct {
 	db *sqlx.DB
 }
 
-func NewPGRepository(db db.Database) repository.CategoryRepository {
+func NewPGRepository(db db.Database) repository.CategoryGroupRepository {
 	return &PGRepository{db: db.Client()}
 }
 
-func (repo *PGRepository) GetNextID() entity.CategoryID {
+func (repo *PGRepository) GetNextID() entity.CategoryGroupID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('categories_id_seq');").Scan(&nextValue); err != nil {
+	if err := repo.db.QueryRowx("SELECT nextval('category_groups_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.QueryRow: %w", err))
 	}
 
-	return entity.CategoryID{Value: nextValue}
+	return entity.CategoryGroupID{Value: nextValue}
 }
 
-func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.Category, error) {
-	var model CategoryModel
+func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.CategoryGroup, error) {
+	var model CategoryGroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, icon, category_group_id,created_at, updated_at, deleted_at, version
-		FROM categories WHERE name = $1
+		SELECT id, name, icon, created_at, updated_at, deleted_at, version
+		FROM category_groups WHERE name = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
@@ -45,12 +45,12 @@ func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.C
 	return toEntity(model), nil
 }
 
-func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryID) (*entity.Category, error) {
-	var model CategoryModel
+func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryGroupID) (*entity.CategoryGroup, error) {
+	var model CategoryGroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, icon, category_group_id, created_at, updated_at, deleted_at, version
-		FROM categories WHERE id = $1
+		SELECT id, name, icon, created_at, updated_at, deleted_at, version
+		FROM category_groups WHERE id = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
@@ -61,7 +61,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryID) (*e
 	return toEntity(model), nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, entity *entity.Category) error {
+func (repo *PGRepository) Store(ctx context.Context, entity *entity.CategoryGroup) error {
 	var model = toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
 		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"categories_pkey\"" {
@@ -76,10 +76,10 @@ func (repo *PGRepository) Store(ctx context.Context, entity *entity.Category) er
 	return nil
 }
 
-func (repo *PGRepository) create(ctx context.Context, model CategoryModel) error {
+func (repo *PGRepository) create(ctx context.Context, model CategoryGroupModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO categories (id, name, icon, category_group_id, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :icon, :category_group_id,  :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO category_groups (id, name, icon, created_at, updated_at, deleted_at, version)
+		VALUES (:id, :name, :icon, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}
@@ -87,9 +87,9 @@ func (repo *PGRepository) create(ctx context.Context, model CategoryModel) error
 	return nil
 }
 
-func (repo *PGRepository) update(ctx context.Context, model CategoryModel) error {
+func (repo *PGRepository) update(ctx context.Context, model CategoryGroupModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
-		UPDATE categories SET name = :name, icon = :icon, category_group_id = :category_group_id, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
+		UPDATE category_groups SET name = :name, icon = :icon, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version
 	`, model)
 	if err != nil {

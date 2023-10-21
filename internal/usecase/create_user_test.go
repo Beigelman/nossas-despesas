@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/tests/mocks"
+	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -13,7 +13,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	repo := mocks.NewMockUserRepository(t)
+	repo := mockrepository.NewMockUserRepository(t)
 	existUser := entity.NewUser(entity.UserParams{
 		ID:    entity.UserID{Value: 1},
 		Name:  "My test group",

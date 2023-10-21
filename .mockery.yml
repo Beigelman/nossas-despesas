@@ -1,8 +1,8 @@
 with-expecter: true
 all: true
-dir: internal/tests/mocks
-outpkg: mocks
-filename: "mock_{{.PackageName}}_{{.InterfaceName}}.go"
+dir: internal/tests/mocks/{{.PackageName}}
+outpkg: mock{{.PackageName}}
+filename: "mock_{{.InterfaceName}}.go"
 packages:
   github.com/Beigelman/ludaapi/internal/domain/repository:
   github.com/Beigelman/ludaapi/internal/usecase:

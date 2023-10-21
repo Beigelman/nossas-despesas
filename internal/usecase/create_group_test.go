@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/tests/mocks"
+	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -13,7 +13,7 @@ import (
 func TestCreateGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	groupRepo := mocks.NewMockGroupRepository(t)
+	groupRepo := mockrepository.NewMockGroupRepository(t)
 	existingGroup := entity.NewGroup(entity.GroupParams{
 		ID:   entity.GroupID{Value: 1},
 		Name: "My test group",

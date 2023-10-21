@@ -24,9 +24,9 @@ func NewHTTPError(code int, message ...interface{}) *HTTPError {
 // Error makes it compatible with `error` interface.
 func (he *HTTPError) Error() string {
 	if he.Internal == nil {
-		return fmt.Sprintf("code=%d, message=%v", he.Code, he.Message)
+		return fmt.Sprintf("error=%v", he.Message)
 	}
-	return fmt.Sprintf("code=%d, message=%v, internal=%v", he.Code, he.Message, he.Internal)
+	return fmt.Sprintf("error=%v, internal=%v", he.Message, he.Internal)
 }
 
 // SetInternal sets error to HTTPError.Internal

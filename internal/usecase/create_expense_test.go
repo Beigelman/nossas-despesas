@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/tests/mocks"
+	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
 	"github.com/Beigelman/ludaapi/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -14,10 +14,10 @@ import (
 func TestCreateExpense(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mocks.NewMockUserRepository(t)
-	groupRepo := mocks.NewMockGroupRepository(t)
-	categoryRepo := mocks.NewMockCategoryRepository(t)
-	expenseRepo := mocks.NewMockExpenseRepository(t)
+	userRepo := mockrepository.NewMockUserRepository(t)
+	groupRepo := mockrepository.NewMockGroupRepository(t)
+	categoryRepo := mockrepository.NewMockCategoryRepository(t)
+	expenseRepo := mockrepository.NewMockExpenseRepository(t)
 
 	group := entity.NewGroup(entity.GroupParams{
 		ID:   entity.GroupID{Value: 1},
@@ -83,7 +83,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=404, message=payer not found")
+		assert.EqualError(t, err, "error=payer not found")
 	})
 
 	t.Run("should return error if receiver not found", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=404, message=receiver not found")
+		assert.EqualError(t, err, "error=receiver not found")
 	})
 
 	t.Run("should return error if groupRepo fails", func(t *testing.T) {
@@ -145,7 +145,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=404, message=group not found")
+		assert.EqualError(t, err, "error=group not found")
 	})
 
 	t.Run("should return error if payer's and receiver's group does not match", func(t *testing.T) {
@@ -166,7 +166,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=422, message=group mismatch")
+		assert.EqualError(t, err, "error=group mismatch")
 	})
 
 	t.Run("should return error if categoryRepo fails", func(t *testing.T) {
@@ -210,7 +210,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=404, message=category not found")
+		assert.EqualError(t, err, "error=category not found")
 	})
 
 	t.Run("should return error if split ration does not sum 100", func(t *testing.T) {
@@ -233,7 +233,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "code=422, message=Unprocessable Entity, internal=entity.NewCategory: expense.Validate: invalid split ratio")
+		assert.EqualError(t, err, "error=Unprocessable Entity, internal=entity.NewCategory: expense.Validate: invalid split ratio")
 	})
 
 	t.Run("should return error if expenseRepo fails", func(t *testing.T) {

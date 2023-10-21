@@ -1,13 +1,26 @@
--- create "categories" table
-CREATE TABLE "categories" (
+-- create "category_groups" table
+CREATE TABLE "category_groups" (
   "id" serial NOT NULL,
   "name" character varying(255) NOT NULL,
-  "icon" character varying(255) NULL,
+  "icon" character varying(255) NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
   "deleted_at" timestamptz NULL,
   "version" integer NOT NULL,
   PRIMARY KEY ("id")
+);
+-- create "categories" table
+CREATE TABLE "categories" (
+  "id" serial NOT NULL,
+  "name" character varying(255) NOT NULL,
+  "icon" character varying(255) NOT NULL,
+  "category_group_id" integer NOT NULL,
+  "created_at" timestamptz NOT NULL,
+  "updated_at" timestamptz NOT NULL,
+  "deleted_at" timestamptz NULL,
+  "version" integer NOT NULL,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "category_group_id_fk" FOREIGN KEY ("category_group_id") REFERENCES "category_groups" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 -- create "groups" table
 CREATE TABLE "groups" (

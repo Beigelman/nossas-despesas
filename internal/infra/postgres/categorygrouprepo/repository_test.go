@@ -1,4 +1,4 @@
-package grouprepo
+package categorygrouprepo
 
 import (
 	"context"
@@ -15,9 +15,9 @@ import (
 
 var migrationPath string = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
 
-type PgGroupRepoTestSuite struct {
+type PgCategoryGroupTestSuite struct {
 	suite.Suite
-	repository    repository.GroupRepository
+	repository    repository.CategoryGroupRepository
 	ctx           context.Context
 	db            db.Database
 	cfg           config.Config
@@ -25,11 +25,11 @@ type PgGroupRepoTestSuite struct {
 	err           error
 }
 
-func TestPgGroupRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgGroupRepoTestSuite))
+func TestPgUserRepoTestSuite(t *testing.T) {
+	suite.Run(t, new(PgCategoryGroupTestSuite))
 }
 
-func (s *PgGroupRepoTestSuite) SetupSuite() {
+func (s *PgCategoryGroupTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
@@ -45,7 +45,7 @@ func (s *PgGroupRepoTestSuite) SetupSuite() {
 	s.NoError(s.err)
 }
 
-func (s *PgGroupRepoTestSuite) TearDownSuite() {
+func (s *PgCategoryGroupTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown(migrationPath)
 	s.NoError(s.err)
 
@@ -59,28 +59,30 @@ func (s *PgGroupRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgGroupRepoTestSuite) TearDownSubTest() {
+func (s *PgCategoryGroupTestSuite) TearDownSubTest() {
 	err := s.db.Clean()
 	s.NoError(err)
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_Store() {
+func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_Store() {
 	id := s.repository.GetNextID()
-	group := entity.NewGroup(entity.GroupParams{
+	groupCategory := entity.NewCategoryGroup(entity.CategoryGroupParams{
 		ID:   id,
-		Name: "My Group",
+		Name: "shopping",
+		Icon: "test",
 	})
 
-	err := s.repository.Store(s.ctx, group)
-	s.NoError(err)
+	s.NoError(s.repository.Store(s.ctx, groupCategory))
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
+func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := entity.NewGroup(entity.GroupParams{
+	expected := entity.NewCategoryGroup(entity.CategoryGroupParams{
 		ID:   id,
-		Name: "My Group",
+		Name: "shopping",
+		Icon: "test",
 	})
+
 	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
 
@@ -91,17 +93,18 @@ func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
 	s.Equal(expected.Name, actual.Name)
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByName() {
+func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_GetByName() {
 	id := s.repository.GetNextID()
-	expected := entity.NewGroup(entity.GroupParams{
+	expected := entity.NewCategoryGroup(entity.CategoryGroupParams{
 		ID:   id,
-		Name: "My Group 2",
+		Name: "shopping2",
+		Icon: "test",
 	})
 
 	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
 
-	actual, err := s.repository.GetByName(s.ctx, expected.Name)
+	actual, err := s.repository.GetByName(s.ctx, "shopping2")
 	s.NoError(err)
 
 	s.Equal(expected.ID, actual.ID)

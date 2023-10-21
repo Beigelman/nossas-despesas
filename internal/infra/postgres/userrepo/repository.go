@@ -3,6 +3,7 @@ package userrepo
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
@@ -35,13 +36,13 @@ func (repo *PGRepository) GetByEmail(ctx context.Context, email string) (*entity
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
 		FROM users WHERE email = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
 	`, email).StructScan(&model); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("db.Select: %w", err)
@@ -55,13 +56,13 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.UserID) (*entit
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
 		FROM users WHERE id = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
 	`, id.Value).StructScan(&model); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("db.Select: %w", err)
@@ -88,8 +89,8 @@ func (repo *PGRepository) Store(ctx context.Context, entity *entity.User) error 
 
 func (repo *PGRepository) create(ctx context.Context, model UserModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO users (id, name, email, profile_picture, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :email, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO users (id, name, email, group_id, profile_picture, created_at, updated_at, deleted_at, version)
+		VALUES (:id, :name, :email, :group_id, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}
@@ -99,7 +100,7 @@ func (repo *PGRepository) create(ctx context.Context, model UserModel) error {
 
 func (repo *PGRepository) update(ctx context.Context, model UserModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
-		UPDATE users SET name = :name, email = :email, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
+		UPDATE users SET name = :name, email = :email, group_id = :group_id, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version
 	`, model)
 	if err != nil {

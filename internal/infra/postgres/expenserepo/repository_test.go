@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
 	"testing"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var migrationPath string = "file:///Users/danielbeigelman/mydev/go-luda/api/database/migrations"
+var migrationPath string = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
 
 type PgExpenseRepoTestSuite struct {
 	suite.Suite
@@ -25,15 +26,17 @@ type PgExpenseRepoTestSuite struct {
 	err           error
 	testContainer *tests.PostgresContainer
 
-	expenseRepo  repository.ExpenseRepository
-	userRepo     repository.UserRepository
-	categoryRepo repository.CategoryRepository
-	groupRepo    repository.GroupRepository
+	expenseRepo       repository.ExpenseRepository
+	userRepo          repository.UserRepository
+	categoryRepo      repository.CategoryRepository
+	categoryGroupRepo repository.CategoryGroupRepository
+	groupRepo         repository.GroupRepository
 
-	payer    *entity.User
-	receiver *entity.User
-	category *entity.Category
-	group    *entity.Group
+	payer         *entity.User
+	receiver      *entity.User
+	category      *entity.Category
+	categoryGroup *entity.CategoryGroup
+	group         *entity.Group
 
 	db  db.Database
 	cfg config.Config
@@ -56,6 +59,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 	s.expenseRepo = expenserepo.NewPGRepository(s.db)
 	s.userRepo = userrepo.NewPGRepository(s.db)
 	s.categoryRepo = categoryrepo.NewPGRepository(s.db)
+	s.categoryGroupRepo = categorygrouprepo.NewPGRepository(s.db)
 	s.groupRepo = grouprepo.NewPGRepository(s.db)
 
 	s.err = s.db.MigrateUp(migrationPath)
@@ -73,9 +77,17 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 		Email: "receiver@email.com",
 	})
 
-	s.category = entity.NewCategory(entity.CategoryParams{
-		ID:   s.categoryRepo.GetNextID(),
+	s.categoryGroup = entity.NewCategoryGroup(entity.CategoryGroupParams{
+		ID:   s.categoryGroupRepo.GetNextID(),
 		Name: "Category",
+		Icon: "test",
+	})
+
+	s.category = entity.NewCategory(entity.CategoryParams{
+		ID:              s.categoryRepo.GetNextID(),
+		Name:            "Category",
+		Icon:            "test",
+		CategoryGroupID: s.categoryGroup.ID,
 	})
 
 	s.group = entity.NewGroup(entity.GroupParams{
@@ -85,6 +97,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 
 	s.NoError(s.userRepo.Store(s.ctx, s.payer))
 	s.NoError(s.userRepo.Store(s.ctx, s.receiver))
+	s.NoError(s.categoryGroupRepo.Store(s.ctx, s.categoryGroup))
 	s.NoError(s.categoryRepo.Store(s.ctx, s.category))
 	s.NoError(s.groupRepo.Store(s.ctx, s.group))
 }
