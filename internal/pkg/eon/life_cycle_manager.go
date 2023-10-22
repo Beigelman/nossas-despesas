@@ -1,61 +1,14 @@
 package eon
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"syscall"
 	"time"
-
-	"github.com/truepay/go-commons/logger"
-	"github.com/truepay/go-commons/logger/field"
-	"golang.org/x/sys/unix"
 )
 
-// HookStore
-type HookOrder string
-
-var HookOrders = struct {
-	APPEND  HookOrder
-	PREPEND HookOrder
-}{
-	APPEND:  "APPEND",
-	PREPEND: "PREPEND",
-}
-
-type HookFn func() error
-
-type hookStore interface {
-	Get(lfc hook) []HookFn
-	Append(lfc hook, fn ...HookFn)
-	Prepend(lfc hook, fn ...HookFn)
-}
-
-func newHookStore() hookStore {
-	return &hookStoreImpl{
-		hooks: map[hook][]HookFn{},
-	}
-}
-
-type hookStoreImpl struct {
-	hooks map[hook][]HookFn
-}
-
-func (store *hookStoreImpl) Get(lfc hook) []HookFn {
-	return store.hooks[lfc]
-}
-
-func (store *hookStoreImpl) Append(lfc hook, fn ...HookFn) {
-	store.hooks[lfc] = append(store.hooks[lfc], fn...)
-}
-
-func (store *hookStoreImpl) Prepend(lfc hook, fn ...HookFn) {
-	store.hooks[lfc] = append(fn, store.hooks[lfc]...)
-}
-
-// Application
 type appState string
 
 var appStates = struct {
@@ -72,39 +25,20 @@ var appStates = struct {
 	STOPPED:  "STOPPED ",
 }
 
-// LifeCycle
-type hook string
-
-var hooks = struct {
-	BOOTING   hook
-	BOOTED    hook
-	READY     hook
-	RUNNING   hook
-	DISPOSING hook
-	DISPOSED  hook
-}{
-	BOOTING:   "Booting",
-	BOOTED:    "Booted",
-	READY:     "Ready",
-	RUNNING:   "Running",
-	DISPOSING: "Disposing",
-	DISPOSED:  "Disposed",
-}
-
 type lifeCycleManager interface {
 	getState() appState
-	start(ctx context.Context) error
-	stop(ctx context.Context) error
+	start() error
+	stop() error
 	OnBooting(order HookOrder, fn ...HookFn)
 	OnBooted(order HookOrder, fn ...HookFn)
 	OnReady(order HookOrder, fn ...HookFn)
 	OnRunning(order HookOrder, fn ...HookFn)
 	OnDisposing(order HookOrder, fn ...HookFn)
 	OnDisposed(order HookOrder, fn ...HookFn)
-	shutdown(ctx context.Context)
+	shutdown()
 }
 
-func newLifeCycleManager(shutdownTime time.Duration, logger *logger.Logger, ctx context.Context) lifeCycleManager {
+func newLifeCycleManager(shutdownTime time.Duration, logger Logger) lifeCycleManager {
 	return &lifeCycleManagerImpl{
 		state:         appStates.IDLE,
 		hooks:         newHookStore(),
@@ -117,7 +51,7 @@ func newLifeCycleManager(shutdownTime time.Duration, logger *logger.Logger, ctx 
 type lifeCycleManagerImpl struct {
 	state         appState
 	hooks         hookStore
-	logger        *logger.Logger
+	logger        Logger
 	forceShutdown bool
 	shutdownTime  time.Duration
 }
@@ -126,68 +60,66 @@ func (lfcm *lifeCycleManagerImpl) getState() appState {
 	return lfcm.state
 }
 
-func (lfcm *lifeCycleManagerImpl) status(ctx context.Context, newStatus appState) HookFn {
+func (lfcm *lifeCycleManagerImpl) status(newStatus appState) HookFn {
 	return func() error {
-		lfcm.logger.Info(ctx, fmt.Sprintf("Application %s", newStatus))
+		lfcm.logger.Info(fmt.Sprintf("Application %s", newStatus))
 		lfcm.state = newStatus
 		return nil
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) transition(ctx context.Context, lifeCycle hook) HookFn {
+func (lfcm *lifeCycleManagerImpl) transition(lifeCycle hook) HookFn {
 	return func() error {
-		lfcm.logger.Info(ctx, fmt.Sprintf("Processing on%s ", lifeCycle))
-		return hooksChain(lfcm.hooks.Get(lifeCycle)...)
+		lfcm.logger.Info(fmt.Sprintf("Processing on%s ", lifeCycle))
+		if err := hooksChain(lfcm.hooks.Get(lifeCycle)...); err != nil {
+			return fmt.Errorf("processing on%s: %w", lifeCycle, err)
+		}
+		return nil
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) start(ctx context.Context) error {
+func (lfcm *lifeCycleManagerImpl) start() error {
 	if lfcm.state != appStates.IDLE {
-		lfcm.logger.Warn(ctx, "The application has already started.")
+		lfcm.logger.Warn("The application has already started.")
 		return errors.New("the application has already started")
 	}
 
 	err := hooksChain(
-		lfcm.status(ctx, appStates.STARTING),
-		lfcm.transition(ctx, hooks.BOOTING),
-		lfcm.transition(ctx, hooks.BOOTED),
-		lfcm.transition(ctx, hooks.READY),
-		lfcm.transition(ctx, hooks.RUNNING),
-		lfcm.status(ctx, appStates.STARTED),
+		lfcm.status(appStates.STARTING),
+		lfcm.transition(hooks.BOOTING),
+		lfcm.transition(hooks.BOOTED),
+		lfcm.transition(hooks.READY),
+		lfcm.transition(hooks.RUNNING),
+		lfcm.status(appStates.STARTED),
 	)
 	if err != nil {
-		lfcm.logger.Error(ctx, "Error transitioning the life cycles", field.Error(err))
-
-		if stopErr := lfcm.stop(ctx); stopErr != nil {
-			lfcm.logger.Error(ctx, "Error stopping the application on start failure", field.Error(err))
-			return stopErr
+		if stopErr := lfcm.stop(); stopErr != nil {
+			return fmt.Errorf("shutting down the application: %w", stopErr)
 		}
 
-		return err
+		return fmt.Errorf("transitioning the life cycles: %w", err)
 	}
 
 	return nil
 }
 
-func (lfcm *lifeCycleManagerImpl) stop(ctx context.Context) error {
+func (lfcm *lifeCycleManagerImpl) stop() error {
 	if lfcm.state == appStates.IDLE {
-		lfcm.logger.Warn(ctx, "The application is not running.")
+		lfcm.logger.Warn("The application is not running.")
 		return errors.New("the application is not running")
 	}
 
 	err := hooksChain(
-		lfcm.status(ctx, appStates.STOPPING),
-		lfcm.transition(ctx, hooks.DISPOSING),
-		lfcm.transition(ctx, hooks.DISPOSED),
-		lfcm.status(ctx, appStates.STOPPED),
+		lfcm.status(appStates.STOPPING),
+		lfcm.transition(hooks.DISPOSING),
+		lfcm.transition(hooks.DISPOSED),
+		lfcm.status(appStates.STOPPED),
 	)
 	if err != nil {
-		lfcm.logger.Error(ctx, "Error shutting down the application", field.Error(err))
-		return err
+		return fmt.Errorf("shutting down the application: %w", err)
 	}
 
-	lfcm.logger.Info(ctx, "Application exited with success")
-
+	lfcm.logger.Info("Application exited with success")
 	return nil
 }
 
@@ -223,38 +155,32 @@ func (lfcm *lifeCycleManagerImpl) on(lfc hook, order HookOrder, fn ...HookFn) {
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) shutdown(ctx context.Context) {
+func (lfcm *lifeCycleManagerImpl) shutdown() {
 	time.AfterFunc(lfcm.shutdownTime, func() {
-		lfcm.logger.Warn(ctx, "OK, my patience is over #ragequit")
-		if err := lfcm.logger.Flush(); err != nil {
-			lfcm.logger.Error(ctx, "Error flushing the logger", field.Error(err))
-		}
-
+		lfcm.logger.Warn("OK, my patience is over #ragequit")
 		os.Exit(1)
 	})
 
 	if lfcm.state == appStates.STOPPING || lfcm.state == appStates.STOPPED {
 		if lfcm.forceShutdown {
-			lfcm.terminate(ctx, syscall.SIGKILL)
+			lfcm.terminate(syscall.SIGKILL)
+			return
 		}
 
-		lfcm.logger.Warn(ctx, "The application is yet to finishing the shutdown process. Repeat the command to force exit")
+		lfcm.logger.Warn("The application is yet to finishing the shutdown process. Repeat the command to force exit")
 		lfcm.forceShutdown = true
 		return
 	}
 
-	if err := lfcm.stop(ctx); err != nil {
-		lfcm.logger.Fatal(ctx, "Failed to stop the application", field.Error(err))
-	}
-
-	if err := lfcm.logger.Flush(); !shouldIgnoreLoggerSyncError(err) {
-		lfcm.logger.Error(ctx, "Error flushing the logger", field.Error(err))
+	if err := lfcm.stop(); err != nil {
+		lfcm.logger.Error("Failed to stop the application", "err", err)
+		os.Exit(1)
 	}
 
 	os.Exit(0)
 }
 
-func (lfcm *lifeCycleManagerImpl) terminate(ctx context.Context, signal syscall.Signal) {
+func (lfcm *lifeCycleManagerImpl) terminate(signal syscall.Signal) {
 	// first arg is the process id
 	arg0 := os.Args[0]
 	val0, _ := strconv.ParseInt(arg0, 10, 32)
@@ -263,39 +189,7 @@ func (lfcm *lifeCycleManagerImpl) terminate(ctx context.Context, signal syscall.
 	err := syscall.Kill(pid, signal)
 
 	if err != nil {
-		lfcm.logger.Fatal(ctx, "Failed to kill the process", field.Error(err))
+		lfcm.logger.Error("Failed to kill the process", "err", err)
+		os.Exit(1)
 	}
-}
-
-// Workaround to ignore specific errors for unix os.
-// The error only happens when stdout/stderr point to the console, but not if they are redirected to a file (since files support sync).
-// Issue: https://github.com/uber-go/zap/issues/880
-func shouldIgnoreLoggerSyncError(err error) bool {
-	if err == nil {
-		return true
-	}
-
-	errorsToIgnore := []syscall.Errno{
-		unix.ENOTTY,
-		unix.EINVAL,
-	}
-
-	for _, errorToIgnore := range errorsToIgnore {
-		if errors.Is(err, errorToIgnore) {
-			return true
-		}
-	}
-
-	return false
-}
-
-// Utils
-func hooksChain(hooks ...HookFn) error {
-	for _, fn := range hooks {
-		err := fn()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }

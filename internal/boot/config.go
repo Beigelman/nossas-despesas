@@ -3,6 +3,7 @@ package boot
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -31,7 +32,7 @@ func LogLevelMap(level string) slog.Level {
 	}
 }
 
-var ConfigModule = eon.NewModule("ConfigModule", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, func() (*config.Config, error) {
 		v := viper.New()
 
@@ -48,22 +49,25 @@ var ConfigModule = eon.NewModule("ConfigModule", func(ctx context.Context, c *di
 		configDir := filepath.Dir(configPath) // eg: /app or .
 		v.AddConfigPath(configDir)
 
-		err := v.ReadInConfig()
+		environment, err := env.Parse(os.Getenv("ENV"))
 		if err != nil {
+			return nil, fmt.Errorf("env.Parse: %w", err)
+		}
+
+		if err := v.ReadInConfig(); err != nil {
 			return nil, fmt.Errorf("viper.ReadInConfig: %w", err)
 		}
 
-		envViper := v.Sub(string(info.Env))
+		envViper := v.Sub(environment.String())
 		envViper.SetDefault("PORT", "8080")
 		envViper.SetDefault("LOG_LEVEL", "INFO")
 
-		config := config.New(info.Env)
+		config := config.New(environment)
 		err = envViper.Unmarshal(&config)
 		if err != nil {
 			return nil, fmt.Errorf("viper.Unmarshal: %w", err)
 		}
 
-		config.Env = info.Env
 		config.ServiceName = info.ServiceName
 
 		return &config, nil

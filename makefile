@@ -14,7 +14,7 @@ run-local:
 	ENV=development go run main.go
 
 unit:
-		go test -json -v $$(go list ./... | grep -e handler -e usecase | grep -v mocks ) 2>&1 | tee /tmp/gotest.log | gotestfmt
+		go test -json -v $$(go list ./... | grep -e handler -e usecase -e pkg | grep -v mocks ) 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 integration:
 		export MIGRATIONS_PATH="file://$(shell pwd)/database/migrations"; \

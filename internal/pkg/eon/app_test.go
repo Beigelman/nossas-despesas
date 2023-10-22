@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/di"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -36,6 +35,25 @@ var errorModule = NewModule("error", func(ctx context.Context, c *di.Container, 
 			return "Banana" + a
 		}
 	})
+
+	lfcm.OnBooted(HookOrders.APPEND, func() error {
+		a := di.Resolve[PrintBanana](c)
+		a()
+		return nil
+	})
+})
+
+var overdueModule = NewModule("error", func(ctx context.Context, c *di.Container, lfcm LifeCycleManager, app Info) {
+	di.Provide(c, func() PrintBanana {
+		return func() string {
+			return "Banana"
+		}
+	})
+
+	lfcm.OnDisposing(HookOrders.APPEND, func() error {
+		time.Sleep(3 * time.Second)
+		return nil
+	})
 })
 
 type EonAppTestSuite struct {
@@ -48,15 +66,10 @@ func TestEonApp(t *testing.T) {
 }
 
 func (suite *EonAppTestSuite) SetupTest() {
-	suite.app = NewApp(Config{
-		ShutdownTime: 2 * time.Second,
-		ServiceName:  "Test",
-		Env:          env.Development,
-		IoC:          di.New(),
-	})
+	suite.app = New("Test", WithShutdownTime(100*time.Millisecond))
 }
 
-func (suite *EonAppTestSuite) TestStartingTheApplication() {
+func (suite *EonAppTestSuite) TestEonApp_StartingTheApplication() {
 	suite.app.BootStrap(module1, module2)
 
 	err := suite.app.StartTest()
@@ -69,13 +82,13 @@ func (suite *EonAppTestSuite) TestStartingTheApplication() {
 	suite.Equal(printBanana(), "Banana")
 }
 
-func (suite *EonAppTestSuite) TestLoadingABadModule() {
+func (suite *EonAppTestSuite) TestEonApp_LoadingABadModule() {
 	defer func() {
 		r := recover()
 		suite.NotNil(r)
 		suite.ErrorContains(r.(error), "container: no concrete found for: string")
 	}()
 
-	err := suite.app.BootStrap(module1, module2, errorModule).Start()
+	err := suite.app.BootStrap(module1, module2, errorModule).StartTest()
 	suite.EqualError(err, "Error loading module")
 }
