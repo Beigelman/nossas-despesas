@@ -3,6 +3,7 @@ package expenserepo
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
@@ -41,7 +42,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.ExpenseID) (*en
 		ORDER BY version DESC
 		LIMIT 1
 	`, id.Value).StructScan(&model); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("db.SelectContext: %w", err)

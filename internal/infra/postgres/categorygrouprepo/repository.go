@@ -2,6 +2,8 @@ package categorygrouprepo
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
@@ -39,6 +41,9 @@ func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.C
 		ORDER BY version DESC
 		LIMIT 1
 	`, name).StructScan(&model); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("db.QueryRowContext: %w", err)
 	}
 
@@ -55,6 +60,9 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryGroupID
 		ORDER BY version DESC
 		LIMIT 1
 	`, id.Value).StructScan(&model); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("db.QueryRowContext: %w", err)
 	}
 
