@@ -17,7 +17,7 @@ type (
 	CreateCategoryRequest struct {
 		Icon            string `json:"icon" validate:"required"`
 		Name            string `json:"name" validate:"required"`
-		GroupCategoryID int    `json:"group_category_id" validate:"required"`
+		CategoryGroupID int    `json:"category_group_id" validate:"required"`
 	}
 
 	CreateCategoryResponse struct {
@@ -41,7 +41,7 @@ func NewCreateCategoryHandler(createCategory usecase.CreateCategory) CreateCateg
 		group, err := createCategory(ctx.Context(), usecase.CreateCategoryInput{
 			Name:            req.Name,
 			Icon:            req.Icon,
-			GroupCategoryID: entity.CategoryGroupID{Value: req.GroupCategoryID},
+			CategoryGroupID: entity.CategoryGroupID{Value: req.CategoryGroupID},
 		})
 		if err != nil {
 			return fmt.Errorf("createCategory: %w", err)

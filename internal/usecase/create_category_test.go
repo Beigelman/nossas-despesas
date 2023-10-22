@@ -25,7 +25,7 @@ func TestCreateCategory(t *testing.T) {
 	input := usecase.CreateCategoryInput{
 		Name:            "My test category",
 		Icon:            "icon1",
-		GroupCategoryID: entity.CategoryGroupID{Value: 1},
+		CategoryGroupID: entity.CategoryGroupID{Value: 1},
 	}
 
 	useCase := usecase.NewCreateCategory(repo)

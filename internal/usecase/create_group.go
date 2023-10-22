@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
 )
 
 type CreateGroup func(ctx context.Context, name string) (*entity.Group, error)
@@ -17,7 +18,7 @@ func NewCreateGroup(repo repository.GroupRepository) CreateGroup {
 		}
 
 		if alreadyExists != nil {
-			return nil, fmt.Errorf("group already exists")
+			return nil, except.ConflictError("group already exists")
 		}
 
 		groupID := repo.GetNextID()

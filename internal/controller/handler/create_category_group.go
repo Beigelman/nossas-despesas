@@ -14,9 +14,8 @@ type (
 	CreateCategoryGroup func(ctx *fiber.Ctx) error
 
 	CreateCategoryGroupRequest struct {
-		Icon            string `json:"icon" validate:"required"`
-		Name            string `json:"name" validate:"required"`
-		GroupCategoryID int    `json:"group_category_id" validate:"required"`
+		Icon string `json:"icon" validate:"required"`
+		Name string `json:"name" validate:"required"`
 	}
 
 	CreateCategoryGroupResponse struct {

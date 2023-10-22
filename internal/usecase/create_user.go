@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
 )
 
 type CreateUserParams struct {
@@ -23,7 +24,7 @@ func NewCreateUser(repo repository.UserRepository) CreateUser {
 		}
 
 		if alreadyExists != nil {
-			return nil, fmt.Errorf("email already exists")
+			return nil, except.ConflictError("email already exists")
 		}
 
 		userID := repo.GetNextID()

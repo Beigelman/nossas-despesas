@@ -11,7 +11,7 @@ import (
 type CreateCategoryInput struct {
 	Name            string
 	Icon            string
-	GroupCategoryID entity.CategoryGroupID
+	CategoryGroupID entity.CategoryGroupID
 }
 
 type CreateCategory func(ctx context.Context, input CreateCategoryInput) (*entity.Category, error)
@@ -33,7 +33,7 @@ func NewCreateCategory(repo repository.CategoryRepository) CreateCategory {
 			ID:              categoryID,
 			Name:            input.Name,
 			Icon:            input.Icon,
-			CategoryGroupID: input.GroupCategoryID,
+			CategoryGroupID: input.CategoryGroupID,
 		})
 
 		if err := repo.Store(ctx, category); err != nil {
