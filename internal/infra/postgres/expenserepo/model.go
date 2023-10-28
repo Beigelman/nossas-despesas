@@ -29,7 +29,7 @@ type SplitRatio struct {
 	Receiver int `db:"receiver"`
 }
 
-func (sr SplitRatio) Value() (driver.Value, error) {
+func (sr *SplitRatio) Value() (driver.Value, error) {
 	return json.Marshal(sr)
 }
 

@@ -31,31 +31,25 @@ var hooks = struct {
 	DISPOSED:  "Disposed",
 }
 
-type hookStore interface {
-	Get(lfc hook) []HookFn
-	Append(lfc hook, fn ...HookFn)
-	Prepend(lfc hook, fn ...HookFn)
+type hookStore struct {
+	hooks map[hook][]HookFn
 }
 
-func newHookStore() hookStore {
-	return &hookStoreImpl{
+func newHookStore() *hookStore {
+	return &hookStore{
 		hooks: map[hook][]HookFn{},
 	}
 }
 
-type hookStoreImpl struct {
-	hooks map[hook][]HookFn
-}
-
-func (store *hookStoreImpl) Get(lfc hook) []HookFn {
+func (store *hookStore) get(lfc hook) []HookFn {
 	return store.hooks[lfc]
 }
 
-func (store *hookStoreImpl) Append(lfc hook, fn ...HookFn) {
+func (store *hookStore) append(lfc hook, fn ...HookFn) {
 	store.hooks[lfc] = append(store.hooks[lfc], fn...)
 }
 
-func (store *hookStoreImpl) Prepend(lfc hook, fn ...HookFn) {
+func (store *hookStore) prepend(lfc hook, fn ...HookFn) {
 	store.hooks[lfc] = append(fn, store.hooks[lfc]...)
 }
 

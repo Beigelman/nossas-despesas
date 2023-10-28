@@ -31,13 +31,14 @@ type (
 
 	CreateExpenseResponse struct {
 		ID         int     `json:"id"`
-		Amount     float32 `json:"name"`
+		Name       string  `json:"name"`
+		Amount     float32 `json:"amount"`
 		PayerID    int     `json:"payer_id"`
 		ReceiverID int     `json:"receiver_id"`
 	}
 )
 
-func NewCreateExpenseHandler(createExpense usecase.CreateExpense) CreateExpense {
+func NewCreateExpense(createExpense usecase.CreateExpense) CreateExpense {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateExpenseRequest
@@ -69,6 +70,7 @@ func NewCreateExpenseHandler(createExpense usecase.CreateExpense) CreateExpense 
 		return ctx.Status(http.StatusCreated).JSON(
 			api.NewResponse[CreateExpenseResponse](http.StatusCreated, CreateExpenseResponse{
 				ID:         expense.ID.Value,
+				Name:       expense.Name,
 				Amount:     float32(expense.Amount) / 100,
 				PayerID:    expense.PayerID.Value,
 				ReceiverID: expense.ReceiverID.Value,

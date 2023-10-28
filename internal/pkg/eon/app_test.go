@@ -58,7 +58,7 @@ var overdueModule = NewModule("error", func(ctx context.Context, c *di.Container
 
 type EonAppTestSuite struct {
 	suite.Suite
-	app Application
+	app *Application
 }
 
 func TestEonApp(t *testing.T) {
@@ -75,10 +75,10 @@ func (suite *EonAppTestSuite) TestEonApp_StartingTheApplication() {
 	err := suite.app.StartTest()
 	suite.NoError(err)
 
-	printTest := di.Resolve[PrintTest](suite.app.container())
+	printTest := di.Resolve[PrintTest](suite.app.ctnr)
 	suite.Equal(printTest(), "Test")
 
-	printBanana := di.Resolve[PrintBanana](suite.app.container())
+	printBanana := di.Resolve[PrintBanana](suite.app.ctnr)
 	suite.Equal(printBanana(), "Banana")
 }
 

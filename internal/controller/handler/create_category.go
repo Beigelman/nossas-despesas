@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func NewCreateCategoryHandler(createCategory usecase.CreateCategory) CreateCategory {
+func NewCreateCategory(createCategory usecase.CreateCategory) CreateCategory {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateCategoryRequest

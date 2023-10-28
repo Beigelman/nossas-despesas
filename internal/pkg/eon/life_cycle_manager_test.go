@@ -12,7 +12,7 @@ import (
 
 type LifeCycleManagerTestSuite struct {
 	suite.Suite
-	lfcm lifeCycleManager
+	lfcm *lifeCycleManager
 }
 
 func TestLifeCycleManager(t *testing.T) {

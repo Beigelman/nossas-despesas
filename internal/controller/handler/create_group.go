@@ -24,7 +24,7 @@ type (
 	}
 )
 
-func NewCreateGroupHandler(createGroup usecase.CreateGroup) CreateGroup {
+func NewCreateGroup(createGroup usecase.CreateGroup) CreateGroup {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateGroupRequest

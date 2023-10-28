@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="app@localhost" uuid="ea565989-b312-4be0-b6bb-ec2e29858dca">
+    <data-source source="LOCAL" name="Luda - local" uuid="dc2729dc-4242-4331-8d35-ec9bf5f57d40">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

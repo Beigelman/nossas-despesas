@@ -24,7 +24,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 	})
 
 	createExpense := mockusecase.NewMockCreateExpense(t)
-	createExpenseHandler := handler.NewCreateExpenseHandler(createExpense.Execute)
+	createExpenseHandler := handler.NewCreateExpense(createExpense.Execute)
 	bodyReq := handler.CreateExpenseRequest{
 		GroupID:     1,
 		Name:        "Test Expense",

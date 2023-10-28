@@ -25,21 +25,8 @@ var appStates = struct {
 	STOPPED:  "STOPPED ",
 }
 
-type lifeCycleManager interface {
-	getState() appState
-	start() error
-	stop() error
-	OnBooting(order HookOrder, fn ...HookFn)
-	OnBooted(order HookOrder, fn ...HookFn)
-	OnReady(order HookOrder, fn ...HookFn)
-	OnRunning(order HookOrder, fn ...HookFn)
-	OnDisposing(order HookOrder, fn ...HookFn)
-	OnDisposed(order HookOrder, fn ...HookFn)
-	shutdown()
-}
-
-func newLifeCycleManager(shutdownTime time.Duration, logger Logger) lifeCycleManager {
-	return &lifeCycleManagerImpl{
+func newLifeCycleManager(shutdownTime time.Duration, logger Logger) *lifeCycleManager {
+	return &lifeCycleManager{
 		state:         appStates.IDLE,
 		hooks:         newHookStore(),
 		logger:        logger,
@@ -48,39 +35,39 @@ func newLifeCycleManager(shutdownTime time.Duration, logger Logger) lifeCycleMan
 	}
 }
 
-type lifeCycleManagerImpl struct {
+type lifeCycleManager struct {
 	state         appState
-	hooks         hookStore
+	hooks         *hookStore
 	logger        Logger
 	forceShutdown bool
 	shutdownTime  time.Duration
 }
 
-func (lfcm *lifeCycleManagerImpl) getState() appState {
+func (lfcm *lifeCycleManager) getState() appState {
 	return lfcm.state
 }
 
-func (lfcm *lifeCycleManagerImpl) status(newStatus appState) HookFn {
+func (lfcm *lifeCycleManager) status(newStatus appState) HookFn {
 	return func() error {
-		lfcm.logger.Info(fmt.Sprintf("Application %s", newStatus))
+		lfcm.logger.Info(fmt.Sprintf("[EON] Application %s", newStatus))
 		lfcm.state = newStatus
 		return nil
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) transition(lifeCycle hook) HookFn {
+func (lfcm *lifeCycleManager) transition(lifeCycle hook) HookFn {
 	return func() error {
-		lfcm.logger.Info(fmt.Sprintf("Processing on%s ", lifeCycle))
-		if err := hooksChain(lfcm.hooks.Get(lifeCycle)...); err != nil {
+		lfcm.logger.Info(fmt.Sprintf("[EON] Processing on%s ", lifeCycle))
+		if err := hooksChain(lfcm.hooks.get(lifeCycle)...); err != nil {
 			return fmt.Errorf("processing on%s: %w", lifeCycle, err)
 		}
 		return nil
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) start() error {
+func (lfcm *lifeCycleManager) start() error {
 	if lfcm.state != appStates.IDLE {
-		lfcm.logger.Warn("The application has already started.")
+		lfcm.logger.Warn("[EON] The application has already started.")
 		return errors.New("the application has already started")
 	}
 
@@ -103,9 +90,9 @@ func (lfcm *lifeCycleManagerImpl) start() error {
 	return nil
 }
 
-func (lfcm *lifeCycleManagerImpl) stop() error {
+func (lfcm *lifeCycleManager) stop() error {
 	if lfcm.state == appStates.IDLE {
-		lfcm.logger.Warn("The application is not running.")
+		lfcm.logger.Warn("[EON] The application is not running.")
 		return errors.New("the application is not running")
 	}
 
@@ -119,45 +106,45 @@ func (lfcm *lifeCycleManagerImpl) stop() error {
 		return fmt.Errorf("shutting down the application: %w", err)
 	}
 
-	lfcm.logger.Info("Application exited with success")
+	lfcm.logger.Info("[EON] Application exited with success")
 	return nil
 }
 
-func (lfcm *lifeCycleManagerImpl) OnBooting(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnBooting(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.BOOTING, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) OnBooted(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnBooted(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.BOOTED, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) OnReady(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnReady(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.READY, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) OnRunning(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnRunning(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.RUNNING, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) OnDisposing(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnDisposing(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.DISPOSING, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) OnDisposed(order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) OnDisposed(order HookOrder, fn ...HookFn) {
 	lfcm.on(hooks.DISPOSED, order, fn...)
 }
 
-func (lfcm *lifeCycleManagerImpl) on(lfc hook, order HookOrder, fn ...HookFn) {
+func (lfcm *lifeCycleManager) on(lfc hook, order HookOrder, fn ...HookFn) {
 	if order == HookOrders.APPEND {
-		lfcm.hooks.Append(lfc, fn...)
+		lfcm.hooks.append(lfc, fn...)
 	} else {
-		lfcm.hooks.Prepend(lfc, fn...)
+		lfcm.hooks.prepend(lfc, fn...)
 	}
 }
 
-func (lfcm *lifeCycleManagerImpl) shutdown() {
+func (lfcm *lifeCycleManager) shutdown() {
 	time.AfterFunc(lfcm.shutdownTime, func() {
-		lfcm.logger.Warn("OK, my patience is over #ragequit")
+		lfcm.logger.Warn("[EON] OK, my patience is over #ragequit")
 		os.Exit(1)
 	})
 
@@ -167,20 +154,20 @@ func (lfcm *lifeCycleManagerImpl) shutdown() {
 			return
 		}
 
-		lfcm.logger.Warn("The application is yet to finishing the shutdown process. Repeat the command to force exit")
+		lfcm.logger.Warn("[EON] The application is yet to finishing the shutdown process. Repeat the command to force exit")
 		lfcm.forceShutdown = true
 		return
 	}
 
 	if err := lfcm.stop(); err != nil {
-		lfcm.logger.Error("Failed to stop the application", "err", err)
+		lfcm.logger.Error("[EON] Failed to stop the application", "err", err)
 		os.Exit(1)
 	}
 
 	os.Exit(0)
 }
 
-func (lfcm *lifeCycleManagerImpl) terminate(signal syscall.Signal) {
+func (lfcm *lifeCycleManager) terminate(signal syscall.Signal) {
 	// first arg is the process id
 	arg0 := os.Args[0]
 	val0, _ := strconv.ParseInt(arg0, 10, 32)
@@ -189,7 +176,7 @@ func (lfcm *lifeCycleManagerImpl) terminate(signal syscall.Signal) {
 	err := syscall.Kill(pid, signal)
 
 	if err != nil {
-		lfcm.logger.Error("Failed to kill the process", "err", err)
+		lfcm.logger.Error("[EON] Failed to kill the process", "err", err)
 		os.Exit(1)
 	}
 }

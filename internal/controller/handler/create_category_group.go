@@ -24,7 +24,7 @@ type (
 	}
 )
 
-func NewCreateCategoryGroupHandler(createCategoryGroup usecase.CreateCategoryGroup) CreateCategoryGroup {
+func NewCreateCategoryGroup(createCategoryGroup usecase.CreateCategoryGroup) CreateCategoryGroup {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		var req CreateCategoryGroupRequest

@@ -13,25 +13,21 @@ import (
 	"time"
 )
 
-type applicationImpl struct {
+type Application struct {
 	ctnr         *di.Container
 	shutdownTime time.Duration
-	lfcm         lifeCycleManager
+	lfcm         *lifeCycleManager
 	logger       Logger
 	ctx          context.Context
 	serviceName  string
 }
 
-func (app *applicationImpl) container() *di.Container {
-	return app.ctnr
-}
-
-func (app *applicationImpl) BootStrap(modules ...Module) Application {
+func (app *Application) BootStrap(modules ...Module) *Application {
 	var bootOrder []HookFn
 	for i := range modules {
 		module := modules[i]
 		hookFn := func() error {
-			app.logger.Info(fmt.Sprintf("Booting %s", module.name))
+			app.logger.Info(fmt.Sprintf("[EON] Booting %s", module.name))
 			module.bootFn(
 				app.ctx,
 				app.ctnr,
@@ -50,9 +46,9 @@ func (app *applicationImpl) BootStrap(modules ...Module) Application {
 	return app
 }
 
-func (app *applicationImpl) Start() error {
+func (app *Application) Start() error {
 	if err := app.lfcm.start(); err != nil {
-		app.logger.Error("Error starting the application", "err", err)
+		app.logger.Error("[EON] Error starting the application", "err", err)
 		return fmt.Errorf("starting the application: %w", err)
 	}
 
@@ -72,18 +68,18 @@ func (app *applicationImpl) Start() error {
 	return nil
 }
 
-func (app *applicationImpl) StartTest() error {
+func (app *Application) StartTest() error {
 	if err := app.lfcm.start(); err != nil {
-		app.logger.Error("Error starting the application", "err", err)
+		app.logger.Error("[EON] Error starting the application", "err", err)
 		return err
 	}
 
 	return nil
 }
 
-func (app *applicationImpl) Stop() error {
+func (app *Application) Stop() error {
 	if err := app.lfcm.stop(); err != nil {
-		app.logger.Error("Failed to stop the application", "err", err)
+		app.logger.Error("[EON] Failed to stop the application", "err", err)
 		return fmt.Errorf("stopping the application: %w", err)
 	}
 	return nil

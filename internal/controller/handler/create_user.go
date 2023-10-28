@@ -25,7 +25,7 @@ type (
 	CreateUser func(ctx *fiber.Ctx) error
 )
 
-func NewCreateUserHandler(createUser usecase.CreateUser) CreateUser {
+func NewCreateUser(createUser usecase.CreateUser) CreateUser {
 	return func(ctx *fiber.Ctx) error {
 		var req CreateUserRequest
 		if err := ctx.BodyParser(&req); err != nil {

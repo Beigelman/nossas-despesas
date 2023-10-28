@@ -3,6 +3,7 @@ package boot
 import (
 	"context"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
+	"github.com/Beigelman/ludaapi/internal/query"
 
 	"github.com/Beigelman/ludaapi/internal/controller/handler"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categoryrepo"
@@ -18,20 +19,24 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	// user
 	di.Provide(c, userrepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateUser)
-	di.Provide(c, handler.NewCreateUserHandler)
+	di.Provide(c, handler.NewCreateUser)
+	di.Provide(c, usecase.NewAddUserToGroup)
+	di.Provide(c, handler.NewAddUserToGroup)
 	// group
 	di.Provide(c, grouprepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateGroup)
-	di.Provide(c, handler.NewCreateGroupHandler)
+	di.Provide(c, handler.NewCreateGroup)
 	// expense
 	di.Provide(c, expenserepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateExpense)
-	di.Provide(c, handler.NewCreateExpenseHandler)
+	di.Provide(c, query.NewGetGroupExpenses)
+	di.Provide(c, handler.NewGetGroupExpenses)
+	di.Provide(c, handler.NewCreateExpense)
 	// category
 	di.Provide(c, categoryrepo.NewPGRepository)
 	di.Provide(c, categorygrouprepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateCategory)
 	di.Provide(c, usecase.NewCreateCategoryGroup)
-	di.Provide(c, handler.NewCreateCategoryHandler)
-	di.Provide(c, handler.NewCreateCategoryGroupHandler)
+	di.Provide(c, handler.NewCreateCategory)
+	di.Provide(c, handler.NewCreateCategoryGroup)
 })
