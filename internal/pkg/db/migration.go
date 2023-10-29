@@ -8,9 +8,9 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 )
 
-func (db *SQLDatabase) MigrateUp(migrationPath string) error {
-	driver, err := postgres.WithInstance(db.db.DB, &postgres.Config{
-		DatabaseName: db.name,
+func (sql *SQLDatabase) MigrateUp(migrationPath string) error {
+	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
+		DatabaseName: sql.name,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to get DB instance: %w", err)
@@ -28,13 +28,13 @@ func (db *SQLDatabase) MigrateUp(migrationPath string) error {
 	return nil
 }
 
-func (db *SQLDatabase) MigrateDown(migrationPath string) error {
-	if db.env == env.Production {
+func (sql *SQLDatabase) MigrateDown(migrationPath string) error {
+	if sql.env == env.Production {
 		return nil
 	}
 
-	driver, err := postgres.WithInstance(db.db.DB, &postgres.Config{
-		DatabaseName: db.name,
+	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
+		DatabaseName: sql.name,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to get DB instance: %w", err)

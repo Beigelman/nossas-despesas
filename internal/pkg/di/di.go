@@ -5,7 +5,7 @@ func Reset(ctnr *Container) {
 	ctnr.reset()
 }
 
-// SingletonLazy binds an abstraction to concrete lazily in singleton mode.
+// Provide binds an abstraction to concrete lazily in singleton mode.
 // The concrete is resolved only when the abstraction is resolved for the first time.
 // It takes a resolver function that returns the concrete, and its return type matches the abstraction (interface).
 // The resolver function can have arguments of abstraction that have been declared in the Container already.
@@ -16,7 +16,7 @@ func Provide(ctnr *Container, resolver any) {
 	}
 }
 
-// NamedSingleton binds a named abstraction to concrete lazily in singleton mode.
+// ProvideNamed binds a named abstraction to concrete lazily in singleton mode.
 // The concrete is resolved only when the abstraction is resolved for the first time.
 func ProvideNamed(ctnr *Container, name string, resolver any) {
 	err := ctnr.namedSingletonLazy(name, resolver)

@@ -21,7 +21,7 @@ func (c *Circle) SetArea(a int) {
 	c.a = a
 }
 
-func (c Circle) GetArea() int {
+func (c *Circle) GetArea() int {
 	return c.a
 }
 
@@ -47,14 +47,14 @@ func TestContainer_Provide(t *testing.T) {
 		return &Circle{a: 13}
 	})
 
-	di.Call(container, func(s1 Shape) {
+	assert.NoError(t, di.Call(container, func(s1 Shape) {
 		s1.SetArea(666)
-	})
+	}))
 
-	di.Call(container, func(s1 Shape) {
+	assert.NoError(t, di.Call(container, func(s1 Shape) {
 		a := s1.GetArea()
 		assert.Equal(t, a, 666)
-	})
+	}))
 }
 
 func TestContainer_SingletonLazy(t *testing.T) {
@@ -67,14 +67,14 @@ func TestContainer_SingletonLazy(t *testing.T) {
 		return &Circle{a: 13}
 	})
 
-	di.Call(container, func(s1 Shape) {
+	assert.NoError(t, di.Call(container, func(s1 Shape) {
 		s1.SetArea(666)
-	})
+	}))
 
-	di.Call(container, func(s2 Shape) {
+	assert.NoError(t, di.Call(container, func(s2 Shape) {
 		a := s2.GetArea()
 		assert.Equal(t, a, 666)
-	})
+	}))
 }
 
 func TestContainer_SingletonLazy_With_Resolve_That_Returns_Nothing(t *testing.T) {
@@ -169,7 +169,7 @@ func TestContainer_Call_With_Multiple_Resolving(t *testing.T) {
 		return &MySQL{}
 	})
 
-	di.Call(container, func(s Shape, m Database) {
+	assert.NoError(t, di.Call(container, func(s Shape, m Database) {
 		if _, ok := s.(*Circle); !ok {
 			t.Error("Expected Circle")
 		}
@@ -177,7 +177,7 @@ func TestContainer_Call_With_Multiple_Resolving(t *testing.T) {
 		if _, ok := m.(*MySQL); !ok {
 			t.Error("Expected MySQL")
 		}
-	})
+	}))
 }
 
 func TestContainer_Call_With_Dependency_Missing_In_Chain(t *testing.T) {
@@ -193,11 +193,11 @@ func TestContainer_Call_With_Dependency_Missing_In_Chain(t *testing.T) {
 		return &MySQL{}, nil
 	})
 
-	di.Call(container, func(m Database) {
+	assert.NoError(t, di.Call(container, func(m Database) {
 		if _, ok := m.(*MySQL); !ok {
 			t.Error("Expected MySQL")
 		}
-	})
+	}))
 }
 
 func TestContainer_Call_With_Unsupported_Receiver_It_Should_Fail(t *testing.T) {

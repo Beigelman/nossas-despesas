@@ -12,16 +12,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PGRepository struct {
+type GroupPGRepository struct {
 	db *sqlx.DB
 }
 
 func NewPGRepository(db db.Database) repository.GroupRepository {
-	return &PGRepository{db: db.Client()}
+	return &GroupPGRepository{db: db.Client()}
 }
 
 // GetNextID implements group.UserRepository.
-func (repo *PGRepository) GetNextID() entity.GroupID {
+func (repo *GroupPGRepository) GetNextID() entity.GroupID {
 	var nextValue int
 
 	if err := repo.db.QueryRowx("SELECT nextval('groups_id_seq');").Scan(&nextValue); err != nil {
@@ -32,7 +32,7 @@ func (repo *PGRepository) GetNextID() entity.GroupID {
 }
 
 // GetByID implements group.UserRepository.
-func (repo *PGRepository) GetByID(ctx context.Context, id entity.GroupID) (*entity.Group, error) {
+func (repo *GroupPGRepository) GetByID(ctx context.Context, id entity.GroupID) (*entity.Group, error) {
 	var model GroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -52,7 +52,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.GroupID) (*enti
 }
 
 // GetByName implements group.UserRepository.
-func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.Group, error) {
+func (repo *GroupPGRepository) GetByName(ctx context.Context, name string) (*entity.Group, error) {
 	var model GroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -72,7 +72,7 @@ func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.G
 }
 
 // Store implements group.UserRepository.
-func (repo *PGRepository) Store(ctx context.Context, entity *entity.Group) error {
+func (repo *GroupPGRepository) Store(ctx context.Context, entity *entity.Group) error {
 	var model = toModel(entity)
 
 	if err := repo.create(ctx, model); err != nil {
@@ -88,7 +88,7 @@ func (repo *PGRepository) Store(ctx context.Context, entity *entity.Group) error
 	return nil
 }
 
-func (repo *PGRepository) create(ctx context.Context, model GroupModel) error {
+func (repo *GroupPGRepository) create(ctx context.Context, model GroupModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
 		INSERT INTO groups (id, name, created_at, updated_at, deleted_at, version)
 		VALUES (:id, :name, :created_at, :updated_at, :deleted_at, :version)
@@ -99,7 +99,7 @@ func (repo *PGRepository) create(ctx context.Context, model GroupModel) error {
 	return nil
 }
 
-func (repo *PGRepository) update(ctx context.Context, model GroupModel) error {
+func (repo *GroupPGRepository) update(ctx context.Context, model GroupModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE groups SET name = :name, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id AND version = :version

@@ -69,9 +69,7 @@ func (sql *SQLDatabase) Clean() error {
 			return fmt.Errorf("failed to scan %s: %w", tableName, err)
 		}
 
-		sql_command := fmt.Sprintf("TRUNCATE TABLE %s;", tableName)
-		_, err = sql.db.Exec(sql_command)
-		if err != nil {
+		if _, err = sql.db.Exec("TRUNCATE TABLE $1;", tableName); err != nil {
 			return fmt.Errorf("failed to truncate table %s: %w", tableName, err)
 		}
 	}

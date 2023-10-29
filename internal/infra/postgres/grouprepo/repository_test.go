@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var migrationPath string = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
+var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
 
 type PgGroupRepoTestSuite struct {
 	suite.Suite

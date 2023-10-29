@@ -11,16 +11,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PGRepository struct {
+type UserPGRepository struct {
 	db *sqlx.DB
 }
 
 func NewPGRepository(db db.Database) repository.UserRepository {
-	return &PGRepository{db: db.Client()}
+	return &UserPGRepository{db: db.Client()}
 }
 
 // GetNextID implements user.UserRepository.
-func (repo *PGRepository) GetNextID() entity.UserID {
+func (repo *UserPGRepository) GetNextID() entity.UserID {
 	var nextValue int
 
 	if err := repo.db.QueryRowx("SELECT nextval('users_id_seq');").Scan(&nextValue); err != nil {
@@ -31,7 +31,7 @@ func (repo *PGRepository) GetNextID() entity.UserID {
 }
 
 // GetByEmail implements user.UserRepository.
-func (repo *PGRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (repo *UserPGRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -51,7 +51,7 @@ func (repo *PGRepository) GetByEmail(ctx context.Context, email string) (*entity
 }
 
 // GetByID implements user.UserRepository.
-func (repo *PGRepository) GetByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (repo *UserPGRepository) GetByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -71,7 +71,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.UserID) (*entit
 }
 
 // Store implements user.UserRepository.
-func (repo *PGRepository) Store(ctx context.Context, entity *entity.User) error {
+func (repo *UserPGRepository) Store(ctx context.Context, entity *entity.User) error {
 	var model = toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
 		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"users_pkey\"" {
@@ -86,7 +86,7 @@ func (repo *PGRepository) Store(ctx context.Context, entity *entity.User) error 
 	return nil
 }
 
-func (repo *PGRepository) create(ctx context.Context, model UserModel) error {
+func (repo *UserPGRepository) create(ctx context.Context, model UserModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
 		INSERT INTO users (id, name, email, group_id, profile_picture, created_at, updated_at, deleted_at, version)
 		VALUES (:id, :name, :email, :group_id, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
@@ -97,7 +97,7 @@ func (repo *PGRepository) create(ctx context.Context, model UserModel) error {
 	return nil
 }
 
-func (repo *PGRepository) update(ctx context.Context, model UserModel) error {
+func (repo *UserPGRepository) update(ctx context.Context, model UserModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE users SET name = :name, email = :email, group_id = :group_id, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version

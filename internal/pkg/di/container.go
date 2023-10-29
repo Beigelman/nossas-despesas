@@ -1,4 +1,4 @@
-// Package container is a lightweight yet powerful IoC container for Go projects.
+// Package di is a lightweight yet powerful IoC container for Go projects.
 // It provides an easy-to-use interface and performance-in-mind container to be your ultimate requirement.
 package di
 
@@ -49,15 +49,15 @@ func New() *Container {
 }
 
 // Child creates a child container that contains all the fathers bindings.
-func (c Container) Child() *Container {
+func (c *Container) Child() *Container {
 	return &Container{
-		father:   &c,
+		father:   c,
 		bindings: make(map[reflect.Type]map[string]*binding),
 	}
 }
 
 // bind maps an abstraction to concrete and instantiates if it is a singleton binding.
-func (c Container) bind(resolver interface{}, name string, isSingleton bool, isLazy bool) error {
+func (c *Container) bind(resolver interface{}, name string, isSingleton bool, isLazy bool) error {
 	reflectedResolver := reflect.TypeOf(resolver)
 	if reflectedResolver.Kind() != reflect.Func {
 		return errors.New("container: the resolver must be a function")
@@ -91,7 +91,7 @@ func (c Container) bind(resolver interface{}, name string, isSingleton bool, isL
 	return nil
 }
 
-func (c Container) validateResolverFunction(funcType reflect.Type) error {
+func (c *Container) validateResolverFunction(funcType reflect.Type) error {
 	retCount := funcType.NumOut()
 
 	if retCount == 0 || retCount > 2 {
@@ -110,7 +110,7 @@ func (c Container) validateResolverFunction(funcType reflect.Type) error {
 
 // invoke calls a function and its returned values.
 // It only accepts one value and an optional error.
-func (c Container) invoke(function interface{}) (interface{}, error) {
+func (c *Container) invoke(function interface{}) (interface{}, error) {
 	arguments, err := c.arguments(function)
 	if err != nil {
 		return nil, err

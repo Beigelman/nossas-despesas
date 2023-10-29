@@ -13,15 +13,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PGRepository struct {
+type CategoryGroupPGRepository struct {
 	db *sqlx.DB
 }
 
 func NewPGRepository(db db.Database) repository.CategoryGroupRepository {
-	return &PGRepository{db: db.Client()}
+	return &CategoryGroupPGRepository{db: db.Client()}
 }
 
-func (repo *PGRepository) GetNextID() entity.CategoryGroupID {
+func (repo *CategoryGroupPGRepository) GetNextID() entity.CategoryGroupID {
 	var nextValue int
 
 	if err := repo.db.QueryRowx("SELECT nextval('category_groups_id_seq');").Scan(&nextValue); err != nil {
@@ -31,7 +31,7 @@ func (repo *PGRepository) GetNextID() entity.CategoryGroupID {
 	return entity.CategoryGroupID{Value: nextValue}
 }
 
-func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.CategoryGroup, error) {
+func (repo *CategoryGroupPGRepository) GetByName(ctx context.Context, name string) (*entity.CategoryGroup, error) {
 	var model CategoryGroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -50,7 +50,7 @@ func (repo *PGRepository) GetByName(ctx context.Context, name string) (*entity.C
 	return toEntity(model), nil
 }
 
-func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryGroupID) (*entity.CategoryGroup, error) {
+func (repo *CategoryGroupPGRepository) GetByID(ctx context.Context, id entity.CategoryGroupID) (*entity.CategoryGroup, error) {
 	var model CategoryGroupModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -69,7 +69,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.CategoryGroupID
 	return toEntity(model), nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, entity *entity.CategoryGroup) error {
+func (repo *CategoryGroupPGRepository) Store(ctx context.Context, entity *entity.CategoryGroup) error {
 	var model = toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
 		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"categories_pkey\"" {
@@ -84,7 +84,7 @@ func (repo *PGRepository) Store(ctx context.Context, entity *entity.CategoryGrou
 	return nil
 }
 
-func (repo *PGRepository) create(ctx context.Context, model CategoryGroupModel) error {
+func (repo *CategoryGroupPGRepository) create(ctx context.Context, model CategoryGroupModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
 		INSERT INTO category_groups (id, name, icon, created_at, updated_at, deleted_at, version)
 		VALUES (:id, :name, :icon, :created_at, :updated_at, :deleted_at, :version)
@@ -95,7 +95,7 @@ func (repo *PGRepository) create(ctx context.Context, model CategoryGroupModel) 
 	return nil
 }
 
-func (repo *PGRepository) update(ctx context.Context, model CategoryGroupModel) error {
+func (repo *CategoryGroupPGRepository) update(ctx context.Context, model CategoryGroupModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE category_groups SET name = :name, icon = :icon, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version

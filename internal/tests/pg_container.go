@@ -3,8 +3,7 @@ package tests
 import (
 	"context"
 
-	"github.com/docker/go-connections/nat"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
@@ -24,11 +23,11 @@ func DefaultPostgresContainerOptions() PostgresContainerOptions {
 			Image:        "postgres:15-alpine",
 			ExposedPorts: []string{"5432/tcp"},
 			WaitingFor: wait.ForAll(
-				wait.ForListeningPort(nat.Port("5432/tcp")),
+				wait.ForListeningPort("5432/tcp"),
 			),
 			Env: map[string]string{
-				"POSTGRES_USER":     "root",
-				"POSTGRES_PASSWORD": "root",
+				"POSTGRES_USER":     "luda",
+				"POSTGRES_PASSWORD": "luda",
 				"POSTGRES_DB":       "test",
 			},
 		},
@@ -41,7 +40,7 @@ func StartPostgres(ctx context.Context) (*PostgresContainer, error) {
 
 type DisableLog struct{}
 
-func (l DisableLog) Printf(format string, a ...interface{}) {}
+func (l DisableLog) Printf(_ string, _ ...interface{}) {}
 
 func StartPostgresWithConfig(ctx context.Context, options PostgresContainerOptions) (*PostgresContainer, error) {
 	req := options.ContainerRequest

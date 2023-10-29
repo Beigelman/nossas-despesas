@@ -30,7 +30,7 @@ type TransactionFunction func(ctx context.Context, tx *sqlx.Tx) error
 
 type TransactionManager func(ctx context.Context, txFn TransactionFunction, ops ...TxOptions) error
 
-func (db *SQLDatabase) NewTransactionManager() TransactionManager {
+func (sql *SQLDatabase) NewTransactionManager() TransactionManager {
 	return func(ctx context.Context, txFn TransactionFunction, opts ...TxOptions) error {
 		var txOptions *TxOptions
 		if len(opts) > 0 {
@@ -39,7 +39,7 @@ func (db *SQLDatabase) NewTransactionManager() TransactionManager {
 			txOptions = nil
 		}
 
-		tx, err := db.db.BeginTxx(ctx, convertTxOptions(txOptions))
+		tx, err := sql.db.BeginTxx(ctx, convertTxOptions(txOptions))
 		if err != nil {
 			return fmt.Errorf("BeginTxx: %w", err)
 		}

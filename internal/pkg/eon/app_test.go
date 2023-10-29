@@ -43,19 +43,6 @@ var errorModule = NewModule("error", func(ctx context.Context, c *di.Container, 
 	})
 })
 
-var overdueModule = NewModule("error", func(ctx context.Context, c *di.Container, lfcm LifeCycleManager, app Info) {
-	di.Provide(c, func() PrintBanana {
-		return func() string {
-			return "Banana"
-		}
-	})
-
-	lfcm.OnDisposing(HookOrders.APPEND, func() error {
-		time.Sleep(3 * time.Second)
-		return nil
-	})
-})
-
 type EonAppTestSuite struct {
 	suite.Suite
 	app *Application

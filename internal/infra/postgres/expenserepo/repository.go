@@ -11,16 +11,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type PGRepository struct {
+type ExpensePGRepository struct {
 	db *sqlx.DB
 }
 
 func NewPGRepository(db db.Database) repository.ExpenseRepository {
-	return &PGRepository{db: db.Client()}
+	return &ExpensePGRepository{db: db.Client()}
 }
 
 // GetNextID implements expense.UserRepository.
-func (repo *PGRepository) GetNextID() entity.ExpenseID {
+func (repo *ExpensePGRepository) GetNextID() entity.ExpenseID {
 	var nextValue int
 
 	if err := repo.db.QueryRowx("SELECT nextval('expenses_id_seq');").Scan(&nextValue); err != nil {
@@ -31,7 +31,7 @@ func (repo *PGRepository) GetNextID() entity.ExpenseID {
 }
 
 // GetByID implements expense.UserRepository.
-func (repo *PGRepository) GetByID(ctx context.Context, id entity.ExpenseID) (*entity.Expense, error) {
+func (repo *ExpensePGRepository) GetByID(ctx context.Context, id entity.ExpenseID) (*entity.Expense, error) {
 	var model ExpenseModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
@@ -51,7 +51,7 @@ func (repo *PGRepository) GetByID(ctx context.Context, id entity.ExpenseID) (*en
 }
 
 // Store implements expense.UserRepository.
-func (repo *PGRepository) Store(ctx context.Context, entity *entity.Expense) error {
+func (repo *ExpensePGRepository) Store(ctx context.Context, entity *entity.Expense) error {
 	var model = toModel(entity)
 
 	if _, err := repo.db.NamedExecContext(ctx, `
