@@ -47,8 +47,8 @@ func NewTestConfig(dbPort string, dbHost string) Config {
 		Db: Db{
 			Type:         "postgres",
 			Host:         dbHost,
-			User:         "root",
-			Password:     "root",
+			User:         "luda",
+			Password:     "luda",
 			Name:         "test",
 			Port:         dbPort,
 			MaxOpenConns: 4,

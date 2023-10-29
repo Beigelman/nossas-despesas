@@ -29,11 +29,11 @@ type SplitRatio struct {
 	Receiver int `db:"receiver"`
 }
 
-func (sr *SplitRatio) Value() (driver.Value, error) {
+func (sr SplitRatio) Value() (driver.Value, error) {
 	return json.Marshal(sr)
 }
 
-func (sr *SplitRatio) Scan(value any) error {
+func (sr SplitRatio) Scan(value any) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")
