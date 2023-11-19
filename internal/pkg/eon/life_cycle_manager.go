@@ -22,7 +22,7 @@ var appStates = struct {
 	STARTING: "STARTING",
 	STARTED:  "STARTED",
 	STOPPING: "STOPPING",
-	STOPPED:  "STOPPED ",
+	STOPPED:  "STOPPED",
 }
 
 func newLifeCycleManager(shutdownTime time.Duration, logger Logger) *lifeCycleManager {
@@ -57,7 +57,7 @@ func (lfcm *lifeCycleManager) status(newStatus appState) HookFn {
 
 func (lfcm *lifeCycleManager) transition(lifeCycle hook) HookFn {
 	return func() error {
-		lfcm.logger.Info(fmt.Sprintf("[EON] Processing on%s ", lifeCycle))
+		lfcm.logger.Info(fmt.Sprintf("[EON] Processing on%s", lifeCycle))
 		if err := hooksChain(lfcm.hooks.get(lifeCycle)...); err != nil {
 			return fmt.Errorf("processing on%s: %w", lifeCycle, err)
 		}

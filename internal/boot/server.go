@@ -16,6 +16,7 @@ import (
 	"github.com/Beigelman/ludaapi/internal/pkg/eon"
 	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
@@ -29,6 +30,8 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 			JSONDecoder:  sonic.Unmarshal,
 			ErrorHandler: api.ErrorHandler,
 		})
+
+		server.Use(cors.New())
 
 		server.Use(func(ctx *fiber.Ctx) error {
 			ctx.Set("x-service-name", info.ServiceName)

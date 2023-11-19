@@ -25,15 +25,15 @@ type ExpenseModel struct {
 }
 
 type SplitRatio struct {
-	Payer    int `db:"payer"`
-	Receiver int `db:"receiver"`
+	Payer    int `db:"payer" json:"payer"`
+	Receiver int `db:"receiver" json:"receiver"`
 }
 
 func (sr SplitRatio) Value() (driver.Value, error) {
 	return json.Marshal(sr)
 }
 
-func (sr SplitRatio) Scan(value any) error {
+func (sr *SplitRatio) Scan(value any) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")

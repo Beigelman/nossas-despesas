@@ -1,6 +1,6 @@
 default: &default
   LOG_LEVEL: "info"
-  PORT: 3000
+  PORT: 8080
   DB_HOST: localhost
   DB_NAME: app
   DB_USER: luda

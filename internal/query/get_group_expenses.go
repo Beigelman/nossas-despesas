@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"time"
 )
 
 type (
@@ -17,6 +18,7 @@ type (
 		Payer       string                 `db:"payer" json:"payer"`
 		Receiver    string                 `db:"receiver" json:"receiver"`
 		SplitRatio  expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
+		CreatedAt   time.Time              `db:"created_at" json:"created_at"`
 	}
 
 	GetGroupExpenses func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error)
@@ -42,7 +44,8 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
     			cat.name as category,
     			payer.name as payer,
     			receiver.name as receiver,
-    			ex.split_ratio as split_ratio
+    			ex.split_ratio as split_ratio,
+				ex.created_at as created_at
 			from expenses ex
          	inner join categories cat on ex.category_id = cat.id
          	inner join users payer on ex.payer_id = payer.id
