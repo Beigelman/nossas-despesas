@@ -14,9 +14,9 @@ type (
 		Name        string                 `db:"name" json:"name"`
 		Amount      float32                `db:"amount" json:"amount"`
 		Description string                 `db:"description" json:"description"`
-		Category    string                 `db:"category" json:"category"`
-		Payer       string                 `db:"payer" json:"payer"`
-		Receiver    string                 `db:"receiver" json:"receiver"`
+		CategoryID  int                    `db:"category_id" json:"category_id"`
+		PayerID     int                    `db:"payer_id" json:"payer_id"`
+		ReceiverID  int                    `db:"receiver_id" json:"receiver_id"`
 		SplitRatio  expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
 		CreatedAt   time.Time              `db:"created_at" json:"created_at"`
 	}
@@ -36,24 +36,28 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 		var expenses []ExpenseDetails
 
 		if err := dbClient.SelectContext(ctx, &expenses, `
-			select
-    			distinct on (ex.id) ex.id as id,
-    			ex.name as name,
-    			(ex.amount_cents::float / 100) as amount,
-    			ex.description as description,
-    			cat.name as category,
-    			payer.name as payer,
-    			receiver.name as receiver,
-    			ex.split_ratio as split_ratio,
-				ex.created_at as created_at
-			from expenses ex
-         	inner join categories cat on ex.category_id = cat.id
-         	inner join users payer on ex.payer_id = payer.id
-         	inner join users receiver on ex.receiver_id = receiver.id
-			where ex.group_id = $1
-			and ex.id > $2
-			and ex.deleted_at is null
-			order by ex.id, ex.version desc
+			with base as (
+				select
+    				distinct on (ex.id) ex.id as id,
+    				ex.name as name,
+    				(ex.amount_cents::float / 100) as amount,
+    				ex.description as description,
+    				cat.id as category_id,
+    				payer.id as payer_id,
+    				receiver.id as receiver_id,
+    				ex.split_ratio as split_ratio,
+					ex.created_at as created_at,
+					ex.deleted_at as deleted_at
+				from expenses ex
+         		inner join categories cat on ex.category_id = cat.id
+         		inner join users payer on ex.payer_id = payer.id
+         		inner join users receiver on ex.receiver_id = receiver.id
+				where ex.group_id = $1
+				and ex.id > $2
+				order by ex.id desc, ex.version desc, ex.created_at
+			)
+			select id, name, amount, description, category_id, payer_id, receiver_id, split_ratio, created_at from base b
+			where b.deleted_at is null
 			limit $3
 		`, input.GroupID, input.LastExpenseID, input.Limit); err != nil {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)

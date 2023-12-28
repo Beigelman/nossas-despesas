@@ -5,6 +5,7 @@ import (
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/pkg/validator"
 	"net/http"
+	"time"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
@@ -19,14 +20,15 @@ type (
 		GroupID     int    `json:"group_id" validate:"required"`
 		Name        string `json:"name" validate:"required"`
 		Amount      int    `json:"amount" validate:"required"`
-		Description string `json:"description" validate:"required"`
+		Description string `json:"description"`
 		CategoryID  int    `json:"category_id" validate:"required"`
 		SplitRatio  struct {
 			Payer    int `json:"payer" validate:"required"`
 			Receiver int `json:"receiver" validate:"required"`
 		} `json:"split_ratio" validate:"required"`
-		PayerID    int `json:"payer_id" validate:"required"`
-		ReceiverID int `json:"receiver_id" validate:"required"`
+		PayerID    int        `json:"payer_id" validate:"required"`
+		ReceiverID int        `json:"receiver_id" validate:"required"`
+		CreatedAt  *time.Time `json:"created_at"`
 	}
 
 	CreateExpenseResponse struct {
@@ -62,6 +64,7 @@ func NewCreateExpense(createExpense usecase.CreateExpense) CreateExpense {
 			},
 			PayerID:    entity.UserID{Value: req.PayerID},
 			ReceiverID: entity.UserID{Value: req.ReceiverID},
+			CreatedAt:  req.CreatedAt,
 		})
 		if err != nil {
 			return fmt.Errorf("CreateExpense: %w", err)

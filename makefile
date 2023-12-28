@@ -10,7 +10,7 @@ migrate-create:
 migrate-apply:
 	atlas migrate apply -c file://database/atlas.hcl --env local
 
-run-local:
+dev:
 	ENV=development go run main.go
 
 unit:

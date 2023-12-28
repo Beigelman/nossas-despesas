@@ -17,6 +17,8 @@ func Router(
 	getGroupHandler handler.GetGroup,
 	getUserHandler handler.GetUser,
 	getCategoriesHandler handler.GetCategories,
+	updateExpenseHandler handler.UpdateExpense,
+	deleteExpenseHandler handler.DeleteExpense,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
@@ -39,6 +41,8 @@ func Router(
 		// Expense routes
 		expense := v1.Group("expense")
 		expense.Post("/", createExpenseHandler)
+		expense.Patch("/:expense_id", updateExpenseHandler)
+		expense.Delete("/:expense_id", deleteExpenseHandler)
 		// Category routes
 		category := v1.Group("category")
 		category.Get("/", getCategoriesHandler)

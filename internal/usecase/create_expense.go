@@ -6,6 +6,7 @@ import (
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"time"
 )
 
 type (
@@ -18,6 +19,7 @@ type (
 		SplitRatio  entity.SplitRatio
 		PayerID     entity.UserID
 		ReceiverID  entity.UserID
+		CreatedAt   *time.Time
 	}
 	CreateExpense func(ctx context.Context, p CreateExpenseParams) (*entity.Expense, error)
 )
@@ -81,6 +83,7 @@ func NewCreateExpense(
 			SplitRatio:  p.SplitRatio,
 			PayerID:     p.PayerID,
 			ReceiverID:  p.ReceiverID,
+			CreatedAt:   p.CreatedAt,
 		})
 		if err != nil {
 			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.NewCategory: %w", err))

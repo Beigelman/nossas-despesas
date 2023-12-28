@@ -35,11 +35,13 @@ func (repo *ExpensePGRepository) GetByID(ctx context.Context, id entity.ExpenseI
 	var model ExpenseModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, amount_cents, description, group_id, category_id, split_ratio, payer_id, receiver_id, created_at, updated_at, deleted_at, version
-		FROM expenses WHERE id = $1
-		AND deleted_at IS NULL
-		ORDER BY version DESC
-		LIMIT 1
+		WITH base AS (
+			SELECT id, name, amount_cents, description, group_id, category_id, split_ratio, payer_id, receiver_id, created_at, updated_at, deleted_at, version
+			FROM expenses WHERE id = $1
+			ORDER BY version DESC
+			LIMIT 1
+		)
+		SELECT * FROM base WHERE deleted_at IS NULL
 	`, id.Value).StructScan(&model); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
