@@ -10,24 +10,47 @@ import (
 )
 
 type User struct {
-	ID        int    `db:"id" json:"id"`
-	Name      string `db:"name" json:"name"`
-	GroupID   *int   `db:"group_id" json:"group_id"`
-	CreatedAt string `db:"created_at" json:"created_at"`
-	UpdatedAt string `db:"updated_at" json:"updated_at"`
+	ID             int     `db:"id" json:"id"`
+	Name           string  `db:"name" json:"name"`
+	Email          string  `db:"email" json:"email"`
+	GroupID        *int    `db:"group_id" json:"group_id,omitempty"`
+	ProfilePicture *string `db:"profile_picture" json:"profile_picture,omitempty"`
+	CreatedAt      string  `db:"created_at" json:"created_at"`
+	UpdatedAt      string  `db:"updated_at" json:"updated_at"`
 }
 
-type GetUser func(ctx context.Context, userID int) (*User, error)
+type GetUserByID func(ctx context.Context, userID int) (*User, error)
 
-func NewGetUser(db db.Database) GetUser {
+func NewGetUserByID(db db.Database) GetUserByID {
 	dbClient := db.Client()
 	return func(ctx context.Context, userID int) (*User, error) {
 		var user User
 		if err := dbClient.GetContext(ctx, &user, `
-			select id, name, group_id, created_at, updated_at
+			select id, name, email, profile_picture, group_id, created_at, updated_at
 			from users
 			where id = $1	
 		`, userID); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, except.NotFoundError("user not found")
+			}
+			return nil, fmt.Errorf("db.GetContext: %w", err)
+		}
+
+		return &user, nil
+	}
+}
+
+type GetUserByAuthenticationID func(ctx context.Context, authenticationID string) (*User, error)
+
+func NewGetUserByAuthenticationID(db db.Database) GetUserByAuthenticationID {
+	dbClient := db.Client()
+	return func(ctx context.Context, authenticationID string) (*User, error) {
+		var user User
+		if err := dbClient.GetContext(ctx, &user, `
+			select id, name, email, profile_picture, group_id, created_at, updated_at
+			from users
+			where authentication_id = $1	
+		`, authenticationID); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, except.NotFoundError("user not found")
 			}

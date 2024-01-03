@@ -35,7 +35,7 @@ func (repo *UserPGRepository) GetByEmail(ctx context.Context, email string) (*en
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, authentication_id, created_at, updated_at, deleted_at, version
 		FROM users WHERE email = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
@@ -55,7 +55,7 @@ func (repo *UserPGRepository) GetByID(ctx context.Context, id entity.UserID) (*e
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, authentication_id, created_at, updated_at, deleted_at, version
 		FROM users WHERE id = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
@@ -88,8 +88,8 @@ func (repo *UserPGRepository) Store(ctx context.Context, entity *entity.User) er
 
 func (repo *UserPGRepository) create(ctx context.Context, model UserModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO users (id, name, email, group_id, profile_picture, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :email, :group_id, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO users (id, name, email, group_id, profile_picture, authentication_id, created_at, updated_at, deleted_at, version)
+		VALUES (:id, :name, :email, :group_id, :profile_picture, :authentication_id, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}

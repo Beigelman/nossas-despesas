@@ -3,25 +3,23 @@ package handler
 import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
-	"strconv"
 )
 
 type (
-	GetUser func(ctx *fiber.Ctx) error
+	GetUserByAuthenticationID func(ctx *fiber.Ctx) error
 )
 
-func NewGetUser(getUser query.GetUser) GetUser {
+func NewGetUserByAuthenticationID(getUserByAuthenticationID query.GetUserByAuthenticationID) GetUserByAuthenticationID {
 	return func(ctx *fiber.Ctx) error {
-		userID, err := strconv.Atoi(ctx.Params("user_id"))
-		if err != nil {
-			return except.BadRequestError("invalid user id").SetInternal(err)
+		authenticationID := ctx.Params("authentication_id")
+		if authenticationID == "" {
+			return fmt.Errorf("authentication_id is required")
 		}
 
-		user, err := getUser(ctx.Context(), userID)
+		user, err := getUserByAuthenticationID(ctx.Context(), authenticationID)
 		if err != nil {
 			return fmt.Errorf("query.getUser: %w", err)
 		}

@@ -11,7 +11,7 @@ func main() {
 
 	if err := app.BootStrap(
 		boot.ConfigModule,
-		boot.DatabaseModule,
+		boot.ClientsModule,
 		boot.ServerModule,
 		boot.ApplicationModule,
 	).Start(); err != nil {

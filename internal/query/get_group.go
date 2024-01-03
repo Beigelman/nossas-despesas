@@ -12,10 +12,13 @@ import (
 
 type (
 	Member struct {
-		ID        int       `db:"id" json:"id"`
-		Name      string    `db:"name" json:"name"`
-		CreatedAt time.Time `db:"created_at" json:"created_at"`
-		UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+		ID             int       `db:"id" json:"id"`
+		Name           string    `db:"name" json:"name"`
+		Email          string    `db:"email" json:"email"`
+		GroupID        int       `db:"group_id" json:"group_id"`
+		ProfilePicture *string   `db:"profile_picture" json:"profile_picture,omitempty"`
+		CreatedAt      time.Time `db:"created_at" json:"created_at"`
+		UpdatedAt      time.Time `db:"updated_at" json:"updated_at"`
 	}
 
 	Group struct {
@@ -54,6 +57,9 @@ func NewGetGroup(db db.Database) GetGroup {
 			select
     		id,
 			name,
+			email,
+			group_id,
+			profile_picture,
 			created_at,
 			updated_at 
 			from users

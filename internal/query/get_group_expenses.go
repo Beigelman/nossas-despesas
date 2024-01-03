@@ -34,13 +34,12 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 	dbClient := db.Client()
 	return func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error) {
 		var expenses []ExpenseDetails
-
 		if err := dbClient.SelectContext(ctx, &expenses, `
 			with base as (
 				select
     				distinct on (ex.id) ex.id as id,
     				ex.name as name,
-    				(ex.amount_cents::float / 100) as amount,
+    				ex.amount_cents amount,
     				ex.description as description,
     				cat.id as category_id,
     				payer.id as payer_id,
@@ -54,10 +53,11 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
          		inner join users receiver on ex.receiver_id = receiver.id
 				where ex.group_id = $1
 				and ex.id > $2
-				order by ex.id desc, ex.version desc, ex.created_at
+				order by ex.id desc, ex.version desc
 			)
 			select id, name, amount, description, category_id, payer_id, receiver_id, split_ratio, created_at from base b
 			where b.deleted_at is null
+			order by b.created_at desc
 			limit $3
 		`, input.GroupID, input.LastExpenseID, input.Limit); err != nil {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)

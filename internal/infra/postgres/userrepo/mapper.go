@@ -24,6 +24,11 @@ func toEntity(model UserModel) *entity.User {
 		groupID = &entity.GroupID{Value: int(model.GroupID.Int64)}
 	}
 
+	var authenticationID *string
+	if model.AuthenticationID.Valid {
+		authenticationID = &model.AuthenticationID.String
+	}
+
 	return &entity.User{
 		Entity: ddd.Entity[entity.UserID]{
 			ID:        entity.UserID{Value: model.ID},
@@ -32,44 +37,44 @@ func toEntity(model UserModel) *entity.User {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
-		GroupID:        groupID,
-		Name:           model.Name,
-		Email:          model.Email,
-		ProfilePicture: profilePicture,
+		GroupID:          groupID,
+		Name:             model.Name,
+		Email:            model.Email,
+		ProfilePicture:   profilePicture,
+		AuthenticationID: authenticationID,
 	}
 }
 
 func toModel(entity *entity.User) UserModel {
-	var profilePicture sql.NullString
+	profilePicture := sql.NullString{String: "", Valid: false}
 	if entity.ProfilePicture != nil {
 		profilePicture = sql.NullString{String: *entity.ProfilePicture, Valid: true}
-	} else {
-		profilePicture = sql.NullString{String: "", Valid: false}
 	}
-
-	var deletedAt sql.NullTime
+	deletedAt := sql.NullTime{Time: time.Time{}, Valid: false}
 	if entity.DeletedAt != nil {
 		deletedAt = sql.NullTime{Time: *entity.DeletedAt, Valid: true}
-	} else {
-		deletedAt = sql.NullTime{Time: time.Time{}, Valid: false}
 	}
 
-	var groupID sql.NullInt64
+	groupID := sql.NullInt64{Int64: 0, Valid: false}
 	if entity.GroupID != nil {
 		groupID = sql.NullInt64{Int64: int64(entity.GroupID.Value), Valid: true}
-	} else {
-		groupID = sql.NullInt64{Int64: 0, Valid: false}
+	}
+
+	authenticationID := sql.NullString{String: "", Valid: false}
+	if entity.AuthenticationID != nil {
+		authenticationID = sql.NullString{String: *entity.AuthenticationID, Valid: true}
 	}
 
 	return UserModel{
-		ID:             entity.ID.Value,
-		Name:           entity.Name,
-		Email:          entity.Email,
-		GroupID:        groupID,
-		ProfilePicture: profilePicture,
-		CreatedAt:      entity.CreatedAt,
-		UpdatedAt:      entity.UpdatedAt,
-		DeletedAt:      deletedAt,
-		Version:        entity.Version,
+		ID:               entity.ID.Value,
+		Name:             entity.Name,
+		Email:            entity.Email,
+		GroupID:          groupID,
+		ProfilePicture:   profilePicture,
+		AuthenticationID: authenticationID,
+		CreatedAt:        entity.CreatedAt,
+		UpdatedAt:        entity.UpdatedAt,
+		DeletedAt:        deletedAt,
+		Version:          entity.Version,
 	}
 }

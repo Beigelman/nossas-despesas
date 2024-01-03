@@ -215,6 +215,10 @@ table "users" {
     type = int
     null = true
   }
+  column "authentication_id" {
+     type = varchar(255)
+     null = true
+   }
   column "created_at" {
     type = timestamptz
     null = false
@@ -234,5 +238,63 @@ table "users" {
 
   primary_key  {
     columns = [column.id]
+  }
+
+  index "authentication_id_idx" {
+    columns = [column.authentication_id]
+    unique = true
+  }
+}
+
+table "auth" {
+  schema = schema.public
+  column "id" {
+    type =
+    null = false
+  }
+  column "name" {
+    type = varchar(255)
+    null = false
+  }
+  column "email" {
+    type = varchar(255)
+    null = false
+  }
+  column "profile_picture" {
+    type = varchar(255)
+    null = true
+  }
+  column "group_id" {
+    type = int
+    null = true
+  }
+  column "" {
+     type = varchar(255)
+     null = true
+   }
+  column "created_at" {
+    type = timestamptz
+    null = false
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+  }
+  column "deleted_at" {
+    type = timestamptz
+    null = true
+  }
+	column "version" {
+    type = int
+    null = false
+  }
+
+  primary_key  {
+    columns = [column.id]
+  }
+
+  index "authentication_id_idx" {
+    columns = [column.authentication_id]
+    unique = true
   }
 }

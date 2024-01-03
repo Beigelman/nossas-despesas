@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"firebase.google.com/go/v4/auth"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
@@ -9,14 +10,16 @@ import (
 )
 
 type CreateUserParams struct {
-	Name           string
-	Email          string
-	ProfilePicture *string
+	Name             string
+	Email            string
+	ProfilePicture   *string
+	AuthenticationID *string
+	GroupID          *entity.GroupID
 }
 
 type CreateUser func(ctx context.Context, p CreateUserParams) (*entity.User, error)
 
-func NewCreateUser(repo repository.UserRepository) CreateUser {
+func NewCreateUser(repo repository.UserRepository, auth *auth.Client) CreateUser {
 	return func(ctx context.Context, p CreateUserParams) (*entity.User, error) {
 		alreadyExists, err := repo.GetByEmail(ctx, p.Email)
 		if err != nil {
@@ -30,11 +33,12 @@ func NewCreateUser(repo repository.UserRepository) CreateUser {
 		userID := repo.GetNextID()
 
 		user := entity.NewUser(entity.UserParams{
-			ID:             userID,
-			Name:           p.Name,
-			Email:          p.Email,
-			ProfilePicture: p.ProfilePicture,
-			GroupID:        nil,
+			ID:               userID,
+			Name:             p.Name,
+			Email:            p.Email,
+			ProfilePicture:   p.ProfilePicture,
+			GroupID:          p.GroupID,
+			AuthenticationID: p.AuthenticationID,
 		})
 
 		if err := repo.Store(ctx, user); err != nil {

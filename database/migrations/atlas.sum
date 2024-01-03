@@ -1,3 +1,5 @@
-h1:h0s7JPUczdBVs2YpxJPgzyPHeMw1T/z8L37klJXgGuU=
+h1:yQ5B4rH69M+HVrX8sLs6YofEG6azjpdxyfATax6YkFU=
 20231021015010_init.down.sql h1:E+U7vcsm97EcdPQIef3DgYeMfZUX4R7XbtOD9b/Vxks=
 20231021015010_init.up.sql h1:RRUEkuy9d09O/1yAx6KMiOK5o8iiYElUZHPAG88X5Co=
+20231229203559_create-authentication-id-column.down.sql h1:O6BrDpGQY5iiycAcmDzkH7L5ICD4MsNSKq64Tb/NGx0=
+20231229203559_create-authentication-id-column.up.sql h1:r4svSviVjxqtOy2oxuWjN+wK5Y26tkB9Vwt1n8L4k6s=

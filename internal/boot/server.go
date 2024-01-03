@@ -5,7 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/controller"
+	"github.com/Beigelman/ludaapi/internal/controller/middleware"
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"log"
 	"log/slog"
 	"net/http"
@@ -32,12 +35,9 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		})
 
 		server.Use(cors.New())
-
-		server.Use(func(ctx *fiber.Ctx) error {
-			ctx.Set("x-service-name", info.ServiceName)
-			slog.Info(fmt.Sprintf("Calling %s%s", ctx.BaseURL(), ctx.Path()), "method", ctx.Method(), "ip", ctx.IP())
-			return ctx.Next()
-		})
+		server.Use(recover.New())
+		server.Use(requestid.New())
+		server.Use(middleware.LogRequest(info.ServiceName))
 
 		return server
 	})
@@ -58,9 +58,11 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 	})
 
 	lc.OnDisposing(eon.HookOrders.APPEND, func() error {
-		slog.Info("Shutting down server")
-		if err := server.Shutdown(); err != nil {
-			return fmt.Errorf("server.Shutdown: %w", err)
+		if server != nil {
+			slog.Info("Shutting down server")
+			if err := server.Shutdown(); err != nil {
+				return fmt.Errorf("server.Shutdown: %w", err)
+			}
 		}
 		return nil
 	})

@@ -10,18 +10,20 @@ type UserID struct{ Value int }
 
 type User struct {
 	ddd.Entity[UserID]
-	Name           string
-	Email          string
-	ProfilePicture *string
-	GroupID        *GroupID
+	Name             string
+	Email            string
+	ProfilePicture   *string
+	GroupID          *GroupID
+	AuthenticationID *string
 }
 
 type UserParams struct {
-	ID             UserID
-	Name           string
-	Email          string
-	ProfilePicture *string
-	GroupID        *GroupID
+	ID               UserID
+	Name             string
+	Email            string
+	ProfilePicture   *string
+	GroupID          *GroupID
+	AuthenticationID *string
 }
 
 func NewUser(p UserParams) *User {
@@ -32,10 +34,11 @@ func NewUser(p UserParams) *User {
 			UpdatedAt: time.Now(),
 			Version:   0,
 		},
-		Name:           p.Name,
-		Email:          p.Email,
-		ProfilePicture: p.ProfilePicture,
-		GroupID:        p.GroupID,
+		Name:             p.Name,
+		Email:            p.Email,
+		ProfilePicture:   p.ProfilePicture,
+		GroupID:          p.GroupID,
+		AuthenticationID: p.AuthenticationID,
 	}
 }
 
