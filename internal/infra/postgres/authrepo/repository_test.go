@@ -1,4 +1,4 @@
-package userrepo
+package authrepo
 
 import (
 	"context"
@@ -17,7 +17,7 @@ var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database
 
 type PgUserRepoTestSuite struct {
 	suite.Suite
-	repository    repository.UserRepository
+	repository    repository.AuthRepository
 	ctx           context.Context
 	db            db.Database
 	cfg           config.Config
@@ -25,7 +25,7 @@ type PgUserRepoTestSuite struct {
 	err           error
 }
 
-func TestPgUserRepoTestSuite(t *testing.T) {
+func TestPgAuthRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(PgUserRepoTestSuite))
 }
 
@@ -43,6 +43,12 @@ func (s *PgUserRepoTestSuite) SetupSuite() {
 
 	s.err = s.db.MigrateUp(migrationPath)
 	s.NoError(s.err)
+
+	_, err := s.db.Client().Exec(`
+   		INSERT INTO users (id, name, email, created_at, updated_at, deleted_at, version)
+		VALUES (1, 'john', 'john@email.com', now(), now(), now(), 0)`,
+	)
+	s.NoError(err)
 }
 
 func (s *PgUserRepoTestSuite) TearDownSuite() {
@@ -59,23 +65,28 @@ func (s *PgUserRepoTestSuite) TearDownSuite() {
 	}
 }
 
+func (s *PgUserRepoTestSuite) TearDownTest() {
+	err := s.db.Clean("authentications")
+	s.NoError(err)
+}
+
 func (s *PgUserRepoTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	user := entity.NewUser(entity.UserParams{
-		ID:    id,
-		Name:  "John Doe",
-		Email: "john@email.com",
+	auth := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+		ID:       id,
+		Email:    "john@email.com",
+		Password: "test123",
 	})
 
-	s.NoError(s.repository.Store(s.ctx, user))
+	s.NoError(s.repository.Store(s.ctx, auth))
 }
 
 func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := entity.NewUser(entity.UserParams{
-		ID:    id,
-		Name:  "John Doe",
-		Email: "john1@email.com",
+	expected := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+		ID:       id,
+		Email:    "john@email.com",
+		Password: "test123",
 	})
 
 	err := s.repository.Store(s.ctx, expected)
@@ -85,25 +96,24 @@ func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByID() {
 	s.NoError(err)
 
 	s.Equal(expected.ID, actual.ID)
-	s.Equal(expected.Name, actual.Name)
 	s.Equal(expected.Email, actual.Email)
 }
 
 func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByEmail() {
 	id := s.repository.GetNextID()
-	expected := entity.NewUser(entity.UserParams{
-		ID:    id,
-		Name:  "John Doe",
-		Email: "john2@email.com",
+	expected := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+		ID:       id,
+		Email:    "john@email.com",
+		Password: "test123",
 	})
 
 	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
 
-	actual, err := s.repository.GetByEmail(s.ctx, "john2@email.com")
+	actual, err := s.repository.GetByEmail(s.ctx, expected.Email, entity.AuthTypes.Credentials)
 	s.NoError(err)
 
 	s.Equal(expected.ID, actual.ID)
-	s.Equal(expected.Name, actual.Name)
 	s.Equal(expected.Email, actual.Email)
+	s.Equal(expected.Type, actual.Type)
 }

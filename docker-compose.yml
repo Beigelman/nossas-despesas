@@ -3,7 +3,7 @@ version: "3"
 services:
   db:
     image: postgres:15-alpine
-    container_name: luda_api_db
+    container_name: nossas-despesas-db
     environment:
       POSTGRES_USER: luda
       POSTGRES_PASSWORD: luda

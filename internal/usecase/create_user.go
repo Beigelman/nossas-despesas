@@ -33,12 +33,11 @@ func NewCreateUser(repo repository.UserRepository, auth *auth.Client) CreateUser
 		userID := repo.GetNextID()
 
 		user := entity.NewUser(entity.UserParams{
-			ID:               userID,
-			Name:             p.Name,
-			Email:            p.Email,
-			ProfilePicture:   p.ProfilePicture,
-			GroupID:          p.GroupID,
-			AuthenticationID: p.AuthenticationID,
+			ID:             userID,
+			Name:           p.Name,
+			Email:          p.Email,
+			ProfilePicture: p.ProfilePicture,
+			GroupID:        p.GroupID,
 		})
 
 		if err := repo.Store(ctx, user); err != nil {

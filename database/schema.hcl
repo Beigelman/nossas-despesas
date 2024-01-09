@@ -3,54 +3,54 @@ schema "public" {}
 table "expenses" {
   schema = schema.public
   column "id" {
-    type = serial
+    type = bigserial
     null = false
   }
-	column "name" {
+  column "name" {
     type = varchar(255)
     null = false
   }
-	column "amount_cents" {
+  column "amount_cents" {
     type = bigint
     null = false
   }
-	column "description" {
+  column "description" {
     type = varchar(255)
     null = false
   }
-	column "group_id" {
-    type = int
+  column "group_id" {
+    type = bigint
     null = false
   }
-	column "category_id" {
-    type = int
+  column "category_id" {
+    type = bigint
     null = false
   }
-	column "split_ratio" {
+  column "split_ratio" {
     type = jsonb
     null = false
   }
-	column "payer_id" {
-    type = int
+  column "payer_id" {
+    type = bigint
     null = false
   }
-	column "receiver_id" {
-    type = int
+  column "receiver_id" {
+    type = bigint
     null = false
   }
-	column "created_at" {
+  column "created_at" {
     type = timestamptz
     null = false
   }
-	column "updated_at" {
+  column "updated_at" {
     type = timestamptz
     null = false
   }
-	column "deleted_at" {
+  column "deleted_at" {
     type = timestamptz
     null = true
   }
-	column "version" {
+  column "version" {
     type = int
     null = false
   }
@@ -83,7 +83,7 @@ table "expenses" {
 table "groups" {
   schema = schema.public
   column "id" {
-    type = serial
+    type = bigserial
     null = false
   }
   column "name" {
@@ -115,7 +115,7 @@ table "groups" {
 table "categories" {
   schema = schema.public
   column "id" {
-    type = serial
+    type = bigserial
     null = false
   }
   column "name" {
@@ -127,7 +127,7 @@ table "categories" {
     null = false
   }
   column "category_group_id" {
-    type = int
+    type = bigint
     null = false
   }
   column "created_at" {
@@ -160,7 +160,7 @@ table "categories" {
 table "category_groups" {
   schema = schema.public
   column "id" {
-    type = serial
+    type = bigserial
     null = false
   }
   column "name" {
@@ -196,7 +196,7 @@ table "category_groups" {
 table "users" {
   schema = schema.public
   column "id" {
-    type = serial
+    type = bigserial
     null = false
   }
   column "name" {
@@ -212,13 +212,9 @@ table "users" {
     null = true
   }
   column "group_id" {
-    type = int
+    type = bigint
     null = true
   }
-  column "authentication_id" {
-     type = varchar(255)
-     null = true
-   }
   column "created_at" {
     type = timestamptz
     null = false
@@ -231,7 +227,7 @@ table "users" {
     type = timestamptz
     null = true
   }
-	column "version" {
+  column "version" {
     type = int
     null = false
   }
@@ -240,38 +236,34 @@ table "users" {
     columns = [column.id]
   }
 
-  index "authentication_id_idx" {
-    columns = [column.authentication_id]
+  index "email_unique_idx" {
+    columns = [column.email]
     unique = true
   }
 }
 
-table "auth" {
+table "authentications" {
   schema = schema.public
   column "id" {
-    type =
-    null = false
-  }
-  column "name" {
-    type = varchar(255)
+    type = bigserial
     null = false
   }
   column "email" {
     type = varchar(255)
     null = false
   }
-  column "profile_picture" {
+  column "password" {
     type = varchar(255)
     null = true
   }
-  column "group_id" {
-    type = int
+  column "provider_id" {
+    type = varchar(255)
     null = true
   }
-  column "" {
-     type = varchar(255)
-     null = true
-   }
+  column "type" {
+    type = enum.authentication_type
+    null = false
+  }
   column "created_at" {
     type = timestamptz
     null = false
@@ -284,7 +276,7 @@ table "auth" {
     type = timestamptz
     null = true
   }
-	column "version" {
+  column "version" {
     type = int
     null = false
   }
@@ -293,8 +285,18 @@ table "auth" {
     columns = [column.id]
   }
 
-  index "authentication_id_idx" {
-    columns = [column.authentication_id]
+  foreign_key "auth_email_fk" {
+    columns = [column.email]
+    ref_columns = [table.users.column.email]
+  }
+
+  index "email_type_unique_idx" {
+    columns = [column.email, column.type]
     unique = true
   }
+}
+
+enum "authentication_type" {
+  schema = schema.public
+  values = ["credentials", "google"]
 }

@@ -4,14 +4,17 @@ db:
 migrate-diff:
 	atlas migrate diff $(name) -c file://database/atlas.hcl --env local
 
-migrate-create:
+migrate-new:
 	atlas migrate new $(name) -c file://database/atlas.hcl --env local
 
-migrate-apply:
-	atlas migrate apply -c file://database/atlas.hcl --env local
+migrate-hash:
+	 atlas migrate hash -c file://database/atlas.hcl --env local
 
 migrate-up:
 	migrate -path "./database/migrations" -database "postgres://luda:luda@localhost:5432/app?sslmode=disable" up
+
+migrate-down:
+	migrate -path "./database/migrations" -database "postgres://luda:luda@localhost:5432/app?sslmode=disable" down
 
 dev:
 	ENV=development go run main.go

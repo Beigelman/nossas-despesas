@@ -2,6 +2,7 @@ package boot
 
 import (
 	"context"
+	"github.com/Beigelman/ludaapi/internal/infra/postgres/authrepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
 	"github.com/Beigelman/ludaapi/internal/query"
 
@@ -16,15 +17,21 @@ import (
 )
 
 var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+	// auth
+	di.Provide(c, authrepo.NewPGRepository)
+	di.Provide(c, usecase.NewSignUpWithCredentials)
+	di.Provide(c, usecase.NewSignInWithCredentials)
+	di.Provide(c, usecase.NewRefreshAuthToken)
+	di.Provide(c, handler.NewSignUpWithCredentials)
+	di.Provide(c, handler.NewSignInWithCredentials)
+	di.Provide(c, handler.NewRefreshAuthToken)
 	// user
 	di.Provide(c, userrepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateUser)
-	di.Provide(c, handler.NewCreateUser)
 	di.Provide(c, query.NewGetUserByID)
 	di.Provide(c, query.NewGetUserByAuthenticationID)
 	di.Provide(c, usecase.NewAddUserToGroup)
 	di.Provide(c, handler.NewAddUserToGroup)
-	di.Provide(c, handler.NewGetUserByAuthenticationID)
 	di.Provide(c, handler.NewGetUserByID)
 	// group
 	di.Provide(c, grouprepo.NewPGRepository)

@@ -24,11 +24,6 @@ func toEntity(model UserModel) *entity.User {
 		groupID = &entity.GroupID{Value: int(model.GroupID.Int64)}
 	}
 
-	var authenticationID *string
-	if model.AuthenticationID.Valid {
-		authenticationID = &model.AuthenticationID.String
-	}
-
 	return &entity.User{
 		Entity: ddd.Entity[entity.UserID]{
 			ID:        entity.UserID{Value: model.ID},
@@ -37,11 +32,10 @@ func toEntity(model UserModel) *entity.User {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
-		GroupID:          groupID,
-		Name:             model.Name,
-		Email:            model.Email,
-		ProfilePicture:   profilePicture,
-		AuthenticationID: authenticationID,
+		GroupID:        groupID,
+		Name:           model.Name,
+		Email:          model.Email,
+		ProfilePicture: profilePicture,
 	}
 }
 
@@ -60,21 +54,15 @@ func toModel(entity *entity.User) UserModel {
 		groupID = sql.NullInt64{Int64: int64(entity.GroupID.Value), Valid: true}
 	}
 
-	authenticationID := sql.NullString{String: "", Valid: false}
-	if entity.AuthenticationID != nil {
-		authenticationID = sql.NullString{String: *entity.AuthenticationID, Valid: true}
-	}
-
 	return UserModel{
-		ID:               entity.ID.Value,
-		Name:             entity.Name,
-		Email:            entity.Email,
-		GroupID:          groupID,
-		ProfilePicture:   profilePicture,
-		AuthenticationID: authenticationID,
-		CreatedAt:        entity.CreatedAt,
-		UpdatedAt:        entity.UpdatedAt,
-		DeletedAt:        deletedAt,
-		Version:          entity.Version,
+		ID:             entity.ID.Value,
+		Name:           entity.Name,
+		Email:          entity.Email,
+		GroupID:        groupID,
+		ProfilePicture: profilePicture,
+		CreatedAt:      entity.CreatedAt,
+		UpdatedAt:      entity.UpdatedAt,
+		DeletedAt:      deletedAt,
+		Version:        entity.Version,
 	}
 }

@@ -7,14 +7,14 @@ import (
 	"github.com/Beigelman/ludaapi/internal/config"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/jackc/pgx/v5"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 type Database interface {
 	Client() *sqlx.DB
 	Close() error
-	Clean() error
+	Clean(tables ...string) error
 	MigrateUp(migrationPath string) error
 	MigrateDown(migrationPath string) error
 	NewTransactionManager() TransactionManager
@@ -54,24 +54,35 @@ func (sql *SQLDatabase) Close() error {
 	return sql.db.Close()
 }
 
-func (sql *SQLDatabase) Clean() error {
-	rows, err := sql.db.Queryx(`
-		SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name != 'schema_migrations';
-	`)
-	if err != nil {
-		return fmt.Errorf("failed to get DB tables: %w", err)
-	}
-
-	var tableName string
-	for rows.Next() {
-		err := rows.Scan(&tableName)
+func (sql *SQLDatabase) Clean(tables ...string) error {
+	if len(tables) == 0 {
+		rows, err := sql.db.Queryx(`
+			SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name != 'schema_migrations';
+		`)
 		if err != nil {
-			return fmt.Errorf("failed to scan %s: %w", tableName, err)
+			return fmt.Errorf("failed to get DB tables: %w", err)
 		}
 
-		if _, err = sql.db.Exec("TRUNCATE TABLE $1;", tableName); err != nil {
-			return fmt.Errorf("failed to truncate table %s: %w", tableName, err)
+		var tableName string
+		for rows.Next() {
+			err := rows.Scan(&tableName)
+			if err != nil {
+				return fmt.Errorf("failed to scan %s: %w", tableName, err)
+			}
+
+			if _, err = sql.db.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", tableName)); err != nil {
+				return fmt.Errorf("failed to truncate table %s: %w", tableName, err)
+			}
+		}
+
+		return nil
+	}
+
+	for _, table := range tables {
+		if _, err := sql.db.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", table)); err != nil {
+			return fmt.Errorf("failed to truncate table %s: %w", table, err)
 		}
 	}
+
 	return nil
 }

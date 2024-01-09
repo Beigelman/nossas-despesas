@@ -14,7 +14,6 @@ func TestUserModel(t *testing.T) {
 	user := userrepo.UserModel{
 		ID:             1,
 		Name:           "Test User",
-		Email:          "test@example.com",
 		ProfilePicture: sql.NullString{String: "test.jpg", Valid: true},
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
@@ -24,7 +23,6 @@ func TestUserModel(t *testing.T) {
 
 	assert.Equal(t, 1, user.ID)
 	assert.Equal(t, "Test User", user.Name)
-	assert.Equal(t, "test@example.com", user.Email)
 	assert.Equal(t, "test.jpg", user.ProfilePicture.String)
 	assert.True(t, user.ProfilePicture.Valid)
 	assert.True(t, user.CreatedAt.Before(time.Now()))

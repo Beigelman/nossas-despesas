@@ -30,17 +30,17 @@ func (repo *UserPGRepository) GetNextID() entity.UserID {
 	return entity.UserID{Value: nextValue}
 }
 
-// GetByEmail implements user.UserRepository.
-func (repo *UserPGRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+// GetByID implements user.UserRepository.
+func (repo *UserPGRepository) GetByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, authentication_id, created_at, updated_at, deleted_at, version
-		FROM users WHERE email = $1
+		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		FROM users WHERE id = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
-	`, email).StructScan(&model); err != nil {
+	`, id.Value).StructScan(&model); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
@@ -50,17 +50,16 @@ func (repo *UserPGRepository) GetByEmail(ctx context.Context, email string) (*en
 	return toEntity(model), nil
 }
 
-// GetByID implements user.UserRepository.
-func (repo *UserPGRepository) GetByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (repo *UserPGRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, authentication_id, created_at, updated_at, deleted_at, version
-		FROM users WHERE id = $1
+		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		FROM users WHERE email = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
-	`, id.Value).StructScan(&model); err != nil {
+	`, email).StructScan(&model); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
@@ -88,8 +87,8 @@ func (repo *UserPGRepository) Store(ctx context.Context, entity *entity.User) er
 
 func (repo *UserPGRepository) create(ctx context.Context, model UserModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO users (id, name, email, group_id, profile_picture, authentication_id, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :email, :group_id, :profile_picture, :authentication_id, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO users (id, name, email, group_id, profile_picture, created_at, updated_at, deleted_at, version)
+		VALUES (:id, :name, :email, :group_id, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}
@@ -99,7 +98,7 @@ func (repo *UserPGRepository) create(ctx context.Context, model UserModel) error
 
 func (repo *UserPGRepository) update(ctx context.Context, model UserModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
-		UPDATE users SET name = :name, email = :email, group_id = :group_id, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
+		UPDATE users SET name = :name, group_id = :group_id, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version
 	`, model)
 	if err != nil {

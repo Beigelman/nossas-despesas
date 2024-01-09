@@ -14,7 +14,6 @@ func TestToEntity(t *testing.T) {
 	model := UserModel{
 		ID:             1,
 		Name:           "Test User",
-		Email:          "test@example.com",
 		ProfilePicture: sql.NullString{String: "test.jpg", Valid: true},
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
@@ -25,7 +24,6 @@ func TestToEntity(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.Equal(t, entity.UserID{Value: 1}, user.ID)
 	assert.Equal(t, "Test User", user.Name)
-	assert.Equal(t, "test@example.com", user.Email)
 	assert.Equal(t, "test.jpg", *user.ProfilePicture)
 	assert.NotNil(t, user.DeletedAt)
 	assert.Equal(t, 1, user.Version)
@@ -34,7 +32,6 @@ func TestToEntity(t *testing.T) {
 	model = UserModel{
 		ID:             2,
 		Name:           "Test User 2",
-		Email:          "test2@example.com",
 		ProfilePicture: sql.NullString{String: "", Valid: false},
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
@@ -45,7 +42,6 @@ func TestToEntity(t *testing.T) {
 	assert.NotNil(t, user)
 	assert.Equal(t, entity.UserID{Value: 2}, user.ID)
 	assert.Equal(t, "Test User 2", user.Name)
-	assert.Equal(t, "test2@example.com", user.Email)
 	assert.Nil(t, user.ProfilePicture)
 	assert.Nil(t, user.DeletedAt)
 	assert.Equal(t, 2, user.Version)

@@ -2,8 +2,10 @@ package categoryrepo
 
 import (
 	"context"
+	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	"os"
 	"testing"
 	"time"
 
@@ -39,15 +41,21 @@ func (s *PgCategoryRepoTestSuite) SetupSuite() {
 
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
+	a, err := os.Getwd()
+	fmt.Println(a, err)
+
+	f, err := os.Open(fmt.Sprintf("%s/model.go", a))
+	fmt.Println(f, err)
+
 	s.db = db.New(&s.cfg)
 	s.repository = NewPGRepository(s.db)
 
 	s.err = s.db.MigrateUp(migrationPath)
 	s.NoError(s.err)
 
-	_, err := s.db.Client().Exec(`
+	_, err = s.db.Client().Exec(`
    		INSERT INTO category_groups (id, name, icon, created_at, updated_at, deleted_at, version)
-		VALUES (1, 'category group', 'test', now(), now(), now(), 0)`,
+		VALUES (999, 'category group', 'test', now(), now(), now(), 0)`,
 	)
 	s.NoError(err)
 }

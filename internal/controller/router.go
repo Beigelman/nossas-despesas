@@ -9,8 +9,7 @@ import (
 
 func Router(
 	server *fiber.App,
-	auth *auth.Client,
-	createUserHandler handler.CreateUser,
+	auth2 *auth.Client,
 	createGroupHandler handler.CreateGroup,
 	createExpenseHandler handler.CreateExpense,
 	createCategoryHandler handler.CreateCategory,
@@ -18,28 +17,32 @@ func Router(
 	addUserToGroupHandler handler.AddUserToGroup,
 	getGroupExpenseHandler handler.GetGroupExpenses,
 	getGroupHandler handler.GetGroup,
-	getUserByAuthenticationIDHandler handler.GetUserByAuthenticationID,
 	getUserByIDHandler handler.GetUserByID,
 	getCategoriesHandler handler.GetCategories,
 	updateExpenseHandler handler.UpdateExpense,
 	deleteExpenseHandler handler.DeleteExpense,
 	getGroupBalanceHandler handler.GetGroupBalance,
+	signInWithCredentialsHandler handler.SignInWithCredentials,
+	signUpWithCredentialsHandler handler.SignUpWithCredentials,
+	refreshAuthTokenHandler handler.RefreshAuthToken,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
 	})
 
-	authMiddleware := middleware.AuthMiddleware(auth)
+	authMiddleware := middleware.AuthMiddleware(auth2)
 	// Api group
 	api := server.Group("api")
 	// Api version V1
 	{
 		v1 := api.Group("v1")
+		// Auth routes
+		auth := v1.Group("auth")
+		auth.Post("/sign-in/credentials", signInWithCredentialsHandler)
+		auth.Post("/sign-up/credentials", signUpWithCredentialsHandler)
+		auth.Post("refresh-token", refreshAuthTokenHandler)
 		// User routes
 		user := v1.Group("user")
-		user.Post("/", createUserHandler)
-		user.Get("/:user_id", getUserByIDHandler, authMiddleware)
-		user.Get("/authentication/:authentication_id", getUserByAuthenticationIDHandler)
 		user.Patch("/add-to-group", addUserToGroupHandler, authMiddleware)
 		// Group routes
 		group := v1.Group("group", authMiddleware)

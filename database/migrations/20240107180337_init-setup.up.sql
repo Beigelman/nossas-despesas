@@ -1,6 +1,39 @@
+-- create enum type "authentication_type"
+CREATE TYPE "authentication_type" AS ENUM ('credentials', 'google');
+-- create "users" table
+CREATE TABLE "users" (
+  "id" bigserial NOT NULL,
+  "name" character varying(255) NOT NULL,
+  "email" character varying(255) NOT NULL,
+  "profile_picture" character varying(255) NULL,
+  "group_id" bigint NULL,
+  "created_at" timestamptz NOT NULL,
+  "updated_at" timestamptz NOT NULL,
+  "deleted_at" timestamptz NULL,
+  "version" integer NOT NULL,
+  PRIMARY KEY ("id")
+);
+-- create index "email_unique_idx" to table: "users"
+CREATE UNIQUE INDEX "email_unique_idx" ON "users" ("email");
+-- create "authentications" table
+CREATE TABLE "authentications" (
+  "id" bigserial NOT NULL,
+  "email" character varying(255) NOT NULL,
+  "password" character varying(255) NULL,
+  "provider_id" character varying(255) NULL,
+  "type" "authentication_type" NOT NULL,
+  "created_at" timestamptz NOT NULL,
+  "updated_at" timestamptz NOT NULL,
+  "deleted_at" timestamptz NULL,
+  "version" integer NOT NULL,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "auth_email_fk" FOREIGN KEY ("email") REFERENCES "users" ("email") ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+-- create index "email_type_unique_idx" to table: "authentications"
+CREATE UNIQUE INDEX "email_type_unique_idx" ON "authentications" ("email", "type");
 -- create "category_groups" table
 CREATE TABLE "category_groups" (
-  "id" serial NOT NULL,
+  "id" bigserial NOT NULL,
   "name" character varying(255) NOT NULL,
   "icon" character varying(255) NOT NULL,
   "created_at" timestamptz NOT NULL,
@@ -11,10 +44,10 @@ CREATE TABLE "category_groups" (
 );
 -- create "categories" table
 CREATE TABLE "categories" (
-  "id" serial NOT NULL,
+  "id" bigserial NOT NULL,
   "name" character varying(255) NOT NULL,
   "icon" character varying(255) NOT NULL,
-  "category_group_id" integer NOT NULL,
+  "category_group_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
   "deleted_at" timestamptz NULL,
@@ -24,21 +57,8 @@ CREATE TABLE "categories" (
 );
 -- create "groups" table
 CREATE TABLE "groups" (
-  "id" serial NOT NULL,
+  "id" bigserial NOT NULL,
   "name" character varying(255) NOT NULL,
-  "created_at" timestamptz NOT NULL,
-  "updated_at" timestamptz NOT NULL,
-  "deleted_at" timestamptz NULL,
-  "version" integer NOT NULL,
-  PRIMARY KEY ("id")
-);
--- create "users" table
-CREATE TABLE "users" (
-  "id" serial NOT NULL,
-  "name" character varying(255) NOT NULL,
-  "email" character varying(255) NOT NULL,
-  "profile_picture" character varying(255) NULL,
-  "group_id" integer NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
   "deleted_at" timestamptz NULL,
@@ -47,15 +67,15 @@ CREATE TABLE "users" (
 );
 -- create "expenses" table
 CREATE TABLE "expenses" (
-  "id" serial NOT NULL,
+  "id" bigserial NOT NULL,
   "name" character varying(255) NOT NULL,
   "amount_cents" bigint NOT NULL,
   "description" character varying(255) NOT NULL,
-  "group_id" integer NOT NULL,
-  "category_id" integer NOT NULL,
+  "group_id" bigint NOT NULL,
+  "category_id" bigint NOT NULL,
   "split_ratio" jsonb NOT NULL,
-  "payer_id" integer NOT NULL,
-  "receiver_id" integer NOT NULL,
+  "payer_id" bigint NOT NULL,
+  "receiver_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
   "deleted_at" timestamptz NULL,
