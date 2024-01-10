@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	"github.com/Beigelman/ludaapi/internal/infra/token"
+	"github.com/Beigelman/ludaapi/internal/domain/service"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
 )
 
 type SignUpWithCredentialsParams struct {
@@ -25,7 +26,7 @@ type SignUpWithCredentialsResponse struct {
 
 type SignUpWithCredentials func(ctx context.Context, p SignUpWithCredentialsParams) (*SignUpWithCredentialsResponse, error)
 
-func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo repository.AuthRepository, tokenProvider *token.JWTProvider) SignUpWithCredentials {
+func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo repository.AuthRepository, tokenProvider service.TokenProvider) SignUpWithCredentials {
 	return func(ctx context.Context, p SignUpWithCredentialsParams) (*SignUpWithCredentialsResponse, error) {
 		existingAuth, err := authRepo.GetByEmail(ctx, p.Email, entity.AuthTypes.Credentials)
 		if err != nil {
@@ -33,11 +34,11 @@ func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo repos
 		}
 
 		if existingAuth != nil {
-			return nil, fmt.Errorf("email already exists")
+			return nil, except.BadRequestError("email already registered")
 		}
 
 		if p.Password != p.ConfirmationPassword {
-			return nil, fmt.Errorf("passwords do not match")
+			return nil, except.UnprocessableEntityError("passwords do not match")
 		}
 
 		existingUser, err := userRepo.GetByEmail(ctx, p.Email)
@@ -56,9 +57,6 @@ func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo repos
 				ProfilePicture: p.ProfilePicture,
 				GroupID:        p.GroupID,
 			})
-			if err != nil {
-				return nil, fmt.Errorf("entity.NewUser: %w", err)
-			}
 
 			if err := userRepo.Store(ctx, user); err != nil {
 				return nil, fmt.Errorf("userRepo.Store: %w", err)

@@ -36,7 +36,7 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 
 		token, err := decodeCursor(ctx.Query("next_token", ""))
 		if err != nil {
-			return except.BadRequestError("invalid next token").SetInternal(err)
+			return except.BadRequestError("invalid next jwt").SetInternal(err)
 		}
 
 		expenses, err := getGroupExpenses(ctx.Context(), query.GetGroupExpensesInput{

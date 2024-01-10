@@ -30,7 +30,7 @@ type (
 
 	UserLogIn struct {
 		User         UserResponse `json:"user"`
-		Token        string       `json:"token"`
+		Token        string       `json:"jwt"`
 		RefreshToken string       `json:"refresh_token"`
 	}
 

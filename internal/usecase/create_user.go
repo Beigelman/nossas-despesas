@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"firebase.google.com/go/v4/auth"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
@@ -19,7 +18,7 @@ type CreateUserParams struct {
 
 type CreateUser func(ctx context.Context, p CreateUserParams) (*entity.User, error)
 
-func NewCreateUser(repo repository.UserRepository, auth *auth.Client) CreateUser {
+func NewCreateUser(repo repository.UserRepository) CreateUser {
 	return func(ctx context.Context, p CreateUserParams) (*entity.User, error) {
 		alreadyExists, err := repo.GetByEmail(ctx, p.Email)
 		if err != nil {

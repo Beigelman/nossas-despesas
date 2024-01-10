@@ -39,24 +39,3 @@ func NewGetUserByID(db db.Database) GetUserByID {
 		return &user, nil
 	}
 }
-
-type GetUserByAuthenticationID func(ctx context.Context, authenticationID string) (*User, error)
-
-func NewGetUserByAuthenticationID(db db.Database) GetUserByAuthenticationID {
-	dbClient := db.Client()
-	return func(ctx context.Context, authenticationID string) (*User, error) {
-		var user User
-		if err := dbClient.GetContext(ctx, &user, `
-			select id, name, email, profile_picture, group_id, created_at, updated_at
-			from users
-			where authentication_id = $1	
-		`, authenticationID); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return nil, except.NotFoundError("user not found")
-			}
-			return nil, fmt.Errorf("db.GetContext: %w", err)
-		}
-
-		return &user, nil
-	}
-}

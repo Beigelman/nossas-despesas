@@ -19,6 +19,9 @@ migrate-down:
 dev:
 	ENV=development go run main.go
 
+mock:
+	mockery
+
 unit:
 		go test -json -v $$(go list ./... | grep -e handler -e usecase -e pkg | grep -v mocks ) 2>&1 | tee /tmp/gotest.log | gotestfmt
 

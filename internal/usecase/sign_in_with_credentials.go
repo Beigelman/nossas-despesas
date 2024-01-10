@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	"github.com/Beigelman/ludaapi/internal/infra/token"
+	"github.com/Beigelman/ludaapi/internal/domain/service"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"log/slog"
 )
 
 type SignInWithCredentialsParams struct {
@@ -21,7 +23,7 @@ type SignInWithCredentialsResponse struct {
 
 type SignInWithCredentials func(ctx context.Context, p SignInWithCredentialsParams) (*SignInWithCredentialsResponse, error)
 
-func NewSignInWithCredentials(userRepo repository.UserRepository, authRepo repository.AuthRepository, tokenProvider *token.JWTProvider) SignInWithCredentials {
+func NewSignInWithCredentials(userRepo repository.UserRepository, authRepo repository.AuthRepository, tokenProvider service.TokenProvider) SignInWithCredentials {
 	return func(ctx context.Context, p SignInWithCredentialsParams) (*SignInWithCredentialsResponse, error) {
 		credentialAuth, err := authRepo.GetByEmail(ctx, p.Email, entity.AuthTypes.Credentials)
 		if err != nil {
@@ -29,11 +31,11 @@ func NewSignInWithCredentials(userRepo repository.UserRepository, authRepo repos
 		}
 
 		if credentialAuth == nil {
-			return nil, fmt.Errorf("incorrect email or password")
+			return nil, except.BadRequestError("incorrect email or password")
 		}
 
 		if !credentialAuth.CheckPassword(p.Password) {
-			return nil, fmt.Errorf("incorrect email or password")
+			return nil, except.BadRequestError("incorrect email or password")
 		}
 
 		user, err := userRepo.GetByEmail(ctx, credentialAuth.Email)
@@ -42,8 +44,8 @@ func NewSignInWithCredentials(userRepo repository.UserRepository, authRepo repos
 		}
 
 		if user == nil {
-			// This should not happen
-			return nil, fmt.Errorf("user not found")
+			slog.Warn("token with user not found", slog.String("email", credentialAuth.Email))
+			return nil, except.NotFoundError("user not found")
 		}
 
 		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*user)

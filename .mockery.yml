@@ -5,4 +5,5 @@ outpkg: mock{{.PackageName}}
 filename: "mock_{{.InterfaceName}}.go"
 packages:
   github.com/Beigelman/ludaapi/internal/domain/repository:
+  github.com/Beigelman/ludaapi/internal/domain/service:
   github.com/Beigelman/ludaapi/internal/usecase:

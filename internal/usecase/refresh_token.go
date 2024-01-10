@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	"github.com/Beigelman/ludaapi/internal/infra/token"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/Beigelman/ludaapi/internal/domain/service"
 )
 
 type RefreshAuthTokenParams struct {
@@ -21,17 +20,14 @@ type RefreshAuthTokenResponse struct {
 
 type RefreshAuthToken func(ctx context.Context, p RefreshAuthTokenParams) (*RefreshAuthTokenResponse, error)
 
-func NewRefreshAuthToken(userRepo repository.UserRepository, tokenProvider *token.JWTProvider) RefreshAuthToken {
+func NewRefreshAuthToken(userRepo repository.UserRepository, tokenProvider service.TokenProvider) RefreshAuthToken {
 	return func(ctx context.Context, p RefreshAuthTokenParams) (*RefreshAuthTokenResponse, error) {
-		parsedToken, err := tokenProvider.ParseToken(p.RefreshToken)
+		token, err := tokenProvider.ParseToken(p.RefreshToken)
 		if err != nil {
 			return nil, fmt.Errorf("tokenProvider.ParseToken: %w", err)
 		}
 
-		claims := parsedToken.Claims.(jwt.MapClaims)
-		userID := int(claims["user_id"].(float64))
-
-		user, err := userRepo.GetByID(ctx, entity.UserID{Value: userID})
+		user, err := userRepo.GetByID(ctx, entity.UserID{Value: token.Claims.UserID})
 		if err != nil {
 			return nil, fmt.Errorf("userRepo.GetByID: %w", err)
 		}

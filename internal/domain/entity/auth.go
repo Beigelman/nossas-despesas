@@ -82,3 +82,15 @@ func (a *Auth) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(*a.Password), []byte(password))
 	return err == nil
 }
+
+type Claims struct {
+	UserID  int
+	GroupID *int
+	Email   string
+}
+
+type Token struct {
+	Raw     string
+	Claims  Claims
+	IsValid bool
+}

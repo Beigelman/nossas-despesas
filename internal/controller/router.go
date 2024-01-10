@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"firebase.google.com/go/v4/auth"
 	"github.com/Beigelman/ludaapi/internal/controller/handler"
 	"github.com/Beigelman/ludaapi/internal/controller/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -9,7 +8,6 @@ import (
 
 func Router(
 	server *fiber.App,
-	auth2 *auth.Client,
 	createGroupHandler handler.CreateGroup,
 	createExpenseHandler handler.CreateExpense,
 	createCategoryHandler handler.CreateCategory,
@@ -17,7 +15,7 @@ func Router(
 	addUserToGroupHandler handler.AddUserToGroup,
 	getGroupExpenseHandler handler.GetGroupExpenses,
 	getGroupHandler handler.GetGroup,
-	getUserByIDHandler handler.GetUserByID,
+	getMyUserHandler handler.GetMyUser,
 	getCategoriesHandler handler.GetCategories,
 	updateExpenseHandler handler.UpdateExpense,
 	deleteExpenseHandler handler.DeleteExpense,
@@ -25,12 +23,12 @@ func Router(
 	signInWithCredentialsHandler handler.SignInWithCredentials,
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
 	refreshAuthTokenHandler handler.RefreshAuthToken,
+	authMiddleware middleware.AuthMiddleware,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
 	})
 
-	authMiddleware := middleware.AuthMiddleware(auth2)
 	// Api group
 	api := server.Group("api")
 	// Api version V1
@@ -40,10 +38,11 @@ func Router(
 		auth := v1.Group("auth")
 		auth.Post("/sign-in/credentials", signInWithCredentialsHandler)
 		auth.Post("/sign-up/credentials", signUpWithCredentialsHandler)
-		auth.Post("refresh-token", refreshAuthTokenHandler)
+		auth.Post("refresh-jwt", refreshAuthTokenHandler)
 		// User routes
-		user := v1.Group("user")
-		user.Patch("/add-to-group", addUserToGroupHandler, authMiddleware)
+		user := v1.Group("user", authMiddleware)
+		user.Get("/me", getMyUserHandler)
+		user.Patch("/add-to-group", addUserToGroupHandler)
 		// Group routes
 		group := v1.Group("group", authMiddleware)
 		group.Post("/", createGroupHandler)
