@@ -21,6 +21,7 @@ func Router(
 	deleteExpenseHandler handler.DeleteExpense,
 	getGroupBalanceHandler handler.GetGroupBalance,
 	signInWithCredentialsHandler handler.SignInWithCredentials,
+	signInWithGoogleHandler handler.SignInWithGoogle,
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
 	refreshAuthTokenHandler handler.RefreshAuthToken,
 	authMiddleware middleware.AuthMiddleware,
@@ -37,8 +38,9 @@ func Router(
 		// Auth routes
 		auth := v1.Group("auth")
 		auth.Post("/sign-in/credentials", signInWithCredentialsHandler)
+		auth.Post("/sign-in/google", signInWithGoogleHandler)
 		auth.Post("/sign-up/credentials", signUpWithCredentialsHandler)
-		auth.Post("refresh-jwt", refreshAuthTokenHandler)
+		auth.Post("refresh-token", refreshAuthTokenHandler)
 		// User routes
 		user := v1.Group("user", authMiddleware)
 		user.Get("/me", getMyUserHandler)

@@ -23,9 +23,11 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, usecase.NewSignUpWithCredentials)
 	di.Provide(c, usecase.NewSignInWithCredentials)
 	di.Provide(c, usecase.NewRefreshAuthToken)
+	di.Provide(c, usecase.NewSignInWithGoogle)
 	di.Provide(c, handler.NewSignUpWithCredentials)
 	di.Provide(c, handler.NewSignInWithCredentials)
 	di.Provide(c, handler.NewRefreshAuthToken)
+	di.Provide(c, handler.NewSignInWithGoogle)
 	di.Provide(c, middleware.NewAuthMiddleware)
 	// user
 	di.Provide(c, userrepo.NewPGRepository)

@@ -2,45 +2,26 @@ package handler
 
 import (
 	"fmt"
+	"github.com/Beigelman/ludaapi/internal/pkg/api"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	"github.com/Beigelman/ludaapi/internal/pkg/validator"
-	"net/http"
-	"time"
-
-	"github.com/Beigelman/ludaapi/internal/pkg/api"
 	"github.com/Beigelman/ludaapi/internal/usecase"
 	"github.com/gofiber/fiber/v2"
+	"net/http"
 )
 
 type (
-	SignInWithCredentialsRequest struct {
-		Email    string `json:"email" validate:"required,email"`
-		Password string `json:"password" validate:"required,min=8"`
+	SignInWithGoogleRequest struct {
+		Token string `token:"email" validate:"required"`
 	}
 
-	UserResponse struct {
-		ID             int       `json:"id"`
-		Name           string    `json:"name"`
-		Email          string    `json:"email"`
-		ProfilePicture *string   `json:"profile_picture,omitempty"`
-		GroupID        *int      `json:"group_id,omitempty"`
-		CreatedAt      time.Time `json:"created_at"`
-		UpdatedAt      time.Time `json:"updated_at"`
-	}
-
-	UserLogIn struct {
-		User         UserResponse `json:"user"`
-		Token        string       `json:"token"`
-		RefreshToken string       `json:"refresh_token"`
-	}
-
-	SignInWithCredentials func(ctx *fiber.Ctx) error
+	SignInWithGoogle func(ctx *fiber.Ctx) error
 )
 
-func NewSignInWithCredentials(signUpWithCredentials usecase.SignInWithCredentials) SignInWithCredentials {
+func NewSignInWithGoogle(signInWithGoogle usecase.SignInWithGoogle) SignInWithGoogle {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
-		var req SignInWithCredentialsRequest
+		var req SignInWithGoogleRequest
 		if err := ctx.BodyParser(&req); err != nil {
 			return fmt.Errorf("ctx.BodyParser: %w", err)
 		}
@@ -49,12 +30,11 @@ func NewSignInWithCredentials(signUpWithCredentials usecase.SignInWithCredential
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
-		result, err := signUpWithCredentials(ctx.Context(), usecase.SignInWithCredentialsParams{
-			Email:    req.Email,
-			Password: req.Password,
+		result, err := signInWithGoogle(ctx.Context(), usecase.SignInWithGoogleParams{
+			IdToken: req.Token,
 		})
 		if err != nil {
-			return fmt.Errorf("signUpWithCredentials: %w", err)
+			return fmt.Errorf("signInWithGoogle: %w", err)
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
@@ -77,5 +57,6 @@ func NewSignInWithCredentials(signUpWithCredentials usecase.SignInWithCredential
 				RefreshToken: result.RefreshToken,
 			}),
 		)
+
 	}
 }

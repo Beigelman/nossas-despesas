@@ -22,7 +22,7 @@ type RefreshAuthToken func(ctx context.Context, p RefreshAuthTokenParams) (*Refr
 
 func NewRefreshAuthToken(userRepo repository.UserRepository, tokenProvider service.TokenProvider) RefreshAuthToken {
 	return func(ctx context.Context, p RefreshAuthTokenParams) (*RefreshAuthTokenResponse, error) {
-		token, err := tokenProvider.ParseToken(p.RefreshToken)
+		token, err := tokenProvider.ParseRefreshToken(p.RefreshToken)
 		if err != nil {
 			return nil, fmt.Errorf("tokenProvider.ParseToken: %w", err)
 		}

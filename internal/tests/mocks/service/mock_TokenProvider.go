@@ -79,6 +79,60 @@ func (_c *MockTokenProvider_GenerateUserTokens_Call) RunAndReturn(run func(entit
 	return _c
 }
 
+// ParseRefreshToken provides a mock function with given fields: token
+func (_m *MockTokenProvider) ParseRefreshToken(token string) (*entity.Token, error) {
+	ret := _m.Called(token)
+
+	var r0 *entity.Token
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*entity.Token, error)); ok {
+		return rf(token)
+	}
+	if rf, ok := ret.Get(0).(func(string) *entity.Token); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Token)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockTokenProvider_ParseRefreshToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ParseRefreshToken'
+type MockTokenProvider_ParseRefreshToken_Call struct {
+	*mock.Call
+}
+
+// ParseRefreshToken is a helper method to define mock.On call
+//   - token string
+func (_e *MockTokenProvider_Expecter) ParseRefreshToken(token interface{}) *MockTokenProvider_ParseRefreshToken_Call {
+	return &MockTokenProvider_ParseRefreshToken_Call{Call: _e.mock.On("ParseRefreshToken", token)}
+}
+
+func (_c *MockTokenProvider_ParseRefreshToken_Call) Run(run func(token string)) *MockTokenProvider_ParseRefreshToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *MockTokenProvider_ParseRefreshToken_Call) Return(_a0 *entity.Token, _a1 error) *MockTokenProvider_ParseRefreshToken_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockTokenProvider_ParseRefreshToken_Call) RunAndReturn(run func(string) (*entity.Token, error)) *MockTokenProvider_ParseRefreshToken_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ParseToken provides a mock function with given fields: token
 func (_m *MockTokenProvider) ParseToken(token string) (*entity.Token, error) {
 	ret := _m.Called(token)
