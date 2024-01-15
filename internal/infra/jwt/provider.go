@@ -26,7 +26,7 @@ func (p *Provider) GenerateUserTokens(user entity.User) (string, string, error) 
 			return &user.GroupID.Value
 		}(),
 		"email": user.Email,
-		"exp":   jwt.NewNumericDate(time.Now().Add(time.Hour * 3)),
+		"exp":   jwt.NewNumericDate(time.Now().Add(time.Hour * 5)),
 		"iat":   jwt.NewNumericDate(time.Now()),
 	}
 

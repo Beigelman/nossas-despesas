@@ -7,7 +7,6 @@ import (
 	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
-	"strconv"
 )
 
 type (
@@ -16,9 +15,9 @@ type (
 
 func NewGetMyUser(getUserID query.GetUserByID) GetMyUser {
 	return func(ctx *fiber.Ctx) error {
-		userID, err := strconv.Atoi(ctx.Get("user_id"))
-		if err != nil {
-			return except.BadRequestError("invalid user_id").SetInternal(err)
+		userID, ok := ctx.Locals("user_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid user_id")
 		}
 
 		user, err := getUserID(ctx.Context(), userID)

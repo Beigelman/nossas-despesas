@@ -7,7 +7,6 @@ import (
 	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
-	"strconv"
 )
 
 type (
@@ -21,9 +20,9 @@ type (
 
 func NewGetGroupBalance(getGroupBalance query.GetGroupBalance) GetGroupBalance {
 	return func(ctx *fiber.Ctx) error {
-		groupID, err := strconv.Atoi(ctx.Params("group_id"))
-		if err != nil {
-			return except.BadRequestError("invalid group id").SetInternal(err)
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid group id")
 		}
 
 		balances, err := getGroupBalance(ctx.Context(), groupID)

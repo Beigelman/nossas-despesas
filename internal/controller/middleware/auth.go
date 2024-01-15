@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/service"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -30,9 +29,11 @@ func NewAuthMiddleware(tokenProvider service.TokenProvider) AuthMiddleware {
 			return except.UnauthorizedError("invalid jwt").SetInternal(err)
 		}
 
-		ctx.Set("userID", fmt.Sprintf("%d", tokenInfo.Claims.UserID))
-		ctx.Set("groupID", fmt.Sprintf("%d", tokenInfo.Claims.UserID))
-		ctx.Set("email", tokenInfo.Claims.Email)
+		ctx.Locals("user_id", tokenInfo.Claims.UserID)
+		ctx.Locals("email", tokenInfo.Claims.Email)
+		if tokenInfo.Claims.GroupID != nil {
+			ctx.Locals("group_id", *tokenInfo.Claims.GroupID)
+		}
 
 		return ctx.Next()
 	}

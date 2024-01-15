@@ -9,7 +9,6 @@ import (
 	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
-	"strconv"
 )
 
 type (
@@ -29,9 +28,9 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 	const defaultLimit = 100
 
 	return func(ctx *fiber.Ctx) error {
-		groupID, err := strconv.Atoi(ctx.Params("group_id"))
-		if err != nil {
-			return except.BadRequestError("invalid group id").SetInternal(err)
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid group id")
 		}
 
 		token, err := decodeCursor(ctx.Query("next_token", ""))

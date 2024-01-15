@@ -48,9 +48,9 @@ func Router(
 		// Group routes
 		group := v1.Group("group", authMiddleware)
 		group.Post("/", createGroupHandler)
-		group.Get("/:group_id", getGroupHandler)
-		group.Get("/:group_id/expenses", getGroupExpenseHandler)
-		group.Get("/:group_id/balance", getGroupBalanceHandler)
+		group.Get("/", getGroupHandler)
+		group.Get("/expenses", getGroupExpenseHandler)
+		group.Get("/balance", getGroupBalanceHandler)
 		// Expense routes
 		expense := v1.Group("expense", authMiddleware)
 		expense.Post("/", createExpenseHandler)
