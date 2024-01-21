@@ -18,8 +18,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
-
 type PgExpenseRepoTestSuite struct {
 	suite.Suite
 	ctx           context.Context
@@ -53,7 +51,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
 	s.expenseRepo = expenserepo.NewPGRepository(s.db)
@@ -62,7 +60,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 	s.categoryGroupRepo = categorygrouprepo.NewPGRepository(s.db)
 	s.groupRepo = grouprepo.NewPGRepository(s.db)
 
-	s.err = s.db.MigrateUp(migrationPath)
+	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 
 	s.payer = entity.NewUser(entity.UserParams{
@@ -103,7 +101,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 }
 
 func (s *PgExpenseRepoTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown(migrationPath)
+	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
 	s.err = s.db.Close()

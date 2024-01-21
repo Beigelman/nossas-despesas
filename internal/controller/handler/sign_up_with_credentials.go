@@ -50,7 +50,7 @@ func NewSignUpWithCredentials(signUpWithCredentials usecase.SignUpWithCredential
 			}(),
 		})
 		if err != nil {
-			return fmt.Errorf("signUpWithCredentials: %w", err)
+			return fmt.Errorf("signInWithCredentials: %w", err)
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(

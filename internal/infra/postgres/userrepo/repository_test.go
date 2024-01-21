@@ -13,8 +13,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
-
 type PgUserRepoTestSuite struct {
 	suite.Suite
 	repository    repository.UserRepository
@@ -36,17 +34,17 @@ func (s *PgUserRepoTestSuite) SetupSuite() {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewPGRepository(s.db)
 
-	s.err = s.db.MigrateUp(migrationPath)
+	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 }
 
 func (s *PgUserRepoTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown(migrationPath)
+	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
 	s.err = s.db.Close()

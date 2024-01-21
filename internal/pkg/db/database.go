@@ -2,28 +2,32 @@ package db
 
 import (
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
 	"log"
 
 	"github.com/Beigelman/ludaapi/internal/config"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 )
 
 type Database interface {
 	Client() *sqlx.DB
 	Close() error
 	Clean(tables ...string) error
-	MigrateUp(migrationPath string) error
-	MigrateDown(migrationPath string) error
+	MigrateUp() error
+	MigrateDown() error
 	NewTransactionManager() TransactionManager
 }
 
 type SQLDatabase struct {
-	db   *sqlx.DB
-	env  env.Environment
-	name string
+	db            *sqlx.DB
+	env           env.Environment
+	name          string
+	migrateClient *migrate.Migrate
+	migrationPath string
+	kind          string
 }
 
 func New(c *config.Config) Database {
@@ -40,9 +44,11 @@ func New(c *config.Config) Database {
 	}
 
 	return &SQLDatabase{
-		env:  c.Env,
-		db:   db,
-		name: c.Db.Name,
+		db:            db,
+		env:           c.Env,
+		name:          c.Db.Name,
+		migrationPath: c.Db.MigrationPath,
+		kind:          c.Db.Type,
 	}
 }
 

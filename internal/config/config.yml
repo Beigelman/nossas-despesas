@@ -3,8 +3,8 @@ default: &default
   PORT: 8080
   DB_HOST: localhost
   DB_NAME: app
-  DB_USER: luda
-  DB_PASSWORD: luda
+  DB_USER: root
+  DB_PASSWORD: root
   DB_PORT: 5432
   DB_TYPE: postgres
   DB_MAX_IDLE_CONNS: 10

@@ -26,8 +26,8 @@ func DefaultPostgresContainerOptions() PostgresContainerOptions {
 				wait.ForListeningPort("5432/tcp"),
 			),
 			Env: map[string]string{
-				"POSTGRES_USER":     "luda",
-				"POSTGRES_PASSWORD": "luda",
+				"POSTGRES_USER":     "root",
+				"POSTGRES_PASSWORD": "root",
 				"POSTGRES_DB":       "test",
 			},
 		},

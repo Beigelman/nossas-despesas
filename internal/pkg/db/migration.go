@@ -4,20 +4,15 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 )
 
-func (sql *SQLDatabase) MigrateUp(migrationPath string) error {
-	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
-		DatabaseName: sql.name,
-	})
+func (sql *SQLDatabase) MigrateUp() error {
+	migrateClient, err := sql.getMigrateClient()
 	if err != nil {
-		return fmt.Errorf("failed to get DB instance: %w", err)
-	}
-
-	migrateClient, err := migrate.NewWithDatabaseInstance(migrationPath, "postgres", driver)
-	if err != nil {
-		return fmt.Errorf("failed to create migrate client: %w", err)
+		return fmt.Errorf("failed to get migrate client: %w", err)
 	}
 
 	err = migrateClient.Up()
@@ -27,21 +22,14 @@ func (sql *SQLDatabase) MigrateUp(migrationPath string) error {
 	return nil
 }
 
-func (sql *SQLDatabase) MigrateDown(migrationPath string) error {
+func (sql *SQLDatabase) MigrateDown() error {
 	if sql.env == env.Production {
 		return nil
 	}
 
-	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
-		DatabaseName: sql.name,
-	})
+	migrateClient, err := sql.getMigrateClient()
 	if err != nil {
-		return fmt.Errorf("failed to get DB instance: %w", err)
-	}
-
-	migrateClient, err := migrate.NewWithDatabaseInstance(migrationPath, "postgres", driver)
-	if err != nil {
-		return fmt.Errorf("failed to create migrate client: %w", err)
+		return fmt.Errorf("failed to get migrate client: %w", err)
 	}
 
 	err = migrateClient.Down()
@@ -49,4 +37,36 @@ func (sql *SQLDatabase) MigrateDown(migrationPath string) error {
 		return fmt.Errorf("failed to perform migration down: %w", err)
 	}
 	return nil
+}
+
+func (sql *SQLDatabase) getMigrateClient() (*migrate.Migrate, error) {
+	if sql.migrateClient != nil {
+		return sql.migrateClient, nil
+	}
+
+	var (
+		driver database.Driver
+		err    error
+	)
+	if sql.kind == "mysql" {
+		driver, err = mysql.WithInstance(sql.db.DB, &mysql.Config{
+			DatabaseName: sql.name,
+		})
+	} else if sql.kind == "postgres" {
+		driver, err = postgres.WithInstance(sql.db.DB, &postgres.Config{
+			DatabaseName: sql.name,
+		})
+	} else {
+		return nil, fmt.Errorf("unsupported database type: %s", sql.kind)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get DB instance: %w", err)
+	}
+
+	migrateClient, err := migrate.NewWithDatabaseInstance(sql.migrationPath, sql.kind, driver)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create migrate client: %w", err)
+	}
+
+	return migrateClient, nil
 }

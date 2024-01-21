@@ -1,12 +1,22 @@
 version: "3"
 
 services:
+#  db:
+#    image: mysql:8.0.36-debian
+#    container_name: nossas-despesas-db
+#    environment:
+#      - MYSQL_DATABASE=app
+#      - MYSQL_ROOT_PASSWORD=root
+#    ports:
+#      - "3306:3306/tcp"
+#    volumes:
+#      - ./database/data:/var/lib/mysql
   db:
     image: postgres:15-alpine
     container_name: nossas-despesas-db
     environment:
-      POSTGRES_USER: luda
-      POSTGRES_PASSWORD: luda
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
       POSTGRES_MULTIPLE_DATABASES: app,dev
     command: ["postgres", "-c", "log_statement=all"]
     ports:

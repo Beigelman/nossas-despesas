@@ -11,10 +11,13 @@ migrate-hash:
 	 atlas migrate hash -c file://database/atlas.hcl --env local
 
 migrate-up:
-	migrate -path "./database/migrations" -database "postgres://luda:luda@localhost:5432/app?sslmode=disable" up
+	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" up
 
 migrate-down:
-	migrate -path "./database/migrations" -database "postgres://luda:luda@localhost:5432/app?sslmode=disable" down
+	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" down
+
+migrate-force:
+	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" force $(version)
 
 dev:
 	ENV=development go run main.go

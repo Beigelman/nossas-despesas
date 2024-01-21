@@ -2,10 +2,8 @@ package categoryrepo
 
 import (
 	"context"
-	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	"os"
 	"testing"
 	"time"
 
@@ -14,8 +12,6 @@ import (
 	"github.com/Beigelman/ludaapi/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
-
-var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
 
 type PgCategoryRepoTestSuite struct {
 	suite.Suite
@@ -39,29 +35,17 @@ func (s *PgCategoryRepoTestSuite) SetupSuite() {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
-
-	a, err := os.Getwd()
-	fmt.Println(a, err)
-
-	f, err := os.Open(fmt.Sprintf("%s/model.go", a))
-	fmt.Println(f, err)
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewPGRepository(s.db)
 
-	s.err = s.db.MigrateUp(migrationPath)
+	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
-
-	_, err = s.db.Client().Exec(`
-   		INSERT INTO category_groups (id, name, icon, created_at, updated_at, deleted_at, version)
-		VALUES (999, 'category group', 'test', now(), now(), now(), 0)`,
-	)
-	s.NoError(err)
 }
 
 func (s *PgCategoryRepoTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown(migrationPath)
+	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
 	s.err = s.db.Close()

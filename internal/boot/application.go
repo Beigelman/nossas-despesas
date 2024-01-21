@@ -2,18 +2,17 @@ package boot
 
 import (
 	"context"
+	"github.com/Beigelman/ludaapi/internal/controller/handler"
 	"github.com/Beigelman/ludaapi/internal/controller/middleware"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/authrepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
-	"github.com/Beigelman/ludaapi/internal/query"
-
-	"github.com/Beigelman/ludaapi/internal/controller/handler"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categoryrepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/di"
 	"github.com/Beigelman/ludaapi/internal/pkg/eon"
+	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/Beigelman/ludaapi/internal/usecase"
 )
 

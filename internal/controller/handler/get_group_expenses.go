@@ -9,13 +9,14 @@ import (
 	"github.com/Beigelman/ludaapi/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
+	"time"
 )
 
 type (
 	GetGroupExpenses func(ctx *fiber.Ctx) error
 
 	GetGroupExpensesCursor struct {
-		LastExpenseID int `json:"last_expense_id"`
+		LastExpenseDate time.Time `json:"last_expense_date"`
 	}
 
 	GetGroupExpensesResponse struct {
@@ -39,9 +40,9 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 		}
 
 		expenses, err := getGroupExpenses(ctx.Context(), query.GetGroupExpensesInput{
-			GroupID:       groupID,
-			LastExpenseID: token.LastExpenseID,
-			Limit:         defaultLimit,
+			GroupID:         groupID,
+			LastExpenseDate: token.LastExpenseDate,
+			Limit:           defaultLimit,
 		})
 		if err != nil {
 			return fmt.Errorf("query.GetGroupExpenses: %w", err)
@@ -50,7 +51,7 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 		nextToken := ""
 		if expenses != nil && len(expenses) == defaultLimit {
 			nextToken, err = encodeCursor(&GetGroupExpensesCursor{
-				LastExpenseID: expenses[len(expenses)-1].ID,
+				LastExpenseDate: expenses[len(expenses)-1].CreatedAt,
 			})
 			if err != nil {
 				return fmt.Errorf("encodeCursor: %w", err)
@@ -81,7 +82,7 @@ func decodeCursor(cursor string) (*GetGroupExpensesCursor, error) {
 
 	if string(decodedCursor) == "" {
 		return &GetGroupExpensesCursor{
-			LastExpenseID: 0,
+			LastExpenseDate: time.Now().AddDate(0, 2, 0),
 		}, nil
 	}
 

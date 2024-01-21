@@ -13,8 +13,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var migrationPath = "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations"
-
 type PgUserRepoTestSuite struct {
 	suite.Suite
 	repository    repository.AuthRepository
@@ -36,12 +34,12 @@ func (s *PgUserRepoTestSuite) SetupSuite() {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewPGRepository(s.db)
 
-	s.err = s.db.MigrateUp(migrationPath)
+	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 
 	_, err := s.db.Client().Exec(`
@@ -52,7 +50,7 @@ func (s *PgUserRepoTestSuite) SetupSuite() {
 }
 
 func (s *PgUserRepoTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown(migrationPath)
+	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
 	s.err = s.db.Close()
@@ -72,25 +70,25 @@ func (s *PgUserRepoTestSuite) TearDownTest() {
 
 func (s *PgUserRepoTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	auth := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+	auth, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 		ID:       id,
 		Email:    "john@email.com",
 		Password: "test123",
 	})
+	s.NoError(err)
 
 	s.NoError(s.repository.Store(s.ctx, auth))
 }
 
 func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+	expected, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 		ID:       id,
 		Email:    "john@email.com",
 		Password: "test123",
 	})
-
-	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
+	s.NoError(s.repository.Store(s.ctx, expected))
 
 	actual, err := s.repository.GetByID(s.ctx, id)
 	s.NoError(err)
@@ -101,14 +99,14 @@ func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByID() {
 
 func (s *PgUserRepoTestSuite) TestPgUserRepo_GetByEmail() {
 	id := s.repository.GetNextID()
-	expected := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+	expected, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 		ID:       id,
 		Email:    "john@email.com",
 		Password: "test123",
 	})
-
-	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
+
+	s.NoError(s.repository.Store(s.ctx, expected))
 
 	actual, err := s.repository.GetByEmail(s.ctx, expected.Email, entity.AuthTypes.Credentials)
 	s.NoError(err)
