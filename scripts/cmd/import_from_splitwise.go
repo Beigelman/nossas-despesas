@@ -10,6 +10,7 @@ import (
 	"github.com/Beigelman/ludaapi/scripts/utils"
 	"github.com/spf13/cobra"
 	"log"
+	"math"
 	"math/rand"
 	"strconv"
 	"time"
@@ -33,8 +34,8 @@ func run(cmd *cobra.Command, args []string) {
 			Host:         "localhost",
 			Port:         "5432",
 			Name:         "app",
-			User:         "luda",
-			Password:     "luda",
+			User:         "root",
+			Password:     "root",
 			Type:         "postgres",
 			MaxIdleConns: 1,
 			MaxOpenConns: 1,
@@ -43,12 +44,14 @@ func run(cmd *cobra.Command, args []string) {
 	database := db.New(&cfg)
 	expensesRepo := expenserepo.NewPGRepository(database)
 
-	file, err := utils.ReadCSVFile("./scripts/data/luiel_2024-01-17_export.csv")
+	file, err := utils.ReadCSVFile("./scripts/data/luiel.csv")
 	if err != nil {
 		panic(fmt.Errorf("error reading csv file %w", err))
 	}
-
+	expensesCreated := 0
 	for _, line := range file {
+		//Data			Descrição		Categoria	Custo		Luíza Brito		Daniel Beigelman
+		//2023-06-01	Ajuste maio		Geral		255.64		-255.64			255.64
 		date, err := time.Parse("2006-01-02", line[0])
 		if err != nil {
 			panic(fmt.Errorf("error parsing date: %w", err))
@@ -60,7 +63,7 @@ func run(cmd *cobra.Command, args []string) {
 			panic(fmt.Errorf("error parsing amount %w", err))
 		}
 		amountCents := int(100 * amount)
-		danShare, err := strconv.ParseFloat(line[6], 64)
+		danShare, err := strconv.ParseFloat(line[5], 64)
 		if err != nil {
 			log.Printf("error parsing dan share %v", err)
 			panic(err)
@@ -72,12 +75,12 @@ func run(cmd *cobra.Command, args []string) {
 		if ratio > 0 {
 			payer = danId
 			receiver = luId
-			payerRatio = int(ratio * 100)
-			receiverRatio = 100 - payerRatio
+			receiverRatio = int(math.Round(ratio * 100))
+			payerRatio = 100 - receiverRatio
 		} else {
 			payer = luId
 			receiver = danId
-			receiverRatio = int(ratio * -100)
+			receiverRatio = int(math.Round(ratio * -100))
 			payerRatio = 100 - receiverRatio
 		}
 		splitRatio := entity.SplitRatio{
@@ -102,9 +105,14 @@ func run(cmd *cobra.Command, args []string) {
 		if err := expensesRepo.Store(ctx, expense); err != nil {
 			fmt.Println(fmt.Errorf("error storing expense %w", err))
 		}
+		expensesCreated++
 	}
 
-	fmt.Println("done")
+	fmt.Println("Created", expensesCreated, "expenses")
+
+	if err := database.Close(); err != nil {
+		fmt.Println(fmt.Errorf("error closing database %w", err))
+	}
 }
 
 func init() {

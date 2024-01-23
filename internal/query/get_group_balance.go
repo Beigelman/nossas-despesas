@@ -21,35 +21,35 @@ func NewGetGroupBalance(db db.Database) GetGroupBalance {
 		var balances []UserBalance
 		if err := dbClient.SelectContext(ctx, &balances, `
 			WITH base AS (
-    			SELECT
-    			    distinct on (id) id as id,
-    			    amount_cents,
-    			    group_id,
-    			    split_ratio,
-    			    payer_id,
-    			    receiver_id,
-    			    deleted_at
-    			FROM expenses
-    			WHERE group_id = $1
-    			ORDER BY id desc, version DESC
+			    SELECT
+			        distinct on (id) id as id,
+			        amount_cents,
+			        group_id,
+			        split_ratio,
+			        payer_id,
+			        receiver_id,
+			        deleted_at
+			    FROM expenses
+			    WHERE group_id = $1
+			    ORDER BY id desc, version DESC
 			), balances AS (
 			    SELECT
 			        user_id,
 			        balance,
 			        type
 			    FROM (
-			     SELECT payer_id AS user_id, SUM((amount_cents * (split_ratio->>'payer')::numeric / 100)) AS balance, 'payer' as type
-			     FROM base
-			     WHERE deleted_at IS NULL
-			     GROUP BY payer_id
-			
-			     UNION ALL
-			
-			     SELECT receiver_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'receiver' as type
-			     FROM base
-			     WHERE deleted_at IS NULL
-			     GROUP BY receiver_id
-			    ) AS balances
+					SELECT payer_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'payer' as type
+					FROM base
+					WHERE deleted_at IS NULL
+					GROUP BY payer_id
+	
+					UNION ALL
+	
+					SELECT receiver_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'receiver' as type
+					FROM base
+					WHERE deleted_at IS NULL
+					GROUP BY receiver_id
+			 	) AS balances
 			)
 			SELECT
 			    user_id,

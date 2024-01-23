@@ -26,7 +26,7 @@ type (
 )
 
 func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpenses {
-	const defaultLimit = 100
+	const defaultLimit = 25
 
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
