@@ -1,4 +1,4 @@
-package authrepo
+package incomerepo
 
 import (
 	"context"
@@ -13,9 +13,11 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type PgAuthRepoTestSuite struct {
+var userID = entity.UserID{Value: 1}
+
+type PgIncomeRepoTestSuite struct {
 	suite.Suite
-	repository    repository.AuthRepository
+	repository    repository.IncomeRepository
 	ctx           context.Context
 	db            db.Database
 	cfg           config.Config
@@ -24,10 +26,10 @@ type PgAuthRepoTestSuite struct {
 }
 
 func TestPgAuthRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgAuthRepoTestSuite))
+	suite.Run(t, new(PgIncomeRepoTestSuite))
 }
 
-func (s *PgAuthRepoTestSuite) SetupSuite() {
+func (s *PgIncomeRepoTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
@@ -49,7 +51,7 @@ func (s *PgAuthRepoTestSuite) SetupSuite() {
 	s.NoError(err)
 }
 
-func (s *PgAuthRepoTestSuite) TearDownSuite() {
+func (s *PgIncomeRepoTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -63,55 +65,60 @@ func (s *PgAuthRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgAuthRepoTestSuite) TearDownTest() {
-	err := s.db.Clean("authentications")
+func (s *PgIncomeRepoTestSuite) TearDownTest() {
+	err := s.db.Clean("incomes")
 	s.NoError(err)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_Store() {
+func (s *PgIncomeRepoTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	auth, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
-		ID:       id,
-		Email:    "john@email.com",
-		Password: "test123",
+	income := entity.NewIncome(entity.IncomeParams{
+		ID:     id,
+		Amount: 100,
+		UserID: userID,
+		Type:   entity.IncomeTypes.Salary,
 	})
-	s.NoError(err)
 
-	s.NoError(s.repository.Store(s.ctx, auth))
+	s.NoError(s.repository.Store(s.ctx, income))
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByID() {
+func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
-		ID:       id,
-		Email:    "john@email.com",
-		Password: "test123",
+	expected := entity.NewIncome(entity.IncomeParams{
+		ID:     id,
+		Amount: 100,
+		UserID: userID,
+		Type:   entity.IncomeTypes.Salary,
 	})
-	s.NoError(err)
+
 	s.NoError(s.repository.Store(s.ctx, expected))
 
 	actual, err := s.repository.GetByID(s.ctx, id)
 	s.NoError(err)
 
 	s.Equal(expected.ID, actual.ID)
-	s.Equal(expected.Email, actual.Email)
+	s.Equal(expected.Type, actual.Type)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByEmail() {
-	id := s.repository.GetNextID()
-	expected, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
-		ID:       id,
-		Email:    "john@email.com",
-		Password: "test123",
+func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
+	salary := entity.NewIncome(entity.IncomeParams{
+		ID:     s.repository.GetNextID(),
+		Amount: 100,
+		UserID: userID,
+		Type:   entity.IncomeTypes.Salary,
 	})
+
+	benefit := entity.NewIncome(entity.IncomeParams{
+		ID:     s.repository.GetNextID(),
+		Amount: 200,
+		UserID: userID,
+		Type:   entity.IncomeTypes.Benefit,
+	})
+
+	s.NoError(s.repository.Store(s.ctx, salary))
+	s.NoError(s.repository.Store(s.ctx, benefit))
+
+	incomes, err := s.repository.GetUserMonthlyIncomes(s.ctx, userID, time.Now())
 	s.NoError(err)
-
-	s.NoError(s.repository.Store(s.ctx, expected))
-
-	actual, err := s.repository.GetByEmail(s.ctx, expected.Email, entity.AuthTypes.Credentials)
-	s.NoError(err)
-
-	s.Equal(expected.ID, actual.ID)
-	s.Equal(expected.Email, actual.Email)
-	s.Equal(expected.Type, actual.Type)
+	s.Equal(2, len(incomes))
 }

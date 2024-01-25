@@ -18,18 +18,18 @@ type CreateUserParams struct {
 
 type CreateUser func(ctx context.Context, p CreateUserParams) (*entity.User, error)
 
-func NewCreateUser(repo repository.UserRepository) CreateUser {
+func NewCreateUser(userRepo repository.UserRepository) CreateUser {
 	return func(ctx context.Context, p CreateUserParams) (*entity.User, error) {
-		alreadyExists, err := repo.GetByEmail(ctx, p.Email)
+		alreadyExists, err := userRepo.GetByEmail(ctx, p.Email)
 		if err != nil {
-			return nil, fmt.Errorf("repo.GetByName: %w", err)
+			return nil, fmt.Errorf("userRepo.GetByName: %w", err)
 		}
 
 		if alreadyExists != nil {
 			return nil, except.ConflictError("email already exists")
 		}
 
-		userID := repo.GetNextID()
+		userID := userRepo.GetNextID()
 
 		user := entity.NewUser(entity.UserParams{
 			ID:             userID,
@@ -39,8 +39,8 @@ func NewCreateUser(repo repository.UserRepository) CreateUser {
 			GroupID:        p.GroupID,
 		})
 
-		if err := repo.Store(ctx, user); err != nil {
-			return nil, fmt.Errorf("repo.Store: %w", err)
+		if err := userRepo.Store(ctx, user); err != nil {
+			return nil, fmt.Errorf("userRepo.Store: %w", err)
 		}
 
 		return user, nil

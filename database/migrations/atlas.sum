@@ -1,5 +1,7 @@
-h1:0aRMPJyb+ojGD44xfrF1JpqWkjoThRBIdrGx0TZFbJY=
+h1:zvwRPj+p9xXHDv0xUv9NeFUNgpnVVst0fNpnR5lDug4=
 20240121185311_init-setup.down.sql h1:q68rg4h0I72XM45LzVjA8/Km9tjyZ3kqX86wJzqBwW8=
 20240121185311_init-setup.up.sql h1:7Rx5l3DkCP9DtFb+M8m6odVqkIR8WmAJr0BZKNDp9/o=
 20240121185326_categories-seed.down.sql h1:IMy0s3czAyMmRwcw1zN+2KDHYrSVU8dR/1zFj1Eh464=
-20240121185326_categories-seed.up.sql h1:OsxcSWHSexNswb9hGNJgZWI6lCyLpj/yI9hCMaWtYFw=
+20240121185326_categories-seed.up.sql h1:PX+d5kJOrY+ne0W8HG20lYO4eBurdI3iL4friX7JRuA=
+20240125132319_create-incomes-table.down.sql h1:jG/Key7nHkX8whhpGhgJ/Jojk7OlGTlFC7NI5DhWQYY=
+20240125132319_create-incomes-table.up.sql h1:LPLchMx+SghLqY4CkDu32UyqUGY7GaoDdRoSrrW3Oo0=

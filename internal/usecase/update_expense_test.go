@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
 	"github.com/Beigelman/ludaapi/internal/usecase"
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,7 @@ func TestUpdateExpense(t *testing.T) {
 	userRepo := mockrepository.NewMockUserRepository(t)
 	categoryRepo := mockrepository.NewMockCategoryRepository(t)
 	expenseRepo := mockrepository.NewMockExpenseRepository(t)
+	incomeRepo := mockrepository.NewMockIncomeRepository(t)
 
 	group := entity.NewGroup(entity.GroupParams{
 		ID:   entity.GroupID{Value: 1},
@@ -60,13 +62,13 @@ func TestUpdateExpense(t *testing.T) {
 		Description: "description",
 		GroupID:     group.ID,
 		CategoryID:  category.ID,
-		SplitRatio:  entity.SplitRatio{Payer: 50, Receiver: 50},
+		SplitRatio:  vo.NewEqualSplitRatio(),
 		PayerID:     payer.ID,
 		ReceiverID:  receiver.ID,
 	})
 	assert.Nil(t, err)
 
-	updateExpense := usecase.NewUpdateExpense(expenseRepo, userRepo, categoryRepo)
+	updateExpense := usecase.NewUpdateExpense(expenseRepo, userRepo, categoryRepo, incomeRepo)
 
 	t.Run("should return error if expenseRepo fails", func(t *testing.T) {
 		expenseRepo.EXPECT().GetByID(ctx, expense.ID).Return(nil, errors.New("test error")).Once()
@@ -76,7 +78,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -92,7 +94,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -109,7 +111,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -126,7 +128,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -144,7 +146,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -161,7 +163,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -180,7 +182,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -199,31 +201,12 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
 		assert.Nil(t, expense)
 		assert.EqualError(t, err, "error=category not found")
-	})
-
-	t.Run("should return error if split ration does not sum 100", func(t *testing.T) {
-		expenseRepo.EXPECT().GetByID(ctx, expense.ID).Return(expense, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, payer.ID).Return(payer, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, receiver.ID).Return(receiver, nil).Once()
-		categoryRepo.EXPECT().GetByID(ctx, category.ID).Return(category, nil).Once()
-
-		p := usecase.UpdateExpenseParams{
-			ID:         expense.ID,
-			PayerID:    &payer.ID,
-			ReceiverID: &receiver.ID,
-			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 70, Receiver: 50},
-		}
-
-		expense, err := updateExpense(ctx, p)
-		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=Unprocessable Entity, internal=entity.Update: expense.Validate: invalid split ratio")
 	})
 
 	t.Run("should return error if expenseRepo fails", func(t *testing.T) {
@@ -238,7 +221,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:    &payer.ID,
 			ReceiverID: &receiver.ID,
 			CategoryID: &category.ID,
-			SplitRatio: &entity.SplitRatio{Payer: 50, Receiver: 50},
+			SplitType:  &vo.SpliteTypes.Equal,
 		}
 
 		expense, err := updateExpense(ctx, p)
@@ -246,7 +229,43 @@ func TestUpdateExpense(t *testing.T) {
 		assert.EqualError(t, err, "expenseRepo.Store: test error")
 	})
 
-	t.Run("happy path", func(t *testing.T) {
+	t.Run("happy path with proporcional split type", func(t *testing.T) {
+		expenseRepo.EXPECT().GetByID(ctx, expense.ID).Return(expense, nil).Once()
+		userRepo.EXPECT().GetByID(ctx, payer.ID).Return(payer, nil).Once()
+		userRepo.EXPECT().GetByID(ctx, receiver.ID).Return(receiver, nil).Once()
+		categoryRepo.EXPECT().GetByID(ctx, category.ID).Return(category, nil).Once()
+		expenseRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
+		incomeRepo.EXPECT().GetUserMonthlyIncomes(ctx, payer.ID, mock.Anything).Return([]entity.Income{{Amount: 60}}, nil).Once()
+		incomeRepo.EXPECT().GetUserMonthlyIncomes(ctx, receiver.ID, mock.Anything).Return([]entity.Income{{Amount: 40}}, nil).Once()
+
+		newName := "name 2"
+		newAmount := 1000
+		newDescription := "description 2"
+		p := usecase.UpdateExpenseParams{
+			ID:          expense.ID,
+			PayerID:     &payer.ID,
+			ReceiverID:  &receiver.ID,
+			CategoryID:  &category.ID,
+			SplitType:   &vo.SpliteTypes.Proportional,
+			Name:        &newName,
+			Description: &newDescription,
+			Amount:      &newAmount,
+		}
+
+		expense, err := updateExpense(ctx, p)
+		assert.Equal(t, entity.ExpenseID{Value: 1}, expense.ID)
+		assert.Equal(t, newName, expense.Name)
+		assert.Equal(t, newAmount, expense.Amount)
+		assert.Equal(t, newDescription, expense.Description)
+		assert.Equal(t, group.ID, expense.GroupID)
+		assert.Equal(t, category.ID, expense.CategoryID)
+		assert.Equal(t, vo.NewProportionalSplitRatio(60, 40), expense.SplitRatio)
+		assert.Equal(t, payer.ID, expense.PayerID)
+		assert.Equal(t, receiver.ID, expense.ReceiverID)
+		assert.Nil(t, err)
+	})
+
+	t.Run("happy path with transfer split type", func(t *testing.T) {
 		expenseRepo.EXPECT().GetByID(ctx, expense.ID).Return(expense, nil).Once()
 		userRepo.EXPECT().GetByID(ctx, payer.ID).Return(payer, nil).Once()
 		userRepo.EXPECT().GetByID(ctx, receiver.ID).Return(receiver, nil).Once()
@@ -261,7 +280,7 @@ func TestUpdateExpense(t *testing.T) {
 			PayerID:     &payer.ID,
 			ReceiverID:  &receiver.ID,
 			CategoryID:  &category.ID,
-			SplitRatio:  &entity.SplitRatio{Payer: 70, Receiver: 30},
+			SplitType:   &vo.SpliteTypes.Transfer,
 			Name:        &newName,
 			Description: &newDescription,
 			Amount:      &newAmount,
@@ -274,7 +293,7 @@ func TestUpdateExpense(t *testing.T) {
 		assert.Equal(t, newDescription, expense.Description)
 		assert.Equal(t, group.ID, expense.GroupID)
 		assert.Equal(t, category.ID, expense.CategoryID)
-		assert.Equal(t, entity.SplitRatio{Payer: 70, Receiver: 30}, expense.SplitRatio)
+		assert.Equal(t, vo.NewTransferRatio(), expense.SplitRatio)
 		assert.Equal(t, payer.ID, expense.PayerID)
 		assert.Equal(t, receiver.ID, expense.ReceiverID)
 		assert.Nil(t, err)

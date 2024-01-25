@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/pkg/validator"
 	"net/http"
 	"strconv"
@@ -18,17 +19,14 @@ type (
 	UpdateExpense func(ctx *fiber.Ctx) error
 
 	UpdateExpenseRequest struct {
-		Name        *string `json:"name"`
-		Amount      *int    `json:"amount"`
-		Description *string `json:"description"`
-		CategoryID  *int    `json:"category_id"`
-		SplitRatio  *struct {
-			Payer    int `json:"payer"`
-			Receiver int `json:"receiver"`
-		} `json:"split_ratio"`
-		PayerID    *int       `json:"payer_id"`
-		ReceiverID *int       `json:"receiver_id"`
-		CreatedAt  *time.Time `json:"created_at"`
+		Name        *string    `json:"name"`
+		Amount      *int       `json:"amount"`
+		Description *string    `json:"description"`
+		CategoryID  *int       `json:"category_id"`
+		SplitType   *string    `json:"split_type" validate:"omitempty,oneof=equal proportional transfer"`
+		PayerID     *int       `json:"payer_id"`
+		ReceiverID  *int       `json:"receiver_id"`
+		CreatedAt   *time.Time `json:"created_at"`
 	}
 
 	UpdateExpenseResponse struct {
@@ -64,17 +62,14 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 			Description: req.Description,
 			CategoryID: func() *entity.CategoryID {
 				if req.CategoryID != nil {
-					value := entity.CategoryID{Value: *req.CategoryID}
-					return &value
+					return &entity.CategoryID{Value: *req.CategoryID}
 				}
 				return nil
 			}(),
-			SplitRatio: func() *entity.SplitRatio {
-				if req.SplitRatio != nil {
-					return &entity.SplitRatio{
-						Payer:    req.SplitRatio.Payer,
-						Receiver: req.SplitRatio.Receiver,
-					}
+			SplitType: func() *vo.SplitType {
+				if req.SplitType != nil {
+					splitType := vo.SplitType(*req.SplitType)
+					return &splitType
 				}
 				return nil
 			}(),

@@ -18,7 +18,7 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	var e *except.HTTPError
 	if errors.As(err, &e) {
 		code = e.Code
-		message = e.Error()
+		message = e.Message.(string)
 	}
 
 	ctx.Set("Content-Type", "\"text/plain; charset=utf-8\"")

@@ -10,26 +10,26 @@ import (
 
 type CreateGroup func(ctx context.Context, name string) (*entity.Group, error)
 
-func NewCreateGroup(repo repository.GroupRepository) CreateGroup {
+func NewCreateGroup(groupRepo repository.GroupRepository) CreateGroup {
 	return func(ctx context.Context, name string) (*entity.Group, error) {
-		alreadyExists, err := repo.GetByName(ctx, name)
+		alreadyExists, err := groupRepo.GetByName(ctx, name)
 		if err != nil {
-			return nil, fmt.Errorf("repo.GetByName: %w", err)
+			return nil, fmt.Errorf("groupRepo.GetByName: %w", err)
 		}
 
 		if alreadyExists != nil {
 			return nil, except.ConflictError("group already exists")
 		}
 
-		groupID := repo.GetNextID()
+		groupID := groupRepo.GetNextID()
 
 		group := entity.NewGroup(entity.GroupParams{
 			ID:   groupID,
 			Name: name,
 		})
 
-		if err := repo.Store(ctx, group); err != nil {
-			return nil, fmt.Errorf("repo.Store: %w", err)
+		if err := groupRepo.Store(ctx, group); err != nil {
+			return nil, fmt.Errorf("groupRepo.Store: %w", err)
 		}
 
 		return group, nil

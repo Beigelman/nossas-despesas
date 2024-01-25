@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	"time"
 )
@@ -16,7 +17,7 @@ type (
 		Amount      *int
 		Description *string
 		CategoryID  *entity.CategoryID
-		SplitRatio  *entity.SplitRatio
+		SplitType   *vo.SplitType
 		PayerID     *entity.UserID
 		ReceiverID  *entity.UserID
 		CreatedAt   *time.Time
@@ -28,6 +29,7 @@ func NewUpdateExpense(
 	expenseRepo repository.ExpenseRepository,
 	userRepo repository.UserRepository,
 	categoryRepo repository.CategoryRepository,
+	incomeRepo repository.IncomeRepository,
 ) UpdateExpense {
 	return func(ctx context.Context, p UpdateExpenseParams) (*entity.Expense, error) {
 		expense, err := expenseRepo.GetByID(ctx, p.ID)
@@ -80,17 +82,57 @@ func NewUpdateExpense(
 			}
 		}
 
+		splitRatio := expense.SplitRatio
+		if p.SplitType != nil && *p.SplitType != expense.SplitRatio.Type() {
+			switch *p.SplitType {
+			case vo.SpliteTypes.Proportional:
+				payerID := expense.PayerID
+				if p.PayerID != nil {
+					payerID = *p.PayerID
+				}
+				payerIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, payerID, p.CreatedAt)
+				if err != nil || payerIncomes == nil {
+					return nil, except.UnprocessableEntityError("payer income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+				}
+
+				receiverID := expense.ReceiverID
+				if p.ReceiverID != nil {
+					receiverID = *p.ReceiverID
+				}
+				receiverIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, receiverID, p.CreatedAt)
+				if err != nil || receiverIncomes == nil {
+					return nil, except.UnprocessableEntityError("receiver income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+				}
+
+				totalPayerIncome := 0
+				for _, income := range payerIncomes {
+					totalPayerIncome += income.Amount
+				}
+
+				totalReceiverIncome := 0
+				for _, income := range receiverIncomes {
+					totalReceiverIncome += income.Amount
+				}
+
+				splitRatio = vo.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+			case vo.SpliteTypes.Transfer:
+				splitRatio = vo.NewTransferRatio()
+			default:
+				splitRatio = vo.NewEqualSplitRatio()
+			}
+		}
+
 		if err := expense.Update(entity.ExpenseUpdateParams{
 			Name:        p.Name,
 			Amount:      p.Amount,
 			Description: p.Description,
 			CategoryID:  p.CategoryID,
-			SplitRatio:  p.SplitRatio,
+			SplitRatio:  &splitRatio,
 			PayerID:     p.PayerID,
 			ReceiverID:  p.ReceiverID,
 			CreatedAt:   p.CreatedAt,
 		}); err != nil {
-			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.Update: %w", err))
+			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("expense.Update: %w", err))
 		}
 
 		if err := expenseRepo.Store(ctx, expense); err != nil {

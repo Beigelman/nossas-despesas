@@ -9,6 +9,7 @@ import (
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categoryrepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
+	"github.com/Beigelman/ludaapi/internal/infra/postgres/incomerepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/di"
 	"github.com/Beigelman/ludaapi/internal/pkg/eon"
@@ -28,13 +29,17 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, handler.NewRefreshAuthToken)
 	di.Provide(c, handler.NewSignInWithGoogle)
 	di.Provide(c, middleware.NewAuthMiddleware)
+	// income
+	di.Provide(c, incomerepo.NewPGRepository)
+	di.Provide(c, usecase.NewCreateIncome)
+	di.Provide(c, handler.NewCreateIncome)
 	// user
 	di.Provide(c, userrepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateUser)
 	di.Provide(c, query.NewGetUserByID)
 	di.Provide(c, usecase.NewAddUserToGroup)
 	di.Provide(c, handler.NewAddUserToGroup)
-	di.Provide(c, handler.NewGetMyUser)
+	di.Provide(c, handler.NewGetMe)
 	// group
 	di.Provide(c, grouprepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateGroup)

@@ -16,18 +16,18 @@ type CreateCategoryInput struct {
 
 type CreateCategory func(ctx context.Context, input CreateCategoryInput) (*entity.Category, error)
 
-func NewCreateCategory(repo repository.CategoryRepository) CreateCategory {
+func NewCreateCategory(categoryRepo repository.CategoryRepository) CreateCategory {
 	return func(ctx context.Context, input CreateCategoryInput) (*entity.Category, error) {
-		alreadyExists, err := repo.GetByName(ctx, input.Name)
+		alreadyExists, err := categoryRepo.GetByName(ctx, input.Name)
 		if err != nil {
-			return nil, fmt.Errorf("repo.GetByName: %w", err)
+			return nil, fmt.Errorf("categoryRepo.GetByName: %w", err)
 		}
 
 		if alreadyExists != nil {
 			return nil, except.ConflictError("category already exists")
 		}
 
-		categoryID := repo.GetNextID()
+		categoryID := categoryRepo.GetNextID()
 
 		category := entity.NewCategory(entity.CategoryParams{
 			ID:              categoryID,
@@ -36,8 +36,8 @@ func NewCreateCategory(repo repository.CategoryRepository) CreateCategory {
 			CategoryGroupID: input.CategoryGroupID,
 		})
 
-		if err := repo.Store(ctx, category); err != nil {
-			return nil, fmt.Errorf("repo.Store: %w", err)
+		if err := categoryRepo.Store(ctx, category); err != nil {
+			return nil, fmt.Errorf("categoryRepo.Store: %w", err)
 		}
 
 		return category, nil

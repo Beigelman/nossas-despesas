@@ -15,11 +15,12 @@ func Router(
 	addUserToGroupHandler handler.AddUserToGroup,
 	getGroupExpenseHandler handler.GetGroupExpenses,
 	getGroupHandler handler.GetGroup,
-	getMyUserHandler handler.GetMyUser,
+	getMyUserHandler handler.GetMe,
 	getCategoriesHandler handler.GetCategories,
 	updateExpenseHandler handler.UpdateExpense,
 	deleteExpenseHandler handler.DeleteExpense,
 	getGroupBalanceHandler handler.GetGroupBalance,
+	createIncomeHandler handler.CreateIncome,
 	signInWithCredentialsHandler handler.SignInWithCredentials,
 	signInWithGoogleHandler handler.SignInWithGoogle,
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
@@ -56,6 +57,9 @@ func Router(
 		expense.Post("/", createExpenseHandler)
 		expense.Patch("/:expense_id", updateExpenseHandler)
 		expense.Delete("/:expense_id", deleteExpenseHandler)
+		// Income routes
+		income := v1.Group("income", authMiddleware)
+		income.Post("/", createIncomeHandler)
 		// Category routes
 		category := v1.Group("category", authMiddleware)
 		category.Get("/", getCategoriesHandler)

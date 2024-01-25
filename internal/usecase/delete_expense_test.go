@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
 	"github.com/Beigelman/ludaapi/internal/usecase"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,7 @@ func TestDeleteExpense(t *testing.T) {
 		Description: "description",
 		GroupID:     entity.GroupID{Value: 1},
 		CategoryID:  entity.CategoryID{Value: 1},
-		SplitRatio:  entity.SplitRatio{Payer: 50, Receiver: 50},
+		SplitRatio:  vo.NewEqualSplitRatio(),
 		PayerID:     entity.UserID{Value: 1},
 		ReceiverID:  entity.UserID{Value: 2},
 	})

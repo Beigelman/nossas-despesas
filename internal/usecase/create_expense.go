@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	"time"
 )
@@ -16,7 +17,7 @@ type (
 		Amount      int
 		Description string
 		CategoryID  entity.CategoryID
-		SplitRatio  entity.SplitRatio
+		SplitType   vo.SplitType
 		PayerID     entity.UserID
 		ReceiverID  entity.UserID
 		CreatedAt   *time.Time
@@ -29,6 +30,7 @@ func NewCreateExpense(
 	userRepo repository.UserRepository,
 	groupRepo repository.GroupRepository,
 	categoryRepo repository.CategoryRepository,
+	incomeRepo repository.IncomeRepository,
 ) CreateExpense {
 	return func(ctx context.Context, p CreateExpenseParams) (*entity.Expense, error) {
 		payer, err := userRepo.GetByID(ctx, p.PayerID)
@@ -71,6 +73,36 @@ func NewCreateExpense(
 			return nil, except.NotFoundError("category not found")
 		}
 
+		var splitRatio vo.SplitRatio
+		switch p.SplitType {
+		case vo.SpliteTypes.Proportional:
+			payerIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, payer.ID, p.CreatedAt)
+			if err != nil || payerIncomes == nil {
+				return nil, except.UnprocessableEntityError("payer income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+			}
+
+			receiverIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, receiver.ID, p.CreatedAt)
+			if err != nil || receiverIncomes == nil {
+				return nil, except.UnprocessableEntityError("receiver income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+			}
+
+			totalPayerIncome := 0
+			for _, income := range payerIncomes {
+				totalPayerIncome += income.Amount
+			}
+
+			totalReceiverIncome := 0
+			for _, income := range receiverIncomes {
+				totalReceiverIncome += income.Amount
+			}
+
+			splitRatio = vo.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+		case vo.SpliteTypes.Transfer:
+			splitRatio = vo.NewTransferRatio()
+		default:
+			splitRatio = vo.NewEqualSplitRatio()
+		}
+
 		expenseID := expenseRepo.GetNextID()
 
 		expense, err := entity.NewExpense(entity.ExpenseParams{
@@ -80,13 +112,13 @@ func NewCreateExpense(
 			Description: p.Description,
 			GroupID:     p.GroupID,
 			CategoryID:  p.CategoryID,
-			SplitRatio:  p.SplitRatio,
+			SplitRatio:  splitRatio,
 			PayerID:     p.PayerID,
 			ReceiverID:  p.ReceiverID,
 			CreatedAt:   p.CreatedAt,
 		})
 		if err != nil {
-			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.NewCategory: %w", err))
+			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.NewExpense: %w", err))
 		}
 
 		if err := expenseRepo.Store(ctx, expense); err != nil {

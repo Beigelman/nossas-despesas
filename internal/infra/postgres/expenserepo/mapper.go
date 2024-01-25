@@ -3,6 +3,7 @@ package expenserepo
 import (
 	"database/sql"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"time"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
@@ -27,7 +28,7 @@ func toEntity(model ExpenseModel) *entity.Expense {
 		Description: model.Description,
 		GroupID:     entity.GroupID{Value: model.GroupID},
 		CategoryID:  entity.CategoryID{Value: model.CategoryID},
-		SplitRatio: entity.SplitRatio{
+		SplitRatio: vo.SplitRatio{
 			Payer:    model.SplitRatio.Payer,
 			Receiver: model.SplitRatio.Receiver,
 		},

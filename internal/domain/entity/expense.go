@@ -2,15 +2,11 @@ package entity
 
 import (
 	"fmt"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"time"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
 )
-
-type SplitRatio struct {
-	Payer    int
-	Receiver int
-}
 
 type ExpenseID struct{ Value int }
 
@@ -21,7 +17,7 @@ type Expense struct {
 	Description string
 	GroupID     GroupID
 	CategoryID  CategoryID
-	SplitRatio  SplitRatio
+	SplitRatio  vo.SplitRatio
 	PayerID     UserID
 	ReceiverID  UserID
 }
@@ -33,7 +29,7 @@ type ExpenseParams struct {
 	Description string
 	GroupID     GroupID
 	CategoryID  CategoryID
-	SplitRatio  SplitRatio
+	SplitRatio  vo.SplitRatio
 	PayerID     UserID
 	ReceiverID  UserID
 	CreatedAt   *time.Time
@@ -44,7 +40,7 @@ type ExpenseUpdateParams struct {
 	Amount      *int
 	Description *string
 	CategoryID  *CategoryID
-	SplitRatio  *SplitRatio
+	SplitRatio  *vo.SplitRatio
 	PayerID     *UserID
 	ReceiverID  *UserID
 	CreatedAt   *time.Time
@@ -104,7 +100,7 @@ func (e *Expense) Update(p ExpenseUpdateParams) error {
 		}
 		return e.CategoryID
 	}()
-	e.SplitRatio = func() SplitRatio {
+	e.SplitRatio = func() vo.SplitRatio {
 		if p.SplitRatio != nil {
 			return *p.SplitRatio
 		}
@@ -146,7 +142,7 @@ func (e *Expense) Delete() {
 }
 
 func (e *Expense) validate() error {
-	if e.SplitRatio.Payer+e.SplitRatio.Receiver != 100 {
+	if e.SplitRatio.Payer+e.SplitRatio.Receiver != 100 || e.SplitRatio.Payer > 99 {
 		return ErrInvalidSplitRatio
 	}
 

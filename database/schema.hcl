@@ -300,3 +300,52 @@ enum "authentication_type" {
   schema = schema.public
   values = ["credentials", "google"]
 }
+
+table "incomes" {
+  schema = schema.public
+  column "id" {
+    type = bigserial
+    null = false
+  }
+  column "user_id" {
+    type = bigint
+    null = false
+  }
+  column "amount_cents" {
+    type = varchar(255)
+    null = false
+  }
+  column "type" {
+    type = enum.income_type
+    null = false
+  }
+  column "created_at" {
+    type = timestamptz
+    null = false
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+  }
+  column "deleted_at" {
+    type = timestamptz
+    null = true
+  }
+  column "version" {
+    type = int
+    null = false
+  }
+
+  primary_key  {
+    columns = [column.id]
+  }
+  foreign_key "income_user_id_fk" {
+    columns = [column.user_id]
+    ref_columns = [table.users.column.id]
+  }
+}
+
+enum "income_type" {
+  schema = schema.public
+  values = ["salary", "benefit", "vacation", "thirteenth_salary", "other"]
+}

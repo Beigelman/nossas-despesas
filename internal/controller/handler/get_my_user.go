@@ -10,10 +10,10 @@ import (
 )
 
 type (
-	GetMyUser func(ctx *fiber.Ctx) error
+	GetMe func(ctx *fiber.Ctx) error
 )
 
-func NewGetMyUser(getUserID query.GetUserByID) GetMyUser {
+func NewGetMe(getUserID query.GetUserByID) GetMe {
 	return func(ctx *fiber.Ctx) error {
 		userID, ok := ctx.Locals("user_id").(int)
 		if !ok {
