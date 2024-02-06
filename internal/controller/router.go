@@ -21,6 +21,9 @@ func Router(
 	deleteExpenseHandler handler.DeleteExpense,
 	getGroupBalanceHandler handler.GetGroupBalance,
 	createIncomeHandler handler.CreateIncome,
+	updateIncomeHandler handler.UpdateIncome,
+	deleteIncomeHandler handler.DeleteIncome,
+	getGroupMonthlyIncomeHandler handler.GetGroupMonthlyIncome,
 	signInWithCredentialsHandler handler.SignInWithCredentials,
 	signInWithGoogleHandler handler.SignInWithGoogle,
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
@@ -52,6 +55,7 @@ func Router(
 		group.Get("/", getGroupHandler)
 		group.Get("/expenses", getGroupExpenseHandler)
 		group.Get("/balance", getGroupBalanceHandler)
+		group.Get("income", getGroupMonthlyIncomeHandler)
 		// Expense routes
 		expense := v1.Group("expense", authMiddleware)
 		expense.Post("/", createExpenseHandler)
@@ -60,6 +64,8 @@ func Router(
 		// Income routes
 		income := v1.Group("income", authMiddleware)
 		income.Post("/", createIncomeHandler)
+		income.Patch("/:income_id", updateIncomeHandler)
+		income.Delete("/:income_id", deleteIncomeHandler)
 		// Category routes
 		category := v1.Group("category", authMiddleware)
 		category.Get("/", getCategoriesHandler)

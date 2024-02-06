@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/config"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
 	"github.com/Beigelman/ludaapi/scripts/utils"
@@ -83,7 +84,7 @@ func run(cmd *cobra.Command, args []string) {
 			receiverRatio = int(math.Round(ratio * -100))
 			payerRatio = 100 - receiverRatio
 		}
-		splitRatio := entity.SplitRatio{
+		splitRatio := vo.SplitRatio{
 			Payer:    payerRatio,
 			Receiver: receiverRatio,
 		}

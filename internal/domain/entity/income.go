@@ -59,3 +59,31 @@ func NewIncome(params IncomeParams) *Income {
 		Type:   params.Type,
 	}
 }
+
+type UpdateIncomeParams struct {
+	Amount    *int
+	Type      *IncomeType
+	CreatedAt *time.Time
+}
+
+func (i *Income) Update(p UpdateIncomeParams) {
+	if p.Type != nil {
+		i.Type = *p.Type
+	}
+
+	if p.Amount != nil {
+		i.Amount = *p.Amount
+	}
+
+	if p.CreatedAt != nil {
+		i.CreatedAt = *p.CreatedAt
+	}
+
+	i.UpdatedAt = time.Now()
+}
+
+func (i *Income) Delete() {
+	now := time.Now()
+	i.UpdatedAt = now
+	i.DeletedAt = &now
+}

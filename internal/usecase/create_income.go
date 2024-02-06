@@ -33,7 +33,7 @@ func NewCreateIncome(
 			return nil, except.NotFoundError("user not found")
 		}
 
-		expense := entity.NewIncome(entity.IncomeParams{
+		income := entity.NewIncome(entity.IncomeParams{
 			ID:        incomeRepo.GetNextID(),
 			UserID:    user.ID,
 			Amount:    p.Amount,
@@ -44,10 +44,10 @@ func NewCreateIncome(
 			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.NewIncome: %w", err))
 		}
 
-		if err := incomeRepo.Store(ctx, expense); err != nil {
+		if err := incomeRepo.Store(ctx, income); err != nil {
 			return nil, fmt.Errorf("incomeRepo.Store: %w", err)
 		}
 
-		return expense, nil
+		return income, nil
 	}
 }

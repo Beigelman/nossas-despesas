@@ -80,7 +80,7 @@ func (repo *IncomePGRepository) GetUserMonthlyIncomes(ctx context.Context, userI
 func (repo *IncomePGRepository) Store(ctx context.Context, entity *entity.Income) error {
 	var model = toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
-		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"authentications_pkey\"" {
+		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"incomes_pkey\"" {
 			if err := repo.update(ctx, model); err != nil {
 				return fmt.Errorf("repo.update: %w", err)
 			}

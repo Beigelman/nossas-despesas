@@ -32,7 +32,11 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	// income
 	di.Provide(c, incomerepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateIncome)
+	di.Provide(c, usecase.NewUpdateIncome)
+	di.Provide(c, usecase.NewDeleteIncome)
 	di.Provide(c, handler.NewCreateIncome)
+	di.Provide(c, handler.NewUpdateIncome)
+	di.Provide(c, handler.NewDeleteIncome)
 	// user
 	di.Provide(c, userrepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateUser)
@@ -46,8 +50,10 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, query.NewGetGroup)
 	di.Provide(c, query.NewGetGroupExpenses)
 	di.Provide(c, query.NewGetGroupBalance)
+	di.Provide(c, query.NewGetGroupMonthlyIncome)
 	di.Provide(c, handler.NewGetGroupBalance)
 	di.Provide(c, handler.NewGetGroupExpenses)
+	di.Provide(c, handler.NewGetGroupMonthlyIncome)
 	di.Provide(c, handler.NewCreateGroup)
 	di.Provide(c, handler.NewGetGroup)
 	// expense

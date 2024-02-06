@@ -312,7 +312,7 @@ table "incomes" {
     null = false
   }
   column "amount_cents" {
-    type = varchar(255)
+    type = bigint
     null = false
   }
   column "type" {

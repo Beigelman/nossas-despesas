@@ -4,7 +4,7 @@ CREATE TYPE "income_type" AS ENUM ('salary', 'benefit', 'vacation', 'thirteenth_
 CREATE TABLE "incomes" (
   "id" bigserial NOT NULL,
   "user_id" bigint NOT NULL,
-  "amount_cents" character varying(255) NOT NULL,
+  "amount_cents" bigint NOT NULL,
   "type" "income_type" NOT NULL,
   "created_at" timestamptz NOT NULL,
   "updated_at" timestamptz NOT NULL,
