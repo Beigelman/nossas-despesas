@@ -11,10 +11,12 @@ migrate-hash:
 	 atlas migrate hash -c file://database/atlas.hcl --env local
 
 migrate-up:
-	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" up
+	export DB_CONNECTION_STRING="postgres://root:root@localhost:5432/app?sslmode=disable"; \
+	./database/scripts/migrate.sh up "./database/migrations"
 
 migrate-down:
-	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" down
+	export DB_CONNECTION_STRING="postgres://root:root@localhost:5432/app?sslmode=disable"; \
+    ./database/scripts/migrate.sh down "./database/migrations"
 
 migrate-force:
 	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" force $(version)
@@ -36,11 +38,10 @@ e2e:
 		export MIGRATIONS_PATH="file://$(shell pwd)/database/migrations"; \
 		go test -json -v $$(go list ./... | grep -e e2e) 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-
 test: unit integration e2e
 
 import-split:
-	go run ./scripts/main.go import-from-split-wize -d 1 -l 2 -g 1
+	go run ./scripts/main.go import-from-split-wize
 
 create-users:
 	go run ./scripts/main.go create-users

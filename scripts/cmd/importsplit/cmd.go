@@ -8,6 +8,7 @@ import (
 	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/Beigelman/ludaapi/scripts/utils"
 	"github.com/spf13/cobra"
 	"log"
@@ -23,25 +24,17 @@ var cmd = &cobra.Command{
 }
 
 var danId, luId, groupId int
+var environment string
 
 func run(cmd *cobra.Command, args []string) {
 	ctx := context.Background()
-	cfg := config.Config{
-		Env:         "local",
-		ServiceName: "import-script",
-		Port:        "8080",
-		LogLevel:    "INFO",
-		Db: config.Db{
-			Host:         "localhost",
-			Port:         "5432",
-			Name:         "app",
-			User:         "root",
-			Password:     "root",
-			Type:         "postgres",
-			MaxIdleConns: 1,
-			MaxOpenConns: 1,
-		},
+
+	cfg := config.New(env.Environment(environment))
+	cfg.SetConfigPath("./internal/config/config.yml")
+	if err := cfg.LoadConfig(); err != nil {
+		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
+
 	database := db.New(&cfg)
 	expensesRepo := expenserepo.NewPGRepository(database)
 
@@ -124,6 +117,7 @@ func init() {
 	cmd.Flags().IntVarP(&danId, "dan-id", "d", 1, "dan id")
 	cmd.Flags().IntVarP(&luId, "lu-id", "l", 2, "lu id")
 	cmd.Flags().IntVarP(&groupId, "group-id", "g", 1, "group id")
+	cmd.Flags().StringVarP(&environment, "env", "e", "local", "environment to run the script (local, dev, prod, etc)")
 }
 
 func SplitCategoryToCategory(category string) int {
