@@ -65,7 +65,7 @@ func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo repos
 
 		auth, err := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 			ID:       authRepo.GetNextID(),
-			Email:    p.Email,
+			Email:    user.Email,
 			Password: p.Password,
 		})
 		if err != nil {

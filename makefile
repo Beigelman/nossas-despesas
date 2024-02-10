@@ -38,3 +38,13 @@ e2e:
 
 
 test: unit integration e2e
+
+import-split:
+	go run ./scripts/main.go import-from-split-wize -d 1 -l 2 -g 1
+
+create-users:
+	go run ./scripts/main.go create-users
+
+reset-app: db migrate-down migrate-up create-users import-split
+
+

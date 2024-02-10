@@ -1,4 +1,4 @@
-package cmd
+package importsplit
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var importFromSplitwiseCmd = &cobra.Command{
+var cmd = &cobra.Command{
 	Use: "import-from-split-wize",
 	Run: run,
 }
@@ -116,10 +116,14 @@ func run(cmd *cobra.Command, args []string) {
 	}
 }
 
+func Cmd() *cobra.Command {
+	return cmd
+}
+
 func init() {
-	importFromSplitwiseCmd.Flags().IntVarP(&danId, "dan-id", "d", 1, "dan id")
-	importFromSplitwiseCmd.Flags().IntVarP(&luId, "lu-id", "l", 2, "lu id")
-	importFromSplitwiseCmd.Flags().IntVarP(&groupId, "group-id", "g", 1, "group id")
+	cmd.Flags().IntVarP(&danId, "dan-id", "d", 1, "dan id")
+	cmd.Flags().IntVarP(&luId, "lu-id", "l", 2, "lu id")
+	cmd.Flags().IntVarP(&groupId, "group-id", "g", 1, "group id")
 }
 
 func SplitCategoryToCategory(category string) int {

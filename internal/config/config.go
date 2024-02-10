@@ -26,6 +26,7 @@ type Config struct {
 	ServiceName string          `mapstructure:"SERVICE_NAME"`
 	Port        string          `mapstructure:"PORT"`
 	LogLevel    string          `mapstructure:"LOG_LEVEL"`
+	JWTSecret   string          `mapstructure:"JWT_SECRET"`
 	Db          Db              `mapstructure:",squash"`
 }
 

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/Beigelman/ludaapi/scripts/cmd/createusers"
+	"github.com/Beigelman/ludaapi/scripts/cmd/importsplit"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -21,5 +23,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(importFromSplitwiseCmd)
+	rootCmd.AddCommand(createusers.Cmd())
+	rootCmd.AddCommand(importsplit.Cmd())
 }
