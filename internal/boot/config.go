@@ -3,16 +3,12 @@ package boot
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
-	"log/slog"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/Beigelman/ludaapi/internal/config"
 	"github.com/Beigelman/ludaapi/internal/pkg/di"
+	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/Beigelman/ludaapi/internal/pkg/eon"
-	"github.com/spf13/viper"
+	"log/slog"
+	"os"
 )
 
 const configPath = "./internal/config/config.yml"
@@ -34,43 +30,20 @@ func LogLevelMap(level string) slog.Level {
 
 var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, func() (*config.Config, error) {
-		v := viper.New()
-
-		extension := filepath.Ext(configPath)                 // eg: .yml
-		filename := filepath.Base(configPath)                 // eg: config.yml
-		configName := strings.TrimSuffix(filename, extension) // eg: config
-		v.SetConfigName(configName)                           // viper takes filename without extension
-
-		if len(extension) > 1 {
-			configType := extension[1:]
-			v.SetConfigType(configType)
-		}
-
-		configDir := filepath.Dir(configPath) // eg: /app or .
-		v.AddConfigPath(configDir)
-
 		environment, err := env.Parse(os.Getenv("ENV"))
 		if err != nil {
 			return nil, fmt.Errorf("env.Parse: %w", err)
 		}
 
-		if err := v.ReadInConfig(); err != nil {
-			return nil, fmt.Errorf("viper.ReadInConfig: %w", err)
+		cfg := config.New(environment)
+		cfg.SetConfigPath(configPath)
+		if err := cfg.LoadConfig(); err != nil {
+			return nil, fmt.Errorf("cfg.LoadConfig: %w", err)
 		}
 
-		envViper := v.Sub(environment.String())
-		envViper.SetDefault("PORT", "8080")
-		envViper.SetDefault("LOG_LEVEL", "INFO")
+		cfg.ServiceName = info.ServiceName
 
-		config := config.New(environment)
-		err = envViper.Unmarshal(&config)
-		if err != nil {
-			return nil, fmt.Errorf("viper.Unmarshal: %w", err)
-		}
-
-		config.ServiceName = info.ServiceName
-
-		return &config, nil
+		return &cfg, nil
 	})
 
 	lc.OnBooted(eon.HookOrders.PREPEND, func() error {

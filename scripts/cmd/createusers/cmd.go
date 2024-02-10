@@ -10,8 +10,11 @@ import (
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/incomerepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/spf13/cobra"
 )
+
+var environment string
 
 var cmd = &cobra.Command{
 	Use: "create-users",
@@ -20,22 +23,13 @@ var cmd = &cobra.Command{
 
 func run(cmd *cobra.Command, args []string) {
 	ctx := context.Background()
-	cfg := config.Config{
-		Env:         "local",
-		ServiceName: "import-script",
-		Port:        "8080",
-		LogLevel:    "INFO",
-		Db: config.Db{
-			Host:         "localhost",
-			Port:         "5432",
-			Name:         "app",
-			User:         "root",
-			Password:     "root",
-			Type:         "postgres",
-			MaxIdleConns: 1,
-			MaxOpenConns: 1,
-		},
+
+	cfg := config.New(env.Environment(environment))
+	cfg.SetConfigPath("./internal/config/config.yml")
+	if err := cfg.LoadConfig(); err != nil {
+		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
+
 	database := db.New(&cfg)
 	groupRepo := grouprepo.NewPGRepository(database)
 	usersRepo := userrepo.NewPGRepository(database)
@@ -116,6 +110,10 @@ func run(cmd *cobra.Command, args []string) {
 	if err := database.Close(); err != nil {
 		fmt.Println(fmt.Errorf("error closing database %w", err))
 	}
+}
+
+func init() {
+	cmd.Flags().StringVarP(&environment, "env", "e", "local", "environment to run the script (local, dev, prod, etc)")
 }
 
 func Cmd() *cobra.Command {

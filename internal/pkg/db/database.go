@@ -31,7 +31,7 @@ type SQLDatabase struct {
 }
 
 func New(c *config.Config) Database {
-	db, err := sqlx.Open(c.Db.Type, c.DBConnectionURL())
+	db, err := sqlx.Open(c.Db.Type, c.DBConnectionString())
 	if err != nil {
 		log.Fatal("Failed to connect to database", err)
 	}
