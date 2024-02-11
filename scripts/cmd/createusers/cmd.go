@@ -70,6 +70,7 @@ func run(cmd *cobra.Command, args []string) {
 		ID:     incomeRepo.GetNextID(),
 		UserID: dan.ID,
 		Amount: 1000000,
+		Type:   entity.IncomeTypes.Salary,
 	})
 
 	if err := incomeRepo.Store(ctx, danIncome); err != nil {
@@ -101,6 +102,7 @@ func run(cmd *cobra.Command, args []string) {
 		ID:     incomeRepo.GetNextID(),
 		UserID: lu.ID,
 		Amount: 900000,
+		Type:   entity.IncomeTypes.Salary,
 	})
 
 	if err := incomeRepo.Store(ctx, luIncome); err != nil {
@@ -113,7 +115,7 @@ func run(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	cmd.Flags().StringVarP(&environment, "env", "e", "local", "environment to run the script (local, dev, prod, etc)")
+	cmd.Flags().StringVarP(&environment, "env", "e", "development", "environment to run the script (local, dev, prod, etc)")
 }
 
 func Cmd() *cobra.Command {
