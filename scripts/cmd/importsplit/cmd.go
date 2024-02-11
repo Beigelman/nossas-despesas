@@ -77,6 +77,7 @@ func run(cmd *cobra.Command, args []string) {
 			receiverRatio = int(math.Round(ratio * -100))
 			payerRatio = 100 - receiverRatio
 		}
+
 		splitRatio := vo.SplitRatio{
 			Payer:    payerRatio,
 			Receiver: receiverRatio,
@@ -117,86 +118,88 @@ func init() {
 	cmd.Flags().IntVarP(&danId, "dan-id", "d", 1, "dan id")
 	cmd.Flags().IntVarP(&luId, "lu-id", "l", 2, "lu id")
 	cmd.Flags().IntVarP(&groupId, "group-id", "g", 1, "group id")
-	cmd.Flags().StringVarP(&environment, "env", "e", "local", "environment to run the script (local, dev, prod, etc)")
+	cmd.Flags().StringVarP(&environment, "env", "e", "development", "environment to run the script (dev, stg, prd)")
 }
 
 func SplitCategoryToCategory(category string) int {
 	switch category {
 	case "Geral":
-		return 50
+		return 61
 	case "Mercado":
-		return 14
-	case "Jantar fora":
 		return 15
+	case "Jantar fora":
+		return 16
 	case "Táxi":
-		return 31
+		return 32
 	case "Seguro":
-		return 34
-	case "Hotel":
-		return 52
-	case "Filmes":
-		return 19
-	case "Bebidas alcoólicas":
-		return 17
-	case "Entretenimento - Outros":
-		return 26
-	case "Combustível":
-		return 27
-	case "Presentes":
-		return 39
-	case "Transporte - Outros":
 		return 35
-	case "Estacionamento":
+	case "Hotel":
+		return 54
+	case "Filmes":
+		return 20
+	case "Bebidas alcoólicas":
+		return 18
+	case "Entretenimento - Outros":
+		return 27
+	case "Combustível":
 		return 28
-	case "Casa - Outros":
-		return 13
-	case "Vida - Outros":
+	case "Presentes":
 		return 41
+	case "Transporte - Outros":
+		return 37
+	case "Estacionamento":
+		return 29
+	case "Casa - Outros":
+		return 14
+	case "Vida - Outros":
+		return 43
 	case "Produtos de limpeza":
-		return 12
+		return 13
 	case "Aluguel":
 		return 1
 	case "TV/Telefone/Internet":
 		return 6
 	case "Manutenção":
-		return 7
+		return 8
 	case "Eletricidade":
 		return 4
 	case "Aquecimento/gás":
 		return 5
 	case "Vestuário":
-		return 40
+		return 42
 	case "Despesas médicas":
 		return 48
 	case "Animais de estimação":
-		return 8
+		return 9
 	case "Móveis":
-		return 10
+		return 11
 	case "Carro":
-		return 35
+		return 37
 	case "Eletrônicos":
-		return 13
+		return 14
 	case "Comidas e bebidas - Outros":
-		return 18
+		return 19
 	case "Esportes":
-		return 36
-	case "Serviços":
-		return 11
-	case "Serviços públicos - Outros":
-		return 13
-	case "Ônibus/trem":
-		return 54
-	case "Avião":
-		return 51
-	case "Educação":
 		return 38
+	case "Serviços":
+		return 12
+	case "Serviços públicos - Outros":
+		return 14
+	case "Ônibus/trem":
+		return 31
+	case "Avião":
+		return 53
+	case "Educação":
+		return 40
 	case "Limpeza":
-		return 11
+		return 13
 	case "Música":
-		return 23
+		return 24
 	case "Jogos":
-		return 21
+		return 22
+	case "Impostos":
+		return 60
 	default:
-		return 50
+		return 61
 	}
 }
