@@ -29,6 +29,9 @@ func Router(
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
 	refreshAuthTokenHandler handler.RefreshAuthToken,
 	authMiddleware middleware.AuthMiddleware,
+	getExpensesPerCategoryHandler handler.GetExpensesPerCategory,
+	getExpensesPerPeriodHandler handler.GetExpensesPerPeriod,
+	getIncomesPerPeriodHandler handler.GetIncomesPerPeriod,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
@@ -71,5 +74,11 @@ func Router(
 		category.Get("/", getCategoriesHandler)
 		category.Post("/", createCategoryHandler)
 		category.Post("/group", createCategoryGroupHandler)
+		// Insights routes
+		insights := v1.Group("insights", authMiddleware)
+		insights.Get("/expenses", getExpensesPerPeriodHandler)
+		insights.Get("/expenses/category", getExpensesPerCategoryHandler)
+		insights.Get("/incomes", getIncomesPerPeriodHandler)
+
 	}
 }

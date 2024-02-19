@@ -1,0 +1,45 @@
+package handler
+
+import (
+	"fmt"
+	"github.com/Beigelman/ludaapi/internal/pkg/api"
+	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/ludaapi/internal/query"
+	"github.com/gofiber/fiber/v2"
+	"net/http"
+	"time"
+)
+
+type GetExpensesPerPeriod func(ctx *fiber.Ctx) error
+
+type GetExpensesPerPeriodReq struct {
+	Aggregate string    `query:"aggregate"`
+	StartDate time.Time `query:"start_date"`
+	EndDate   time.Time `query:"end_date"`
+}
+
+func NewGetExpensesPerPeriod(getExpensesPerCategory query.GetExpensesPerPeriod) GetExpensesPerPeriod {
+	return func(ctx *fiber.Ctx) error {
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid group id")
+		}
+
+		var params GetExpensesPerPeriodReq
+		if err := ctx.QueryParser(&params); err != nil {
+			return except.BadRequestError().SetInternal(err)
+		}
+
+		expensesPerPeriod, err := getExpensesPerCategory(ctx.Context(), query.GetExpensesPerPeriodInput{
+			GroupID:   groupID,
+			Aggregate: params.Aggregate,
+			StartDate: params.StartDate,
+			EndDate:   params.EndDate,
+		})
+		if err != nil {
+			return fmt.Errorf("query.GetExpensesPerPeriod: %w", err)
+		}
+
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse[[]query.ExpensesPerPeriod](http.StatusOK, expensesPerPeriod))
+	}
+}
