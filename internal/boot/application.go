@@ -73,4 +73,11 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, handler.NewGetCategories)
 	di.Provide(c, handler.NewCreateCategory)
 	di.Provide(c, handler.NewCreateCategoryGroup)
+	// Insights
+	di.Provide(c, query.NewGetExpensesPerPeriod)
+	di.Provide(c, query.NewGetExpensesPerCategory)
+	di.Provide(c, query.NewGetIncomesPerPeriod)
+	di.Provide(c, handler.NewGetExpensesPerPeriod)
+	di.Provide(c, handler.NewGetExpensesPerCategory)
+	di.Provide(c, handler.NewGetIncomesPerPeriod)
 })

@@ -1,7 +1,9 @@
-h1:BqZ/b6ySiMmhbTEcyhVWWuvVczi5P27ILlKkwoCdDac=
+h1:UlXlrLi99wEeha6HInheAqmcR5s07iW87e8su1g37Qg=
 20240121185311_init-setup.down.sql h1:q68rg4h0I72XM45LzVjA8/Km9tjyZ3kqX86wJzqBwW8=
 20240121185311_init-setup.up.sql h1:7Rx5l3DkCP9DtFb+M8m6odVqkIR8WmAJr0BZKNDp9/o=
 20240121185326_categories-seed.down.sql h1:IMy0s3czAyMmRwcw1zN+2KDHYrSVU8dR/1zFj1Eh464=
-20240121185326_categories-seed.up.sql h1:PX+d5kJOrY+ne0W8HG20lYO4eBurdI3iL4friX7JRuA=
-20240126180510_create-incomes-table.down.sql h1:NKqNdOvtTSQLuZHUbjBE9cxumGYtxjGqrx98KJPskdI=
-20240126180510_create-incomes-table.up.sql h1:ipZUKrDVBT1WdnrAGqFiFL6Zqnynkl4NY8tebYfBJeI=
+20240121185326_categories-seed.up.sql h1:91vyIsugyVibiN8mBl7ChiTIAcPJEsDy12eGJ6qjGv8=
+20240126180510_create-incomes-table.down.sql h1:6UHk5f9pjU1GUlgOulhrvhyo6pjiNq4cFYrdXZ1SDug=
+20240126180510_create-incomes-table.up.sql h1:LHVvMFSz3XBZp5iJA2Rko9GmCccwUsHnQeQm2J8IVEA=
+20240217230629_create-balance-categories.down.sql h1:PIOxU8Givn3l3ra7yev5q9oYvsJHflPyvVJa0vjYCpM=
+20240217230629_create-balance-categories.up.sql h1:QxS8BtWrrnN9jwj8T2hNZ/nErMjht8WrbqNB0s/3MF0=

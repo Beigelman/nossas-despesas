@@ -10,15 +10,16 @@ import (
 
 type (
 	ExpenseDetails struct {
-		ID          int                    `db:"id" json:"id"`
-		Name        string                 `db:"name" json:"name"`
-		Amount      float32                `db:"amount" json:"amount"`
-		Description string                 `db:"description" json:"description"`
-		CategoryID  int                    `db:"category_id" json:"category_id"`
-		PayerID     int                    `db:"payer_id" json:"payer_id"`
-		ReceiverID  int                    `db:"receiver_id" json:"receiver_id"`
-		SplitRatio  expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
-		CreatedAt   time.Time              `db:"created_at" json:"created_at"`
+		ID           int                    `db:"id" json:"id"`
+		Name         string                 `db:"name" json:"name"`
+		Amount       float32                `db:"amount" json:"amount"`
+		Description  string                 `db:"description" json:"description"`
+		CategoryID   int                    `db:"category_id" json:"category_id"`
+		CategoryIcon string                 `db:"category_icon" json:"category_icon"`
+		PayerID      int                    `db:"payer_id" json:"payer_id"`
+		ReceiverID   int                    `db:"receiver_id" json:"receiver_id"`
+		SplitRatio   expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
+		CreatedAt    time.Time              `db:"created_at" json:"created_at"`
 	}
 
 	GetGroupExpenses func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error)
@@ -42,15 +43,14 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
     				ex.amount_cents amount,
     				ex.description as description,
     				cat.id as category_id,
-    				payer.id as payer_id,
-    				receiver.id as receiver_id,
+					cat.icon as category_icon,
+    				ex.payer_id as payer_id,
+    				ex.receiver_id as receiver_id,
     				ex.split_ratio as split_ratio,
 					ex.created_at as created_at,
 					ex.deleted_at as deleted_at
 				from expenses ex
          		inner join categories cat on ex.category_id = cat.id
-         		inner join users payer on ex.payer_id = payer.id
-         		inner join users receiver on ex.receiver_id = receiver.id
 				where ex.group_id = $1
 				and ex.created_at < $2
 				order by ex.id desc, ex.version desc
