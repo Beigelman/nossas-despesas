@@ -61,7 +61,7 @@ func NewGetExpensesPerCategory(db db.Database) GetExpensesPerCategory {
 			inner join categories cat on b.category_id = cat.id
 			inner join category_groups cg on cg.id = cat.category_group_id
 			where b.deleted_at is null
-			and cg.name != 'Balanço'
+			and cg.deleted_at is null
 			and cat.deleted_at is null
 			group by 1, 2 
 			order by 2 desc;

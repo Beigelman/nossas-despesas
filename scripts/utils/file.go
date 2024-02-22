@@ -2,13 +2,10 @@ package utils
 
 import (
 	"encoding/csv"
-	"log"
 	"os"
 )
 
 func ReadCSVFile(filename string) ([][]string, error) {
-	log.Println("Open file:", filename)
-
 	csvFile, err := os.Open(filename)
 	defer csvFile.Close()
 

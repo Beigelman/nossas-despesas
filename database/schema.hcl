@@ -14,6 +14,10 @@ table "expenses" {
     type = bigint
     null = false
   }
+  column "refund_amount_cents" {
+    type = bigint
+    null = true
+  }
   column "description" {
     type = varchar(255)
     null = false

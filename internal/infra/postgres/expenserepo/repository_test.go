@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
 	"testing"
 	"time"
@@ -127,7 +128,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_Store() {
 		Description: "My Description",
 		PayerID:     s.payer.ID,
 		ReceiverID:  s.receiver.ID,
-		SplitRatio: entity.SplitRatio{
+		SplitRatio: vo.SplitRatio{
 			Payer:    50,
 			Receiver: 50,
 		},
@@ -148,7 +149,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByID() {
 		Description: "My Description",
 		PayerID:     s.payer.ID,
 		ReceiverID:  s.receiver.ID,
-		SplitRatio: entity.SplitRatio{
+		SplitRatio: vo.SplitRatio{
 			Payer:    50,
 			Receiver: 50,
 		},

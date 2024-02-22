@@ -50,7 +50,10 @@ func NewGetIncomesPerPeriod(db db.Database) GetIncomesPerPeriod {
 			      	and created_at >= $2
 			      	and created_at <= $3
 			)
-			select to_char(date_trunc('%s', b.created_at), '%s') as date, sum(amount) as amount from base b
+			select 
+				to_char(date_trunc('%s', b.created_at), '%s') as date, 
+				sum(amount) as amount 
+			from base b
 			where b.deleted_at is null
 			group by 1
 			order by 1;

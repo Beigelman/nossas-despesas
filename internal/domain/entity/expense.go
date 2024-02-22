@@ -12,14 +12,15 @@ type ExpenseID struct{ Value int }
 
 type Expense struct {
 	ddd.Entity[ExpenseID]
-	Name        string
-	Amount      int // Value in cents
-	Description string
-	GroupID     GroupID
-	CategoryID  CategoryID
-	SplitRatio  vo.SplitRatio
-	PayerID     UserID
-	ReceiverID  UserID
+	Name         string
+	Amount       int // Value in cents
+	RefundAmount *int
+	Description  string
+	GroupID      GroupID
+	CategoryID   CategoryID
+	SplitRatio   vo.SplitRatio
+	PayerID      UserID
+	ReceiverID   UserID
 }
 
 type ExpenseParams struct {
@@ -36,14 +37,15 @@ type ExpenseParams struct {
 }
 
 type ExpenseUpdateParams struct {
-	Name        *string
-	Amount      *int
-	Description *string
-	CategoryID  *CategoryID
-	SplitRatio  *vo.SplitRatio
-	PayerID     *UserID
-	ReceiverID  *UserID
-	CreatedAt   *time.Time
+	Name         *string
+	Amount       *int
+	RefundAmount *int
+	Description  *string
+	CategoryID   *CategoryID
+	SplitRatio   *vo.SplitRatio
+	PayerID      *UserID
+	ReceiverID   *UserID
+	CreatedAt    *time.Time
 }
 
 func NewExpense(p ExpenseParams) (*Expense, error) {
@@ -76,54 +78,33 @@ func NewExpense(p ExpenseParams) (*Expense, error) {
 }
 
 func (e *Expense) Update(p ExpenseUpdateParams) error {
-	e.Name = func() string {
-		if p.Name != nil {
-			return *p.Name
-		}
-		return e.Name
-	}()
-	e.Amount = func() int {
-		if p.Amount != nil {
-			return *p.Amount
-		}
-		return e.Amount
-	}()
-	e.Description = func() string {
-		if p.Description != nil {
-			return *p.Description
-		}
-		return e.Description
-	}()
-	e.CategoryID = func() CategoryID {
-		if p.CategoryID != nil {
-			return *p.CategoryID
-		}
-		return e.CategoryID
-	}()
-	e.SplitRatio = func() vo.SplitRatio {
-		if p.SplitRatio != nil {
-			return *p.SplitRatio
-		}
-		return e.SplitRatio
-	}()
-	e.PayerID = func() UserID {
-		if p.PayerID != nil {
-			return *p.PayerID
-		}
-		return e.PayerID
-	}()
-	e.ReceiverID = func() UserID {
-		if p.ReceiverID != nil {
-			return *p.ReceiverID
-		}
-		return e.ReceiverID
-	}()
-	e.CreatedAt = func() time.Time {
-		if p.CreatedAt != nil {
-			return *p.CreatedAt
-		}
-		return e.CreatedAt
-	}()
+	if p.Name != nil {
+		e.Name = *p.Name
+	}
+	if p.Amount != nil {
+		e.Amount = *p.Amount
+	}
+	if p.RefundAmount != nil {
+		e.RefundAmount = p.RefundAmount
+	}
+	if p.Description != nil {
+		e.Description = *p.Description
+	}
+	if p.CategoryID != nil {
+		e.CategoryID = *p.CategoryID
+	}
+	if p.SplitRatio != nil {
+		e.SplitRatio = *p.SplitRatio
+	}
+	if p.PayerID != nil {
+		e.PayerID = *p.PayerID
+	}
+	if p.ReceiverID != nil {
+		e.ReceiverID = *p.ReceiverID
+	}
+	if p.CreatedAt != nil {
+		e.CreatedAt = *p.CreatedAt
+	}
 	e.UpdatedAt = time.Now()
 	e.Version++
 
@@ -144,6 +125,10 @@ func (e *Expense) Delete() {
 func (e *Expense) validate() error {
 	if e.SplitRatio.Payer+e.SplitRatio.Receiver != 100 || e.SplitRatio.Payer > 99 {
 		return ErrInvalidSplitRatio
+	}
+
+	if e.RefundAmount != nil && *e.RefundAmount > e.Amount {
+		return ErrInvalidRedfundAmount
 	}
 
 	return nil

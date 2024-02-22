@@ -61,9 +61,11 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, usecase.NewCreateExpense)
 	di.Provide(c, usecase.NewUpdateExpense)
 	di.Provide(c, usecase.NewDeleteExpense)
+	di.Provide(c, query.NewGetExpenseDetails)
 	di.Provide(c, handler.NewCreateExpense)
 	di.Provide(c, handler.NewUpdateExpense)
 	di.Provide(c, handler.NewDeleteExpense)
+	di.Provide(c, handler.NewGetExpenseDetails)
 	// category
 	di.Provide(c, categoryrepo.NewPGRepository)
 	di.Provide(c, categorygrouprepo.NewPGRepository)

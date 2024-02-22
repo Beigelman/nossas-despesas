@@ -12,15 +12,16 @@ import (
 
 type (
 	UpdateExpenseParams struct {
-		ID          entity.ExpenseID
-		Name        *string
-		Amount      *int
-		Description *string
-		CategoryID  *entity.CategoryID
-		SplitType   *vo.SplitType
-		PayerID     *entity.UserID
-		ReceiverID  *entity.UserID
-		CreatedAt   *time.Time
+		ID           entity.ExpenseID
+		Name         *string
+		Amount       *int
+		RefundAmount *int
+		Description  *string
+		CategoryID   *entity.CategoryID
+		SplitType    *vo.SplitType
+		PayerID      *entity.UserID
+		ReceiverID   *entity.UserID
+		CreatedAt    *time.Time
 	}
 	UpdateExpense func(ctx context.Context, p UpdateExpenseParams) (*entity.Expense, error)
 )
@@ -123,14 +124,15 @@ func NewUpdateExpense(
 		}
 
 		if err := expense.Update(entity.ExpenseUpdateParams{
-			Name:        p.Name,
-			Amount:      p.Amount,
-			Description: p.Description,
-			CategoryID:  p.CategoryID,
-			SplitRatio:  &splitRatio,
-			PayerID:     p.PayerID,
-			ReceiverID:  p.ReceiverID,
-			CreatedAt:   p.CreatedAt,
+			Name:         p.Name,
+			Amount:       p.Amount,
+			RefundAmount: p.RefundAmount,
+			Description:  p.Description,
+			CategoryID:   p.CategoryID,
+			SplitRatio:   &splitRatio,
+			PayerID:      p.PayerID,
+			ReceiverID:   p.ReceiverID,
+			CreatedAt:    p.CreatedAt,
 		}); err != nil {
 			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("expense.Update: %w", err))
 		}
