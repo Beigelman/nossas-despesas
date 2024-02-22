@@ -4,20 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/Beigelman/ludaapi/scripts/utils"
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
-	"log"
-	"math"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var cmd = &cobra.Command{
@@ -44,75 +36,22 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		panic(fmt.Errorf("error reading csv file %w", err))
 	}
-	expensesCreated := 0
+
+	bar := progressbar.Default(int64(len(file)))
 	for _, line := range file {
-		//Data			Descrição		Categoria	Custo		Luíza Brito		Daniel Beigelman
-		//2023-06-01	Ajuste maio		Geral		255.64		-255.64			255.64
-		date, err := time.Parse("2006-01-02", line[0])
+		expense, err := extractExpense(line, expensesRepo.GetNextID())
 		if err != nil {
-			panic(fmt.Errorf("error parsing date: %w", err))
+			fmt.Println(fmt.Errorf("error extracting expense %w", err))
 		}
-		name := line[1]
-		category := SplitCategoryToCategory(line[2])
-		amount, err := strconv.ParseFloat(line[3], 64)
-		if err != nil {
-			panic(fmt.Errorf("error parsing amount %w", err))
-		}
-		amountCents := int(100 * amount)
-		danShare, err := strconv.ParseFloat(line[6], 64)
-		if err != nil {
-			log.Printf("error parsing dan share %v", err)
-			panic(err)
-		}
-
-		ratio := danShare / amount
-		var payerRatio, receiverRatio, payer, receiver int
-
-		if ratio > 0 {
-			payer = danId
-			receiver = luId
-			receiverRatio = int(math.Round(ratio * 100))
-			payerRatio = 100 - receiverRatio
-		} else {
-			payer = luId
-			receiver = danId
-			receiverRatio = int(math.Round(ratio * -100))
-			payerRatio = 100 - receiverRatio
-		}
-
-		splitRatio := vo.SplitRatio{
-			Payer:    payerRatio,
-			Receiver: receiverRatio,
-		}
-
-		regex, _ := regexp.Compile(`reembolso|cashback|ajuste`)
-		createdAt := date.Add(time.Duration(int(rand.Float64()*86400)) * time.Millisecond)
-		description := "Imported from splitwise"
-		if regex.FindAllString(strings.ToLower(name), -1) != nil {
-			createdAt = time.Time{}
-			description = fmt.Sprintf("Imported from splitwise. Essa é uma transação legado que tem o objetivo de manter o balanço das contas. Data original: %s", date.Format("2006-01-02"))
-		}
-
-		expense, err := entity.NewExpense(entity.ExpenseParams{
-			ID:          expensesRepo.GetNextID(),
-			Name:        name,
-			Amount:      amountCents,
-			Description: description,
-			GroupID:     entity.GroupID{Value: groupId},
-			CategoryID:  entity.CategoryID{Value: category},
-			SplitRatio:  splitRatio,
-			PayerID:     entity.UserID{Value: payer},
-			ReceiverID:  entity.UserID{Value: receiver},
-			CreatedAt:   &createdAt,
-		})
 
 		if err := expensesRepo.Store(ctx, expense); err != nil {
 			fmt.Println(fmt.Errorf("error storing expense %w", err))
 		}
-		expensesCreated++
-	}
 
-	fmt.Println("Created", expensesCreated, "expenses")
+		if err := bar.Add(1); err != nil {
+			fmt.Println(fmt.Errorf("error incrementing progress bar %w", err))
+		}
+	}
 
 	if err := database.Close(); err != nil {
 		fmt.Println(fmt.Errorf("error closing database %w", err))

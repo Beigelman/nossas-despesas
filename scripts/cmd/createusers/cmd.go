@@ -14,6 +14,7 @@ import (
 )
 
 var environment string
+var password string
 
 var cmd = &cobra.Command{
 	Use: "create-users",
@@ -57,7 +58,7 @@ func run(cmd *cobra.Command, args []string) {
 	danCreds, _ := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 		ID:       authRepo.GetNextID(),
 		Email:    dan.Email,
-		Password: "12345678",
+		Password: password,
 	})
 
 	if err := authRepo.Store(ctx, danCreds); err != nil {
@@ -78,7 +79,7 @@ func run(cmd *cobra.Command, args []string) {
 	luCreds, _ := entity.NewCredentialAuth(entity.CredentialsAuthParams{
 		ID:       authRepo.GetNextID(),
 		Email:    lu.Email,
-		Password: "12345678",
+		Password: password,
 	})
 
 	if err := authRepo.Store(ctx, luCreds); err != nil {
@@ -92,6 +93,7 @@ func run(cmd *cobra.Command, args []string) {
 
 func init() {
 	cmd.Flags().StringVarP(&environment, "env", "e", "development", "environment to run the script (local, dev, prod, etc)")
+	cmd.Flags().StringVarP(&password, "password", "p", "1234", "password for the users created")
 }
 
 func Cmd() *cobra.Command {

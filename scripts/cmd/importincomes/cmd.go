@@ -9,6 +9,7 @@ import (
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
 	"github.com/Beigelman/ludaapi/scripts/utils"
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 	"strconv"
 	"time"
@@ -38,7 +39,7 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		panic(fmt.Errorf("error reading csv file %w", err))
 	}
-	incomesCreated := 0
+	bar := progressbar.Default(int64(len(file)))
 	for _, line := range file {
 		//Data			Daniel Beigelman		Luíza Brito
 		//2023-06-01	100000					12000
@@ -83,10 +84,10 @@ func run(cmd *cobra.Command, args []string) {
 			fmt.Println(fmt.Errorf("error storing expense %w", err))
 		}
 
-		incomesCreated += 2
+		if err := bar.Add(1); err != nil {
+			fmt.Println(fmt.Errorf("error incrementing progress bar %w", err))
+		}
 	}
-
-	fmt.Println("Created", incomesCreated, "incomes")
 
 	if err := database.Close(); err != nil {
 		fmt.Println(fmt.Errorf("error closing database %w", err))
