@@ -57,12 +57,9 @@ func NewGetExpensesPerPeriod(db db.Database) GetExpensesPerPeriod {
 			select 
 				to_char(date_trunc('%s', b.created_at), '%s') as date, 
 				sum(amount) as amount, 
-				count(case when cg.name = 'Balanço' then 0 else 1 end) as quantity 
+				count(1) as quantity 
 			from base b
-			inner join categories cat on b.category_id = cat.id
-			inner join category_groups cg on cg.id = cat.category_group_id
 			where b.deleted_at is null
-			and cg.name != 'Balanço'
 			group by 1
 			order by 1;
 		`, trunc, format)

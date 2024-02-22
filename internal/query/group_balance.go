@@ -23,7 +23,7 @@ func NewGetGroupBalance(db db.Database) GetGroupBalance {
 			WITH base AS (
 			    SELECT
 			        distinct on (id) id as id,
-			        amount_cents,
+			        case when refund_amount_cents is null then amount_cents else amount_cents - refund_amount_cents end as amount_cents,
 			        group_id,
 			        split_ratio,
 			        payer_id,

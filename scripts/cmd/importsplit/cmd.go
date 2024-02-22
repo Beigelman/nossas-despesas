@@ -14,7 +14,9 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -57,7 +59,7 @@ func run(cmd *cobra.Command, args []string) {
 			panic(fmt.Errorf("error parsing amount %w", err))
 		}
 		amountCents := int(100 * amount)
-		danShare, err := strconv.ParseFloat(line[5], 64)
+		danShare, err := strconv.ParseFloat(line[6], 64)
 		if err != nil {
 			log.Printf("error parsing dan share %v", err)
 			panic(err)
@@ -83,18 +85,25 @@ func run(cmd *cobra.Command, args []string) {
 			Receiver: receiverRatio,
 		}
 
-		spiceDate := date.Add(time.Duration(int(rand.Float64()*86400)) * time.Millisecond)
+		regex, _ := regexp.Compile(`reembolso|cashback|ajuste`)
+		createdAt := date.Add(time.Duration(int(rand.Float64()*86400)) * time.Millisecond)
+		description := "Imported from splitwise"
+		if regex.FindAllString(strings.ToLower(name), -1) != nil {
+			createdAt = time.Time{}
+			description = fmt.Sprintf("Imported from splitwise. Essa é uma transação legado que tem o objetivo de manter o balanço das contas. Data original: %s", date.Format("2006-01-02"))
+		}
+
 		expense, err := entity.NewExpense(entity.ExpenseParams{
 			ID:          expensesRepo.GetNextID(),
 			Name:        name,
 			Amount:      amountCents,
-			Description: "imported from splitwise",
+			Description: description,
 			GroupID:     entity.GroupID{Value: groupId},
 			CategoryID:  entity.CategoryID{Value: category},
 			SplitRatio:  splitRatio,
 			PayerID:     entity.UserID{Value: payer},
 			ReceiverID:  entity.UserID{Value: receiver},
-			CreatedAt:   &spiceDate,
+			CreatedAt:   &createdAt,
 		})
 
 		if err := expensesRepo.Store(ctx, expense); err != nil {
@@ -119,87 +128,4 @@ func init() {
 	cmd.Flags().IntVarP(&luId, "lu-id", "l", 2, "lu id")
 	cmd.Flags().IntVarP(&groupId, "group-id", "g", 1, "group id")
 	cmd.Flags().StringVarP(&environment, "env", "e", "development", "environment to run the script (dev, stg, prd)")
-}
-
-func SplitCategoryToCategory(category string) int {
-	switch category {
-	case "Geral":
-		return 61
-	case "Mercado":
-		return 15
-	case "Jantar fora":
-		return 16
-	case "Táxi":
-		return 32
-	case "Seguro":
-		return 35
-	case "Hotel":
-		return 54
-	case "Filmes":
-		return 20
-	case "Bebidas alcoólicas":
-		return 18
-	case "Entretenimento - Outros":
-		return 27
-	case "Combustível":
-		return 28
-	case "Presentes":
-		return 41
-	case "Transporte - Outros":
-		return 37
-	case "Estacionamento":
-		return 29
-	case "Casa - Outros":
-		return 14
-	case "Vida - Outros":
-		return 43
-	case "Produtos de limpeza":
-		return 13
-	case "Aluguel":
-		return 1
-	case "TV/Telefone/Internet":
-		return 6
-	case "Manutenção":
-		return 8
-	case "Eletricidade":
-		return 4
-	case "Aquecimento/gás":
-		return 5
-	case "Vestuário":
-		return 42
-	case "Despesas médicas":
-		return 48
-	case "Animais de estimação":
-		return 9
-	case "Móveis":
-		return 11
-	case "Carro":
-		return 37
-	case "Eletrônicos":
-		return 14
-	case "Comidas e bebidas - Outros":
-		return 19
-	case "Esportes":
-		return 38
-	case "Serviços":
-		return 12
-	case "Serviços públicos - Outros":
-		return 14
-	case "Ônibus/trem":
-		return 31
-	case "Avião":
-		return 53
-	case "Educação":
-		return 40
-	case "Limpeza":
-		return 13
-	case "Música":
-		return 24
-	case "Jogos":
-		return 22
-	case "Impostos":
-		return 60
-	default:
-		return 61
-	}
 }

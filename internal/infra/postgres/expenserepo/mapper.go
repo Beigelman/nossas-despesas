@@ -9,10 +9,16 @@ import (
 	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
 )
 
-func toEntity(model ExpenseModel) *entity.Expense {
+func ToEntity(model ExpenseModel) *entity.Expense {
 	var deletedAt *time.Time
 	if model.DeletedAt.Valid {
 		deletedAt = &model.DeletedAt.Time
+	}
+
+	var refundAmount *int
+	if model.RefundAmountCents.Valid {
+		parsedRefundAmount := int(model.RefundAmountCents.Int64)
+		refundAmount = &parsedRefundAmount
 	}
 
 	return &entity.Expense{
@@ -23,11 +29,12 @@ func toEntity(model ExpenseModel) *entity.Expense {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
-		Name:        model.Name,
-		Amount:      model.AmountCents,
-		Description: model.Description,
-		GroupID:     entity.GroupID{Value: model.GroupID},
-		CategoryID:  entity.CategoryID{Value: model.CategoryID},
+		Name:         model.Name,
+		Amount:       model.AmountCents,
+		RefundAmount: refundAmount,
+		Description:  model.Description,
+		GroupID:      entity.GroupID{Value: model.GroupID},
+		CategoryID:   entity.CategoryID{Value: model.CategoryID},
 		SplitRatio: vo.SplitRatio{
 			Payer:    model.SplitRatio.Payer,
 			Receiver: model.SplitRatio.Receiver,
@@ -37,21 +44,25 @@ func toEntity(model ExpenseModel) *entity.Expense {
 	}
 }
 
-func toModel(entity *entity.Expense) ExpenseModel {
+func ToModel(entity *entity.Expense) ExpenseModel {
 	var deletedAt sql.NullTime
 	if entity.DeletedAt != nil {
 		deletedAt = sql.NullTime{Time: *entity.DeletedAt, Valid: true}
-	} else {
-		deletedAt = sql.NullTime{Time: time.Time{}, Valid: false}
+	}
+
+	var refundAmount sql.NullInt64
+	if entity.RefundAmount != nil {
+		refundAmount = sql.NullInt64{Int64: int64(*entity.RefundAmount), Valid: true}
 	}
 
 	return ExpenseModel{
-		ID:          entity.ID.Value,
-		Name:        entity.Name,
-		AmountCents: entity.Amount,
-		Description: entity.Description,
-		GroupID:     entity.GroupID.Value,
-		CategoryID:  entity.CategoryID.Value,
+		ID:                entity.ID.Value,
+		Name:              entity.Name,
+		AmountCents:       entity.Amount,
+		RefundAmountCents: refundAmount,
+		Description:       entity.Description,
+		GroupID:           entity.GroupID.Value,
+		CategoryID:        entity.CategoryID.Value,
 		SplitRatio: SplitRatio{
 			Payer:    entity.SplitRatio.Payer,
 			Receiver: entity.SplitRatio.Receiver,

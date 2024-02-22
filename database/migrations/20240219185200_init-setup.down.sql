@@ -1,3 +1,5 @@
+-- reverse: create "incomes" table
+DROP TABLE "incomes";
 -- reverse: create "expenses" table
 DROP TABLE "expenses";
 -- reverse: create "groups" table
@@ -14,5 +16,7 @@ DROP TABLE "authentications";
 DROP INDEX "email_unique_idx";
 -- reverse: create "users" table
 DROP TABLE "users";
+-- reverse: create enum type "income_type"
+DROP TYPE "income_type";
 -- reverse: create enum type "authentication_type"
 DROP TYPE "authentication_type";

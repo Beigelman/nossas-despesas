@@ -28,8 +28,9 @@ func NewGetGroupMonthlyIncome(db db.Database) GetGroupMonthlyIncome {
 			FROM incomes
 			WHERE user_id IN (SELECT user_id FROM groups WHERE id = $1)
 			AND extract(month from created_at) = $2
+			AND extract(year from created_at) = $3
 			AND deleted_at is null
-		`, groupID, date.Month()); err != nil {
+		`, groupID, date.Month(), date.Year()); err != nil {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}
 

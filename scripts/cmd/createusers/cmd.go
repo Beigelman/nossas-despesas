@@ -7,7 +7,6 @@ import (
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/authrepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/incomerepo"
 	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
@@ -34,7 +33,6 @@ func run(cmd *cobra.Command, args []string) {
 	groupRepo := grouprepo.NewPGRepository(database)
 	usersRepo := userrepo.NewPGRepository(database)
 	authRepo := authrepo.NewPGRepository(database)
-	incomeRepo := incomerepo.NewPGRepository(database)
 
 	group := entity.NewGroup(entity.GroupParams{
 		ID:   groupRepo.GetNextID(),
@@ -66,17 +64,6 @@ func run(cmd *cobra.Command, args []string) {
 		panic(fmt.Errorf("error saving user credentials: %w", err))
 	}
 
-	danIncome := entity.NewIncome(entity.IncomeParams{
-		ID:     incomeRepo.GetNextID(),
-		UserID: dan.ID,
-		Amount: 1000000,
-		Type:   entity.IncomeTypes.Salary,
-	})
-
-	if err := incomeRepo.Store(ctx, danIncome); err != nil {
-		panic(fmt.Errorf("error saving income: %w", err))
-	}
-
 	lu := entity.NewUser(entity.UserParams{
 		ID:      usersRepo.GetNextID(),
 		Name:    "Luíza Brito",
@@ -96,17 +83,6 @@ func run(cmd *cobra.Command, args []string) {
 
 	if err := authRepo.Store(ctx, luCreds); err != nil {
 		panic(fmt.Errorf("error saving user credentials: %w", err))
-	}
-
-	luIncome := entity.NewIncome(entity.IncomeParams{
-		ID:     incomeRepo.GetNextID(),
-		UserID: lu.ID,
-		Amount: 900000,
-		Type:   entity.IncomeTypes.Salary,
-	})
-
-	if err := incomeRepo.Store(ctx, luIncome); err != nil {
-		panic(fmt.Errorf("error saving income: %w", err))
 	}
 
 	if err := database.Close(); err != nil {

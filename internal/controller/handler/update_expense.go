@@ -19,14 +19,15 @@ type (
 	UpdateExpense func(ctx *fiber.Ctx) error
 
 	UpdateExpenseRequest struct {
-		Name        *string    `json:"name"`
-		Amount      *int       `json:"amount"`
-		Description *string    `json:"description"`
-		CategoryID  *int       `json:"category_id"`
-		SplitType   *string    `json:"split_type" validate:"omitempty,oneof=equal proportional transfer"`
-		PayerID     *int       `json:"payer_id"`
-		ReceiverID  *int       `json:"receiver_id"`
-		CreatedAt   *time.Time `json:"created_at"`
+		Name         *string    `json:"name"`
+		Amount       *int       `json:"amount"`
+		RefundAmount *int       `json:"refund_amount"`
+		Description  *string    `json:"description"`
+		CategoryID   *int       `json:"category_id"`
+		SplitType    *string    `json:"split_type" validate:"omitempty,oneof=equal proportional transfer"`
+		PayerID      *int       `json:"payer_id"`
+		ReceiverID   *int       `json:"receiver_id"`
+		CreatedAt    *time.Time `json:"created_at"`
 	}
 
 	UpdateExpenseResponse struct {
@@ -56,10 +57,11 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 		}
 
 		expense, err := updateExpense(ctx.Context(), usecase.UpdateExpenseParams{
-			ID:          entity.ExpenseID{Value: expenseID},
-			Name:        req.Name,
-			Amount:      req.Amount,
-			Description: req.Description,
+			ID:           entity.ExpenseID{Value: expenseID},
+			Name:         req.Name,
+			Amount:       req.Amount,
+			RefundAmount: req.RefundAmount,
+			Description:  req.Description,
 			CategoryID: func() *entity.CategoryID {
 				if req.CategoryID != nil {
 					return &entity.CategoryID{Value: *req.CategoryID}

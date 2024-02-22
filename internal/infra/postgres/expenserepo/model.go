@@ -9,19 +9,20 @@ import (
 )
 
 type ExpenseModel struct {
-	ID          int          `db:"id"`
-	Name        string       `db:"name"`
-	AmountCents int          `db:"amount_cents"`
-	Description string       `db:"description"`
-	GroupID     int          `db:"group_id"`
-	CategoryID  int          `db:"category_id"`
-	SplitRatio  SplitRatio   `db:"split_ratio"`
-	PayerID     int          `db:"payer_id"`
-	ReceiverID  int          `db:"receiver_id"`
-	CreatedAt   time.Time    `db:"created_at"`
-	UpdatedAt   time.Time    `db:"updated_at"`
-	DeletedAt   sql.NullTime `db:"deleted_at"`
-	Version     int          `db:"version"`
+	ID                int           `db:"id"`
+	Name              string        `db:"name"`
+	AmountCents       int           `db:"amount_cents"`
+	RefundAmountCents sql.NullInt64 `db:"refund_amount_cents"`
+	Description       string        `db:"description"`
+	GroupID           int           `db:"group_id"`
+	CategoryID        int           `db:"category_id"`
+	SplitRatio        SplitRatio    `db:"split_ratio"`
+	PayerID           int           `db:"payer_id"`
+	ReceiverID        int           `db:"receiver_id"`
+	CreatedAt         time.Time     `db:"created_at"`
+	UpdatedAt         time.Time     `db:"updated_at"`
+	DeletedAt         sql.NullTime  `db:"deleted_at"`
+	Version           int           `db:"version"`
 }
 
 type SplitRatio struct {

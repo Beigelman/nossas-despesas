@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"time"
 
 	"github.com/Beigelman/ludaapi/internal/pkg/env"
@@ -57,7 +58,7 @@ func NewTestConfig(dbPort, dbHost, dbType string) Config {
 			User:          "root",
 			Password:      "root",
 			Type:          dbType,
-			MigrationPath: "file:///Users/danielbeigelman/mydev/go-luda/server/database/migrations",
+			MigrationPath: os.Getenv("MIGRATION_PATH"),
 			MaxOpenConns:  4,
 		},
 	}

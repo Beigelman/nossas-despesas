@@ -1,6 +1,11 @@
+# docker
 db:
 	docker compose up db -d
+# Run
+dev:
+	ENV=development go run main.go
 
+# Migrations
 migrate-diff:
 	atlas migrate diff $(name) -c file://database/atlas.hcl --env local
 
@@ -21,9 +26,7 @@ migrate-down:
 migrate-force:
 	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" force $(version)
 
-dev:
-	ENV=development go run main.go
-
+# Tests
 mock:
 	mockery
 
@@ -40,12 +43,16 @@ e2e:
 
 test: unit integration e2e
 
-import-split:
-	go run ./scripts/main.go import-from-split-wize
-
+# Scripts
 create-users:
 	go run ./scripts/main.go create-users
 
-reset-app: db migrate-down migrate-up create-users import-split
+import-split:
+	go run ./scripts/main.go import-from-split-wize
+
+import-incomes:
+	go run ./scripts/main.go import-incomes
+
+reset-app: db migrate-down migrate-up create-users import-incomes import-split
 
 

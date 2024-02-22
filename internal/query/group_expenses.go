@@ -3,25 +3,11 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/ludaapi/internal/pkg/db"
 	"time"
 )
 
 type (
-	ExpenseDetails struct {
-		ID           int                    `db:"id" json:"id"`
-		Name         string                 `db:"name" json:"name"`
-		Amount       float32                `db:"amount" json:"amount"`
-		Description  string                 `db:"description" json:"description"`
-		CategoryID   int                    `db:"category_id" json:"category_id"`
-		CategoryIcon string                 `db:"category_icon" json:"category_icon"`
-		PayerID      int                    `db:"payer_id" json:"payer_id"`
-		ReceiverID   int                    `db:"receiver_id" json:"receiver_id"`
-		SplitRatio   expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
-		CreatedAt    time.Time              `db:"created_at" json:"created_at"`
-	}
-
 	GetGroupExpenses func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error)
 
 	GetGroupExpensesInput struct {
@@ -41,13 +27,16 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
     				distinct on (ex.id) ex.id as id,
     				ex.name as name,
     				ex.amount_cents amount,
+    				ex.refund_amount_cents as refund_amount,
     				ex.description as description,
+    				ex.group_id as group_id,
     				cat.id as category_id,
 					cat.icon as category_icon,
     				ex.payer_id as payer_id,
     				ex.receiver_id as receiver_id,
     				ex.split_ratio as split_ratio,
 					ex.created_at as created_at,
+					ex.updated_at as updated_at,
 					ex.deleted_at as deleted_at
 				from expenses ex
          		inner join categories cat on ex.category_id = cat.id
@@ -55,7 +44,7 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 				and ex.created_at < $2
 				order by ex.id desc, ex.version desc
 			)
-			select id, name, amount, description, category_id, payer_id, receiver_id, split_ratio, created_at from base b
+			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, created_at, updated_at, deleted_at from base b
 			where b.deleted_at is null
 			order by b.created_at desc
 			limit $3

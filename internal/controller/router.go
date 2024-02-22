@@ -32,6 +32,7 @@ func Router(
 	getExpensesPerCategoryHandler handler.GetExpensesPerCategory,
 	getExpensesPerPeriodHandler handler.GetExpensesPerPeriod,
 	getIncomesPerPeriodHandler handler.GetIncomesPerPeriod,
+	getExpenseDetailsHandler handler.GetExpenseDetails,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
@@ -62,6 +63,7 @@ func Router(
 		// Expense routes
 		expense := v1.Group("expense", authMiddleware)
 		expense.Post("/", createExpenseHandler)
+		expense.Get("/:expense_id/details", getExpenseDetailsHandler)
 		expense.Patch("/:expense_id", updateExpenseHandler)
 		expense.Delete("/:expense_id", deleteExpenseHandler)
 		// Income routes

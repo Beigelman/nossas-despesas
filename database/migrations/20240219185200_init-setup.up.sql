@@ -1,5 +1,7 @@
 -- create enum type "authentication_type"
 CREATE TYPE "authentication_type" AS ENUM ('credentials', 'google');
+-- create enum type "income_type"
+CREATE TYPE "income_type" AS ENUM ('salary', 'benefit', 'vacation', 'thirteenth_salary', 'other');
 -- create "users" table
 CREATE TABLE "users" (
   "id" bigserial NOT NULL,
@@ -70,6 +72,7 @@ CREATE TABLE "expenses" (
   "id" bigserial NOT NULL,
   "name" character varying(255) NOT NULL,
   "amount_cents" bigint NOT NULL,
+  "refund_amount_cents" bigint NULL,
   "description" character varying(255) NOT NULL,
   "group_id" bigint NOT NULL,
   "category_id" bigint NOT NULL,
@@ -85,4 +88,17 @@ CREATE TABLE "expenses" (
   CONSTRAINT "group_id_fk" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "payer_id_fk" FOREIGN KEY ("payer_id") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "receiver_id_fk" FOREIGN KEY ("receiver_id") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+-- create "incomes" table
+CREATE TABLE "incomes" (
+  "id" bigserial NOT NULL,
+  "user_id" bigint NOT NULL,
+  "amount_cents" bigint NOT NULL,
+  "type" "income_type" NOT NULL,
+  "created_at" timestamptz NOT NULL,
+  "updated_at" timestamptz NOT NULL,
+  "deleted_at" timestamptz NULL,
+  "version" integer NOT NULL,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "income_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
