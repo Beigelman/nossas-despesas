@@ -13,6 +13,7 @@ type (
 	IncomesPerPeriod struct {
 		Date   string `db:"date" json:"date"`
 		Amount int    `db:"amount" json:"amount"`
+		Count  int    `db:"quantity" json:"quantity"`
 	}
 
 	GetIncomesPerPeriodInput struct {
@@ -52,7 +53,8 @@ func NewGetIncomesPerPeriod(db db.Database) GetIncomesPerPeriod {
 			)
 			select 
 				to_char(date_trunc('%s', b.created_at), '%s') as date, 
-				sum(amount) as amount 
+				sum(amount) as amount,
+				count(1) as quantity
 			from base b
 			where b.deleted_at is null
 			group by 1
