@@ -93,7 +93,7 @@ func run(cmd *cobra.Command, args []string) {
 
 func init() {
 	cmd.Flags().StringVarP(&environment, "env", "e", "development", "environment to run the script (local, dev, prod, etc)")
-	cmd.Flags().StringVarP(&password, "password", "p", "1234", "password for the users created")
+	cmd.Flags().StringVarP(&password, "password", "p", "12345678", "password for the users created")
 }
 
 func Cmd() *cobra.Command {
