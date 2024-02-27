@@ -17,13 +17,13 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
       - name: Set up Go
         uses: 'actions/setup-go@v5'
         with:
           go-version: '1.21'
-
-      - name: Check out code
-        uses: actions/checkout@v4
 
       - name: Run tests
         run: make test
@@ -43,10 +43,9 @@ jobs:
 
       - name: Google Auth
         id: auth
-        uses: 'google-github-actions/auth@v2'
+        uses: 'google-github-actions/auth@v0'
         with:
-          project_id: ${{ env.PROJECT_ID }}
-          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+          credentials_json: '${{ secrets.SA_CREDENTIALS }}'
 
       - name: Docker Auth
         id: docker-auth
