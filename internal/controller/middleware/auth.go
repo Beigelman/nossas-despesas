@@ -11,7 +11,7 @@ type AuthMiddleware func(ctx *fiber.Ctx) error
 
 func NewAuthMiddleware(tokenProvider service.TokenProvider) AuthMiddleware {
 	return func(ctx *fiber.Ctx) error {
-		bearerToken := strings.Split(ctx.GetReqHeaders()["Authorization"], " ")
+		bearerToken := strings.Split(ctx.GetReqHeaders()["Authorization"][0], " ")
 
 		if len(bearerToken) != 2 {
 			return except.UnauthorizedError("invalid jwt format")
