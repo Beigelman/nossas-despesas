@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/Beigelman/ludaapi/internal/controller/handler"
 	"github.com/Beigelman/ludaapi/internal/domain/entity"
+	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
 	"github.com/Beigelman/ludaapi/internal/pkg/api"
 	"github.com/Beigelman/ludaapi/internal/pkg/except"
 	mockusecase "github.com/Beigelman/ludaapi/internal/tests/mocks/usecase"
@@ -31,15 +32,9 @@ func TestCreateExpenseHandler(t *testing.T) {
 		Amount:      100,
 		Description: "My first expense",
 		CategoryID:  1,
-		SplitRatio: struct {
-			Payer    int `json:"payer" validate:"required"`
-			Receiver int `json:"receiver" validate:"required"`
-		}{
-			Payer:    50,
-			Receiver: 50,
-		},
-		PayerID:    1,
-		ReceiverID: 1,
+		SplitType:   "equal",
+		PayerID:     1,
+		ReceiverID:  1,
 	}
 
 	newExpense, _ := entity.NewExpense(entity.ExpenseParams{
@@ -49,7 +44,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		Description: "My first expense",
 		GroupID:     entity.GroupID{Value: 1},
 		CategoryID:  entity.CategoryID{Value: 1},
-		SplitRatio:  entity.SplitRatio{Payer: 50, Receiver: 50},
+		SplitRatio:  vo.SplitRatio{Payer: 50, Receiver: 50},
 		PayerID:     entity.UserID{Value: 1},
 		ReceiverID:  entity.UserID{Value: 2},
 	})
@@ -95,7 +90,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
 		// then
-		assert.Equal(t, `{"status_code":400,"message":"error=invalid request body, internal=validation errors: [Payer]: '0' | Needs to implement 'required' and [Receiver]: '0' | Needs to implement 'required'"}`, string(body))
+		assert.Equal(t, `{"status_code":400,"message":"invalid request body","error":"error=invalid request body, internal=validation errors: [SplitType]: '' | Needs to implement 'required'"}`, string(body))
 		assert.Equal(t, 400, resp.StatusCode)
 	})
 
@@ -111,7 +106,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
 		// then
-		assert.Equal(t, `{"status_code":422,"message":"error=Unprocessable Entity"}`, string(body))
+		assert.Equal(t, `{"status_code":422,"message":"Unprocessable Entity","error":"error=Unprocessable Entity"}`, string(body))
 		assert.Equal(t, 422, resp.StatusCode)
 	})
 

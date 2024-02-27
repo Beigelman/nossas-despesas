@@ -118,7 +118,8 @@ func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
 	s.NoError(s.repository.Store(s.ctx, salary))
 	s.NoError(s.repository.Store(s.ctx, benefit))
 
-	incomes, err := s.repository.GetUserMonthlyIncomes(s.ctx, userID, time.Now())
+	now := time.Now()
+	incomes, err := s.repository.GetUserMonthlyIncomes(s.ctx, userID, &now)
 	s.NoError(err)
 	s.Equal(2, len(incomes))
 }
