@@ -14,11 +14,12 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 
 	code := http.StatusInternalServerError
 	message := http.StatusText(code)
-
+	errMsg := ""
 	var e *except.HTTPError
 	if errors.As(err, &e) {
 		code = e.Code
 		message = e.Message.(string)
+		errMsg = e.Error()
 	}
 
 	ctx.Set("Content-Type", "\"text/plain; charset=utf-8\"")
@@ -26,5 +27,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	return ctx.Status(code).JSON(ErrorResponse{
 		StatusCode: code,
 		Message:    message,
+		Error:      errMsg,
 	})
 }

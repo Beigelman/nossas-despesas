@@ -46,6 +46,7 @@ func New(env env.Environment) Config {
 }
 
 func NewTestConfig(dbPort, dbHost, dbType string) Config {
+	migrationPath := os.Getenv("DB_MIGRATION_PATH")
 	return Config{
 		loader:      viper.New(),
 		ServiceName: "test-luda-api",
@@ -58,7 +59,7 @@ func NewTestConfig(dbPort, dbHost, dbType string) Config {
 			User:          "root",
 			Password:      "root",
 			Type:          dbType,
-			MigrationPath: os.Getenv("MIGRATION_PATH"),
+			MigrationPath: migrationPath,
 			MaxOpenConns:  4,
 		},
 	}
