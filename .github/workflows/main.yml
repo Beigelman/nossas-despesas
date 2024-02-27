@@ -1,4 +1,4 @@
-name: Build and Deploy to Cloud Run
+name: Nossas Despesas Deploy
 
 on:
   push:
@@ -32,6 +32,7 @@ jobs:
         run: make test
 
   deploy:
+    name: Deploy to Cloud Run
     # Add 'id-token' with the intended permissions for workload identity federation
     permissions:
       contents: 'read'
