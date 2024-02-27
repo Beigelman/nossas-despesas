@@ -39,7 +39,7 @@ e2e:
 		export DB_MIGRATION_PATH="file://$(shell pwd)/database/migrations"; \
 		go test -v $$(go list ./... | grep -e e2e)
 
-test: unit integration e2e
+test: unit integration
 
 # Scripts
 create-users:
