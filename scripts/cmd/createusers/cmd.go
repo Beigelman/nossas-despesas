@@ -3,13 +3,13 @@ package createusers
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/authrepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/authrepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/spf13/cobra"
 )
 

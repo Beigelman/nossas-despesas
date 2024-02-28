@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"time"
 )
 

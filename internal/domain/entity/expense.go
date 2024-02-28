@@ -2,10 +2,10 @@ package entity
 
 import (
 	"fmt"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type ExpenseID struct{ Value int }

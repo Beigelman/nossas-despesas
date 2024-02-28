@@ -3,7 +3,7 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type (

@@ -1,6 +1,6 @@
 package service
 
-import "github.com/Beigelman/ludaapi/internal/domain/entity"
+import "github.com/Beigelman/nossas-despesas/internal/domain/entity"
 
 type TokenProvider interface {
 	GenerateUserTokens(user entity.User) (string, string, error)

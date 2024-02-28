@@ -3,9 +3,9 @@ package usecase_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	mockrepository "github.com/Beigelman/ludaapi/internal/tests/mocks/repository"
-	"github.com/Beigelman/ludaapi/internal/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"

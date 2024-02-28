@@ -3,10 +3,10 @@ package boot
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
-	"github.com/Beigelman/ludaapi/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"log/slog"
 	"os"
 )

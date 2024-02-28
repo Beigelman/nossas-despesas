@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"time"
 )
 

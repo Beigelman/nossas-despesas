@@ -3,7 +3,7 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
 	"log/slog"
 	"net/http"

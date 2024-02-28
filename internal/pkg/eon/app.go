@@ -6,7 +6,7 @@ package eon
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"os"
 	"os/signal"
 	"syscall"

@@ -5,7 +5,7 @@ package mockrepository
 import (
 	context "context"
 
-	entity "github.com/Beigelman/ludaapi/internal/domain/entity"
+	entity "github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 

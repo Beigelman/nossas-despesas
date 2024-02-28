@@ -2,8 +2,8 @@ package importsplit
 
 import (
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"math"
 	"math/rand"
 	"regexp"

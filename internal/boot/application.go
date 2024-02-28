@@ -2,19 +2,19 @@ package boot
 
 import (
 	"context"
-	"github.com/Beigelman/ludaapi/internal/controller/handler"
-	"github.com/Beigelman/ludaapi/internal/controller/middleware"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/authrepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/categoryrepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/incomerepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
-	"github.com/Beigelman/ludaapi/internal/pkg/eon"
-	"github.com/Beigelman/ludaapi/internal/query"
-	"github.com/Beigelman/ludaapi/internal/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/controller/handler"
+	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/authrepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categorygrouprepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categoryrepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/incomerepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/query"
+	"github.com/Beigelman/nossas-despesas/internal/usecase"
 )
 
 var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {

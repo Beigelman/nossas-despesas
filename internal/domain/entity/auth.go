@@ -2,7 +2,7 @@ package entity
 
 import (
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )

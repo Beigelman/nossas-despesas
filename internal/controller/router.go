@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/Beigelman/ludaapi/internal/controller/handler"
-	"github.com/Beigelman/ludaapi/internal/controller/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/controller/handler"
+	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 

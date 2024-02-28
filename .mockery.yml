@@ -4,6 +4,6 @@ dir: internal/tests/mocks/{{.PackageName}}
 outpkg: mock{{.PackageName}}
 filename: "mock_{{.InterfaceName}}.go"
 packages:
-  github.com/Beigelman/ludaapi/internal/domain/repository:
-  github.com/Beigelman/ludaapi/internal/domain/service:
-  github.com/Beigelman/ludaapi/internal/usecase:
+  github.com/Beigelman/nossas-despesas/internal/domain/repository:
+  github.com/Beigelman/nossas-despesas/internal/domain/service:
+  github.com/Beigelman/nossas-despesas/internal/usecase:

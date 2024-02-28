@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type (
