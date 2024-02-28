@@ -57,7 +57,7 @@ func TestSignUpWithCredentials(t *testing.T) {
 			Password:             "12345678",
 			ConfirmationPassword: "12345678",
 		})
-		assert.EqualError(t, err, "error=email already registered")
+		assert.EqualError(t, err, "email already registered")
 		assert.Nil(t, resp)
 	})
 
@@ -70,7 +70,7 @@ func TestSignUpWithCredentials(t *testing.T) {
 			Password:             "12345678",
 			ConfirmationPassword: "12345679",
 		})
-		assert.EqualError(t, err, "error=passwords do not match")
+		assert.EqualError(t, err, "passwords do not match")
 		assert.Nil(t, resp)
 	})
 

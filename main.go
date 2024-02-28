@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	app := eon.New("Luda API")
+	app := eon.New("Nossas Despesas")
 
 	if err := app.BootStrap(
 		boot.ConfigModule,

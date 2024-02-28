@@ -21,7 +21,7 @@ type Options func(app *Application)
 // Eon APP is a micro framework that aims to make the processe of bootstrapping a new application quick and easy.
 // The Tino APP will provide you a set of two important tools: a dependency injection container and a life cycle manager for your application
 func New(serviceName string, opts ...Options) *Application {
-	l := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+	l := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 			if a.Key == "level" {
