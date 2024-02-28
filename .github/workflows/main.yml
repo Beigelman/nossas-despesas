@@ -6,7 +6,6 @@ on:
 
 env:
   ENV: prd
-  PORT: 8080
   PROJECT_ID: nossas-despesas
   GAR_LOCATION: us-east1
   SERVICE: nossas-despesas-be
@@ -69,7 +68,6 @@ jobs:
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}
           env_vars: |
             ENV=${{ env.ENV }}
-            PORT=${{ env.PORT }}
             JWT_KEY=${{ secrets.JWT_KEY }}
             DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
 
