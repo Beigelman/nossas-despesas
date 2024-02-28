@@ -5,14 +5,20 @@ import (
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"log/slog"
 	"net/http"
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {
+	requestId, ok := ctx.Locals("requestid").(string)
+	if !ok {
+		requestId = uuid.NewString()
+	}
+
 	slog.Error(
 		fmt.Sprintf("Error calling %s %s", ctx.Method(), ctx.Path()),
-		slog.String("request_id", ctx.Locals("requestid").(string)),
+		slog.String("request_id", requestId),
 		slog.String("error", err.Error()),
 	)
 
