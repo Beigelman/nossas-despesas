@@ -48,7 +48,21 @@ var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Conta
 
 	lc.OnBooted(eon.HookOrders.PREPEND, func() error {
 		cfg := di.Resolve[*config.Config](c)
-		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: LogLevelMap(cfg.LogLevel)})))
+		slog.SetDefault(slog.New(slog.NewJSONHandler(
+			os.Stdout,
+			&slog.HandlerOptions{
+				Level: LogLevelMap(cfg.LogLevel),
+				ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+					if a.Key == "level" {
+						return slog.Attr{Key: "severity", Value: a.Value}
+					}
+
+					if a.Key == "msg" {
+						return slog.Attr{Key: "message", Value: a.Value}
+					}
+
+					return a
+				}})))
 		return nil
 	})
 })
