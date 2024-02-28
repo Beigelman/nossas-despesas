@@ -66,7 +66,7 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docker/${{ env.SERVICE }}:${{ github.sha }}
-          flags: --service-account=default@${{ env.PROJECT_ID }}.iam.gserviceaccount.com --allow-unauthenticated
+          flags: --allow-unauthenticated
           env_vars: |
             ENV="${{ env.ENV }}"
             JWT_KEY="${{ secrets.JWT_KEY }}"
