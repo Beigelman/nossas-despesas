@@ -52,13 +52,17 @@ var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Conta
 			os.Stdout,
 			&slog.HandlerOptions{
 				Level: LogLevelMap(cfg.LogLevel),
-				ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+				ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 					if a.Key == "level" {
 						return slog.Attr{Key: "severity", Value: a.Value}
 					}
 
 					if a.Key == "msg" {
 						return slog.Attr{Key: "message", Value: a.Value}
+					}
+
+					if a.Key == "time" {
+						return slog.Attr{Key: "timestamp", Value: a.Value}
 					}
 
 					return a
