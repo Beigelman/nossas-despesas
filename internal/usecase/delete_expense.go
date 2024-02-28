@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
 type DeleteExpense func(ctx context.Context, expenseID entity.ExpenseID) (*entity.Expense, error)

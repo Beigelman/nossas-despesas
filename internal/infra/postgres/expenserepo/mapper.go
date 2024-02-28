@@ -2,11 +2,11 @@ package expenserepo
 
 import (
 	"database/sql"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 func ToEntity(model ExpenseModel) *entity.Expense {

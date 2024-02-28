@@ -2,14 +2,14 @@ package userrepo
 
 import (
 	"context"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/domain/repository"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
-	"github.com/Beigelman/ludaapi/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 

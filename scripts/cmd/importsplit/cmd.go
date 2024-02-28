@@ -3,11 +3,11 @@ package importsplit
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
-	"github.com/Beigelman/ludaapi/scripts/utils"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
+	"github.com/Beigelman/nossas-despesas/scripts/utils"
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )

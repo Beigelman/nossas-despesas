@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Beigelman/ludaapi/internal/boot"
-	"github.com/Beigelman/ludaapi/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/boot"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"log"
 )
 

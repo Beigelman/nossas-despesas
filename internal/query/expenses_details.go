@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"time"
 )
 

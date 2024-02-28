@@ -2,9 +2,9 @@ package handler
 
 import (
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/api"
-	"github.com/Beigelman/ludaapi/internal/pkg/except"
-	"github.com/Beigelman/ludaapi/internal/query"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"time"

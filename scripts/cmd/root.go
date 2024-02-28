@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/Beigelman/ludaapi/scripts/cmd/createusers"
-	"github.com/Beigelman/ludaapi/scripts/cmd/importincomes"
-	"github.com/Beigelman/ludaapi/scripts/cmd/importsplit"
+	"github.com/Beigelman/nossas-despesas/scripts/cmd/createusers"
+	"github.com/Beigelman/nossas-despesas/scripts/cmd/importincomes"
+	"github.com/Beigelman/nossas-despesas/scripts/cmd/importsplit"
 	"github.com/spf13/cobra"
 	"os"
 )

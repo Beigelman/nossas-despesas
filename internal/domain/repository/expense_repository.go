@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type ExpenseRepository interface {

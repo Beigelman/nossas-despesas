@@ -5,7 +5,7 @@ package mockusecase
 import (
 	context "context"
 
-	usecase "github.com/Beigelman/ludaapi/internal/usecase"
+	usecase "github.com/Beigelman/nossas-despesas/internal/usecase"
 	mock "github.com/stretchr/testify/mock"
 )
 

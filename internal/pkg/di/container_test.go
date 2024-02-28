@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/stretchr/testify/assert"
 )
 

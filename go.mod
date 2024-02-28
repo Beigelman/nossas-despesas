@@ -1,4 +1,4 @@
-module github.com/Beigelman/ludaapi
+module github.com/Beigelman/nossas-despesas
 
 go 1.21
 

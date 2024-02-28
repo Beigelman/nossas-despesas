@@ -2,20 +2,20 @@ package expenserepo_test
 
 import (
 	"context"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/domain/repository"
-	vo "github.com/Beigelman/ludaapi/internal/domain/valueobject"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/categorygrouprepo"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categorygrouprepo"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/categoryrepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/expenserepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/grouprepo"
-	"github.com/Beigelman/ludaapi/internal/infra/postgres/userrepo"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
-	"github.com/Beigelman/ludaapi/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categoryrepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 

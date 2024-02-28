@@ -2,8 +2,8 @@ package jwt
 
 import (
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/domain/entity"
-	"github.com/Beigelman/ludaapi/internal/domain/service"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
 type Db struct {
@@ -35,9 +35,10 @@ type Config struct {
 
 func New(env env.Environment) Config {
 	return Config{
-		loader: viper.New(),
-		Env:    env,
-		Port:   "8080",
+		loader:   viper.New(),
+		Env:      env,
+		Port:     "8080",
+		LogLevel: "INFO",
 		Db: Db{
 			Type:         "postgres",
 			MaxOpenConns: 4,

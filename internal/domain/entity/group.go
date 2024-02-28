@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/ddd"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type GroupID struct{ Value int }

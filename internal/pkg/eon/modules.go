@@ -3,7 +3,7 @@ package eon
 import (
 	"context"
 
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 )
 
 type (

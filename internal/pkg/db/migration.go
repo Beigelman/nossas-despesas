@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/pkg/env"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"

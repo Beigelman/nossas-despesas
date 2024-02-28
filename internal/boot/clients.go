@@ -3,12 +3,12 @@ package boot
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/ludaapi/internal/config"
-	"github.com/Beigelman/ludaapi/internal/domain/service"
-	"github.com/Beigelman/ludaapi/internal/infra/jwt"
-	"github.com/Beigelman/ludaapi/internal/pkg/db"
-	"github.com/Beigelman/ludaapi/internal/pkg/di"
-	"github.com/Beigelman/ludaapi/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/domain/service"
+	"github.com/Beigelman/nossas-despesas/internal/infra/jwt"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"log/slog"
 )
 

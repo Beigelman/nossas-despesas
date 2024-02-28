@@ -27,17 +27,16 @@ func (c *Config) LoadConfig() error {
 	}
 
 	envLoader := c.loader.Sub(c.Env.String())
-	envLoader.SetDefault("PORT", "8080")
-	envLoader.SetDefault("LOG_LEVEL", "INFO")
 
 	if err := bindEnv(envLoader, "PORT"); err != nil {
 		return fmt.Errorf("bindEnv: %w", err)
 	}
-
+	if err := bindEnv(envLoader, "LOG_LEVEL"); err != nil {
+		return fmt.Errorf("bindEnv: %w", err)
+	}
 	if err := bindStructEnv(envLoader, c.Db); err != nil {
 		return fmt.Errorf("bindStructEnv: %w", err)
 	}
-
 	if err := envLoader.Unmarshal(&c); err != nil {
 		return fmt.Errorf("envLoader.Unmarshal: %w", err)
 	}
