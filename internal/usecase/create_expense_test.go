@@ -85,7 +85,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=payer not found")
+		assert.EqualError(t, err, "payer not found")
 	})
 
 	t.Run("should return error if receiver not found", func(t *testing.T) {
@@ -105,7 +105,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=receiver not found")
+		assert.EqualError(t, err, "receiver not found")
 	})
 
 	t.Run("should return error if groupRepo fails", func(t *testing.T) {
@@ -147,7 +147,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=group not found")
+		assert.EqualError(t, err, "group not found")
 	})
 
 	t.Run("should return error if payer's and receiver's group does not match", func(t *testing.T) {
@@ -168,7 +168,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=group mismatch")
+		assert.EqualError(t, err, "group mismatch")
 	})
 
 	t.Run("should return error if categoryRepo fails", func(t *testing.T) {
@@ -212,7 +212,7 @@ func TestCreateExpense(t *testing.T) {
 
 		expense, err := createExpense(ctx, p)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=category not found")
+		assert.EqualError(t, err, "category not found")
 	})
 
 	t.Run("should return error if expenseRepo fails", func(t *testing.T) {

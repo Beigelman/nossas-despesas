@@ -45,7 +45,7 @@ func TestDeleteExpense(t *testing.T) {
 
 		expense, err := deleteExpense(ctx, expense.ID)
 		assert.Nil(t, expense)
-		assert.EqualError(t, err, "error=expense not found")
+		assert.EqualError(t, err, "expense not found")
 	})
 
 	t.Run("should return error if expenseRepo fails", func(t *testing.T) {

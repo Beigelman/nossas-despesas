@@ -90,7 +90,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
 		// then
-		assert.Equal(t, `{"status_code":400,"message":"invalid request body","error":"error=invalid request body, internal=validation errors: [SplitType]: '' | Needs to implement 'required'"}`, string(body))
+		assert.Equal(t, `{"status_code":400,"message":"invalid request body","error":"invalid request body: internal=validation errors: [SplitType]: '' | Needs to implement 'required'"}`, string(body))
 		assert.Equal(t, 400, resp.StatusCode)
 	})
 
@@ -106,7 +106,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
 		// then
-		assert.Equal(t, `{"status_code":422,"message":"Unprocessable Entity","error":"error=Unprocessable Entity"}`, string(body))
+		assert.Equal(t, `{"status_code":422,"message":"Unprocessable Entity","error":"Unprocessable Entity"}`, string(body))
 		assert.Equal(t, 422, resp.StatusCode)
 	})
 

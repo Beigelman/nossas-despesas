@@ -10,7 +10,7 @@ import (
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {
-	slog.ErrorContext(ctx.Context(), fmt.Sprintf("Error calling %s %s%s: %s", ctx.Method(), ctx.BaseURL(), ctx.Path(), err.Error()), "error", err.Error())
+	slog.ErrorContext(ctx.Context(), fmt.Sprintf("Error calling %s %s", ctx.Method(), ctx.Path()), "error", err.Error())
 
 	code := http.StatusInternalServerError
 	message := http.StatusText(code)
