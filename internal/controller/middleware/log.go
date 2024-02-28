@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"log/slog"
 	"regexp"
 )
@@ -45,8 +46,13 @@ func LogRequest(serviceName string) func(ctx *fiber.Ctx) error {
 			return bodyParams
 		}()
 
+		requestId, ok := ctx.Locals("requestid").(string)
+		if !ok {
+			requestId = uuid.NewString()
+		}
+
 		slog.Info(fmt.Sprintf("Calling %s", ctx.Path()),
-			slog.String("request_id", ctx.Locals("requestid").(string)),
+			slog.String("request_id", requestId),
 			slog.Group("http_request",
 				slog.String("ip", ctx.IP()),
 				slog.String("service", serviceName),
