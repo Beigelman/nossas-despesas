@@ -25,7 +25,7 @@ import (
 var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var server *fiber.App
 
-	di.Provide(c, func() *fiber.App {
+	di.Provide(c, func(cfg *config.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
 			AppName:      info.ServiceName,
 			ReadTimeout:  5 * time.Second,
@@ -37,7 +37,7 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		server.Use(cors.New())
 		server.Use(recover.New())
 		server.Use(requestid.New())
-		server.Use(middleware.LogRequest(info.ServiceName))
+		server.Use(middleware.LogRequest(cfg.Env, info.ServiceName))
 
 		return server
 	})

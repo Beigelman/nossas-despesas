@@ -9,11 +9,17 @@ import (
 )
 
 type Provider struct {
-	secret string
+	secret             string
+	tokenExpire        time.Duration
+	refreshTokenExpire time.Duration
 }
 
 func NewJWTProvider(secret string) service.TokenProvider {
-	return &Provider{secret: secret}
+	return &Provider{
+		secret:             secret,
+		tokenExpire:        time.Hour * 5,
+		refreshTokenExpire: time.Hour * 24 * 30,
+	}
 }
 
 func (p *Provider) GenerateUserTokens(user entity.User) (string, string, error) {
@@ -26,13 +32,13 @@ func (p *Provider) GenerateUserTokens(user entity.User) (string, string, error) 
 			return &user.GroupID.Value
 		}(),
 		"email": user.Email,
-		"exp":   jwt.NewNumericDate(time.Now().Add(time.Hour * 5)),
+		"exp":   jwt.NewNumericDate(time.Now().Add(p.tokenExpire)),
 		"iat":   jwt.NewNumericDate(time.Now()),
 	}
 
 	refreshTokenClaims := jwt.MapClaims{
 		"user_id": user.ID.Value,
-		"exp":     jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 5)),
+		"exp":     jwt.NewNumericDate(time.Now().Add(p.refreshTokenExpire)),
 		"iat":     jwt.NewNumericDate(time.Now()),
 	}
 
