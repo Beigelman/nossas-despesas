@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/domain/service"
+	"github.com/Beigelman/nossas-despesas/internal/infra/email"
 	"github.com/Beigelman/nossas-despesas/internal/infra/jwt"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"log/slog"
 )
@@ -21,6 +23,13 @@ var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Con
 	di.Provide(c, func(cfg *config.Config) db.Database {
 		dbClient = db.New(cfg)
 		return dbClient
+	})
+	di.Provide(c, func(cfg *config.Config) service.EmailProvider {
+		if cfg.Env == env.Production {
+			return email.NewResendEmailProvider(cfg.Mail.ApiKey)
+		}
+
+		return email.NewMailTrapEmailProvider(cfg.Mail.ApiKey)
 	})
 
 	lc.OnDisposing(eon.HookOrders.PREPEND, func() error {

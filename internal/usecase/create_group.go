@@ -8,28 +8,37 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
-type CreateGroup func(ctx context.Context, name string) (*entity.Group, error)
+type CreateGroupInput struct {
+	Name   string
+	UserID entity.UserID
+}
 
-func NewCreateGroup(groupRepo repository.GroupRepository) CreateGroup {
-	return func(ctx context.Context, name string) (*entity.Group, error) {
-		alreadyExists, err := groupRepo.GetByName(ctx, name)
+type CreateGroup func(ctx context.Context, params CreateGroupInput) (*entity.Group, error)
+
+func NewCreateGroup(userRepo repository.UserRepository, groupRepo repository.GroupRepository) CreateGroup {
+	return func(ctx context.Context, params CreateGroupInput) (*entity.Group, error) {
+		user, err := userRepo.GetByID(ctx, params.UserID)
 		if err != nil {
-			return nil, fmt.Errorf("groupRepo.GetByName: %w", err)
+			return nil, fmt.Errorf("userRepo.GetByID: %w", err)
 		}
 
-		if alreadyExists != nil {
-			return nil, except.ConflictError("group already exists")
+		if user.GroupID != nil {
+			return nil, except.UnprocessableEntityError("user already in a group")
 		}
-
-		groupID := groupRepo.GetNextID()
 
 		group := entity.NewGroup(entity.GroupParams{
-			ID:   groupID,
-			Name: name,
+			ID:   groupRepo.GetNextID(),
+			Name: params.Name,
 		})
 
 		if err := groupRepo.Store(ctx, group); err != nil {
 			return nil, fmt.Errorf("groupRepo.Store: %w", err)
+		}
+
+		user.AssignGroup(group.ID)
+
+		if err := userRepo.Store(ctx, user); err != nil {
+			return nil, fmt.Errorf("userRepo.Store: %w", err)
 		}
 
 		return group, nil

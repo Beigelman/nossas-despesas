@@ -23,6 +23,11 @@ type Db struct {
 	MaxIdleTime      time.Duration `mapstructure:"DB_MAX_IDLE_TIME"`
 }
 
+type Mail struct {
+	SandBoxID string `mapstructure:"MAIL_SANDBOX_ID"`
+	ApiKey    string `mapstructure:"MAIL_API_KEY"`
+}
+
 type Config struct {
 	loader      *viper.Viper
 	Env         env.Environment `mapstructure:"ENV"`
@@ -30,6 +35,7 @@ type Config struct {
 	Port        string          `mapstructure:"PORT"`
 	LogLevel    string          `mapstructure:"LOG_LEVEL"`
 	JWTSecret   string          `mapstructure:"JWT_SECRET"`
+	Mail        Mail            `mapstructure:",squash"`
 	Db          Db              `mapstructure:",squash"`
 }
 

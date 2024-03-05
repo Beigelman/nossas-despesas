@@ -2,6 +2,7 @@ default: &default
   LOG_LEVEL: "info"
   PORT: 8080
   JWT_SECRET: "my_secret"
+  MAIL_API_KEY: c22e9891bcc32334d85d77fb9cf9cd8a
   DB_HOST: localhost
   DB_NAME: app
   DB_USER: root

@@ -8,6 +8,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categorygrouprepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categoryrepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/groupinviterepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/incomerepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
@@ -41,16 +42,19 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, userrepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateUser)
 	di.Provide(c, query.NewGetUserByID)
-	di.Provide(c, usecase.NewAddUserToGroup)
-	di.Provide(c, handler.NewAddUserToGroup)
 	di.Provide(c, handler.NewGetMe)
 	// group
+	di.Provide(c, groupinviterepo.NewPGRepository)
 	di.Provide(c, grouprepo.NewPGRepository)
 	di.Provide(c, usecase.NewCreateGroup)
+	di.Provide(c, usecase.NewInviteUserToGroup)
+	di.Provide(c, usecase.NewAcceptGroupInvite)
 	di.Provide(c, query.NewGetGroup)
 	di.Provide(c, query.NewGetGroupExpenses)
 	di.Provide(c, query.NewGetGroupBalance)
 	di.Provide(c, query.NewGetGroupMonthlyIncome)
+	di.Provide(c, handler.NewInviteUserToGroup)
+	di.Provide(c, handler.NewAcceptGroupInvite)
 	di.Provide(c, handler.NewGetGroupBalance)
 	di.Provide(c, handler.NewGetGroupExpenses)
 	di.Provide(c, handler.NewGetGroupMonthlyIncome)

@@ -14,43 +14,74 @@ func TestCreateGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	groupRepo := mockrepository.NewMockGroupRepository(t)
-	existingGroup := entity.NewGroup(entity.GroupParams{
-		ID:   entity.GroupID{Value: 1},
-		Name: "My test group",
+	userRepo := mockrepository.NewMockUserRepository(t)
+	user := entity.NewUser(entity.UserParams{
+		ID:    entity.UserID{Value: 1},
+		Name:  "test",
+		Email: "",
 	})
 
-	useCase := NewCreateGroup(groupRepo)
+	useCase := NewCreateGroup(userRepo, groupRepo)
 
-	t.Run("getByName returns error", func(t *testing.T) {
-		groupRepo.EXPECT().GetByName(ctx, existingGroup.Name).Return(nil, errors.New("test error")).Once()
-		group, err := useCase(ctx, existingGroup.Name)
-		assert.Errorf(t, err, "repo.GetByName: test error")
+	t.Run("userRepo.GetByID returns error", func(t *testing.T) {
+		userRepo.EXPECT().GetByID(ctx, user.ID).Return(nil, errors.New("test error")).Once()
+		group, err := useCase(ctx, CreateGroupInput{
+			Name:   "my new group",
+			UserID: user.ID,
+		})
 		assert.Nil(t, group)
+		assert.Errorf(t, err, "userRepo.GetByID: test error")
 	})
 
-	t.Run("group already exists", func(t *testing.T) {
-		groupRepo.EXPECT().GetByName(ctx, existingGroup.Name).Return(existingGroup, nil).Once()
-		group, err := useCase(ctx, existingGroup.Name)
-		assert.Errorf(t, err, "group already exists")
+	t.Run("user already in a group", func(t *testing.T) {
+		user.GroupID = &entity.GroupID{Value: 1}
+		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
+		group, err := useCase(ctx, CreateGroupInput{
+			Name:   "my new group",
+			UserID: user.ID,
+		})
 		assert.Nil(t, group)
+		assert.Errorf(t, err, "user already in a group")
 	})
 
-	t.Run("Store returns error", func(t *testing.T) {
-		groupRepo.EXPECT().GetByName(ctx, existingGroup.Name).Return(nil, nil).Once()
-		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
+	t.Run("groupRepo.Store returns error", func(t *testing.T) {
+		user.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(entity.GroupID{Value: 1}).Once()
-		group, err := useCase(ctx, existingGroup.Name)
-		assert.Errorf(t, err, "repo.Store: test error")
+		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
+		group, err := useCase(ctx, CreateGroupInput{
+			Name:   "my new group",
+			UserID: user.ID,
+		})
+		assert.Errorf(t, err, "groupRepo.Store: test error")
+		assert.Nil(t, group)
+	})
+
+	t.Run("userRepo.Store returns error", func(t *testing.T) {
+		user.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
+		groupRepo.EXPECT().GetNextID().Return(entity.GroupID{Value: 1}).Once()
+		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
+		userRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
+		group, err := useCase(ctx, CreateGroupInput{
+			Name:   "my new group",
+			UserID: user.ID,
+		})
+		assert.Errorf(t, err, "userRepo.Store: test error")
 		assert.Nil(t, group)
 	})
 
 	t.Run("success", func(t *testing.T) {
-		groupRepo.EXPECT().GetByName(ctx, mock.Anything).Return(nil, nil).Once()
-		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
+		user.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(entity.GroupID{Value: 1}).Once()
-		group, err := useCase(ctx, "my new group")
+		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
+		userRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
+		group, err := useCase(ctx, CreateGroupInput{
+			Name:   "my new group",
+			UserID: user.ID,
+		})
 		assert.NoError(t, err)
-		assert.NotNil(t, group)
 		assert.Equal(t, entity.GroupID{Value: 1}, group.ID)
 		assert.Equal(t, "my new group", group.Name)
 	})
