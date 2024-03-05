@@ -33,14 +33,17 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo repository
 		if !ok {
 			return nil, except.UnprocessableEntityError("email not found in token")
 		}
+
 		name, ok := token.Claims["name"].(string)
 		if !ok {
 			return nil, except.UnprocessableEntityError("user name not found in token")
 		}
+
 		providerId, ok := token.Claims["sub"].(string)
 		if !ok {
 			return nil, except.UnprocessableEntityError("sub not found in token")
 		}
+
 		var profilePicture *string
 		picture, ok := token.Claims["picture"].(string)
 		if !ok {
@@ -49,23 +52,7 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo repository
 			profilePicture = &picture
 		}
 
-		existingAuth, err := authRepo.GetByEmail(ctx, email, entity.AuthTypes.Google)
-		if err != nil {
-			return nil, fmt.Errorf("authRepo.GetByEmail: %w", err)
-		}
-
-		if existingAuth != nil {
-			auth := entity.NewGoogleAuth(entity.GoogleAuthParams{
-				ID:         authRepo.GetNextID(),
-				Email:      email,
-				ProviderID: providerId,
-			})
-
-			if err := authRepo.Store(ctx, auth); err != nil {
-				return nil, fmt.Errorf("authRepo.Store: %w", err)
-			}
-		}
-
+		// Check se o usuário já existe
 		existingUser, err := userRepo.GetByEmail(ctx, email)
 		if err != nil {
 			return nil, fmt.Errorf("userRepo.GetByEmail: %w", err)
@@ -93,6 +80,25 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo repository
 			}
 		}
 
+		// Check se a autenticação já existe
+		existingAuth, err := authRepo.GetByEmail(ctx, email, entity.AuthTypes.Google)
+		if err != nil {
+			return nil, fmt.Errorf("authRepo.GetByEmail: %w", err)
+		}
+
+		if existingAuth != nil {
+			auth := entity.NewGoogleAuth(entity.GoogleAuthParams{
+				ID:         authRepo.GetNextID(),
+				Email:      email,
+				ProviderID: providerId,
+			})
+
+			if err := authRepo.Store(ctx, auth); err != nil {
+				return nil, fmt.Errorf("authRepo.Store: %w", err)
+			}
+		}
+
+		// Geração do token de autenticação
 		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*user)
 		if err != nil {
 			return nil, fmt.Errorf("tokenProvider.GenerateUserTokens: %w", err)

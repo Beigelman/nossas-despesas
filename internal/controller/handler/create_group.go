@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"net/http"
@@ -15,7 +16,7 @@ type (
 	CreateGroup func(ctx *fiber.Ctx) error
 
 	CreateGroupRequest struct {
-		Name string `json:"name" validate:"required"`
+		Name string `json:"name" validate:"required,min=3,max=50"`
 	}
 
 	CreateGroupResponse struct {
@@ -36,7 +37,15 @@ func NewCreateGroup(createGroup usecase.CreateGroup) CreateGroup {
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
-		group, err := createGroup(ctx.Context(), req.Name)
+		userID, ok := ctx.Locals("user_id").(int)
+		if !ok {
+			return except.UnprocessableEntityError().SetInternal(fmt.Errorf("user_id not found in context"))
+		}
+
+		group, err := createGroup(ctx.Context(), usecase.CreateGroupInput{
+			Name:   req.Name,
+			UserID: entity.UserID{Value: userID},
+		})
 		if err != nil {
 			return fmt.Errorf("createGroup: %w", err)
 		}

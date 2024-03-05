@@ -343,6 +343,7 @@ table "incomes" {
   primary_key  {
     columns = [column.id]
   }
+
   foreign_key "income_user_id_fk" {
     columns = [column.user_id]
     ref_columns = [table.users.column.id]
@@ -352,4 +353,67 @@ table "incomes" {
 enum "income_type" {
   schema = schema.public
   values = ["salary", "benefit", "vacation", "thirteenth_salary", "other"]
+}
+
+table "group_invites" {
+  schema = schema.public
+  column "id" {
+    type = bigserial
+    null = false
+  }
+  column "group_id" {
+    type = bigint
+    null = false
+  }
+  column "email" {
+    type = varchar(255)
+    null = false
+  }
+  column "token" {
+    type    = uuid
+    default = sql("gen_random_uuid()")
+    null    = false
+  }
+  column "status" {
+    type = enum.group_invites_status
+    null = false
+  }
+  column "expires_at" {
+    type = timestamptz
+    null = false
+  }
+  column "created_at" {
+    type = timestamptz
+    null = false
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+  }
+  column "deleted_at" {
+    type = timestamptz
+    null = true
+  }
+  column "version" {
+    type = int
+    null = false
+  }
+
+  primary_key  {
+    columns = [column.id]
+  }
+
+  index "group_invite_email_idx" {
+    columns = [column.email]
+  }
+
+  index "group_invite_token_idx" {
+    columns = [column.token]
+    unique = true
+  }
+}
+
+enum "group_invites_status" {
+  schema = schema.public
+  values = ["pending", "sent", "accepted"]
 }

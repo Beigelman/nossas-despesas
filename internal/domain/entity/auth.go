@@ -12,9 +12,11 @@ type AuthType string
 var AuthTypes = struct {
 	Credentials AuthType
 	Google      AuthType
+	MagicLink   AuthType
 }{
 	Credentials: "credentials",
 	Google:      "google",
+	MagicLink:   "magic_link",
 }
 
 type AuthID struct{ Value int }

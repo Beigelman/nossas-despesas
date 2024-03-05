@@ -12,7 +12,6 @@ func Router(
 	createExpenseHandler handler.CreateExpense,
 	createCategoryHandler handler.CreateCategory,
 	createCategoryGroupHandler handler.CreateCategoryGroup,
-	addUserToGroupHandler handler.AddUserToGroup,
 	getGroupExpenseHandler handler.GetGroupExpenses,
 	getGroupHandler handler.GetGroup,
 	getMyUserHandler handler.GetMe,
@@ -25,14 +24,16 @@ func Router(
 	deleteIncomeHandler handler.DeleteIncome,
 	getGroupMonthlyIncomeHandler handler.GetGroupMonthlyIncome,
 	signInWithCredentialsHandler handler.SignInWithCredentials,
-	signInWithGoogleHandler handler.SignInWithGoogle,
 	signUpWithCredentialsHandler handler.SignUpWithCredentials,
+	signInWithGoogleHandler handler.SignInWithGoogle,
 	refreshAuthTokenHandler handler.RefreshAuthToken,
 	authMiddleware middleware.AuthMiddleware,
 	getExpensesPerCategoryHandler handler.GetExpensesPerCategory,
 	getExpensesPerPeriodHandler handler.GetExpensesPerPeriod,
 	getIncomesPerPeriodHandler handler.GetIncomesPerPeriod,
 	getExpenseDetailsHandler handler.GetExpenseDetails,
+	inviteUserToGroupHandler handler.InviteUserToGroup,
+	acceptGroupInviteHandler handler.AcceptGroupInvite,
 ) {
 	server.Get("healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
@@ -52,13 +53,14 @@ func Router(
 		// User routes
 		user := v1.Group("user", authMiddleware)
 		user.Get("/me", getMyUserHandler)
-		user.Patch("/add-to-group", addUserToGroupHandler)
 		// Group routes
 		group := v1.Group("group", authMiddleware)
 		group.Post("/", createGroupHandler)
+		group.Post("/invite", inviteUserToGroupHandler)
+		group.Post("/invite/:token/accept", acceptGroupInviteHandler)
 		group.Get("/", getGroupHandler)
-		group.Get("/expenses", getGroupExpenseHandler)
 		group.Get("/balance", getGroupBalanceHandler)
+		group.Get("/expenses", getGroupExpenseHandler)
 		group.Get("income", getGroupMonthlyIncomeHandler)
 		// Expense routes
 		expense := v1.Group("expense", authMiddleware)
