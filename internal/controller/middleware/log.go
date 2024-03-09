@@ -60,7 +60,7 @@ func extractRequestParams(ctx *fiber.Ctx) requestParams {
 	headerParams := func() []any {
 		var headers []any
 		for k, v := range ctx.GetReqHeaders() {
-			value := fmt.Sprintf("%s", v[0])
+			value := v[0]
 			if secretRegex.MatchString(k) {
 				value = "***"
 			}

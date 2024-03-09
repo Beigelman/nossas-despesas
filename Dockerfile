@@ -22,6 +22,6 @@ COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 # Copie o arquivo de configuração para o contêiner
 COPY ./internal/config/config.yml /internal/config/config.yml
 # Copia templates para o contêiner
-COPY ./internal/templates /internal/templates
+COPY ./templates /templates
 # Comando para executar o binário
 CMD ["./main"]
