@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/Beigelman/nossas-despesas/internal/controller/handler"
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
@@ -13,9 +17,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"io"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestCreateExpenseHandler(t *testing.T) {
@@ -27,7 +28,6 @@ func TestCreateExpenseHandler(t *testing.T) {
 	createExpense := mockusecase.NewMockCreateExpense(t)
 	createExpenseHandler := handler.NewCreateExpense(createExpense.Execute)
 	bodyReq := handler.CreateExpenseRequest{
-		GroupID:     1,
 		Name:        "Test Expense",
 		Amount:      100,
 		Description: "My first expense",
@@ -49,7 +49,10 @@ func TestCreateExpenseHandler(t *testing.T) {
 		ReceiverID:  entity.UserID{Value: 2},
 	})
 
-	app.Post("/expenses", createExpenseHandler)
+	app.Post("/expenses", func(c *fiber.Ctx) error {
+		c.Locals("group_id", 1)
+		return c.Next()
+	}, createExpenseHandler)
 
 	t.Run("should return 201 and create a new expense", func(t *testing.T) {
 		createExpense.EXPECT().Execute(mock.Anything, mock.Anything).Return(newExpense, nil).Once()
