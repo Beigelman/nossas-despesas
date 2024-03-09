@@ -2,11 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
-	"net/http"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
@@ -18,7 +19,6 @@ type (
 	CreateExpense func(ctx *fiber.Ctx) error
 
 	CreateExpenseRequest struct {
-		GroupID     int        `json:"group_id" validate:"required"`
 		Name        string     `json:"name" validate:"required"`
 		Amount      int        `json:"amount" validate:"required"`
 		Description string     `json:"description"`
@@ -50,8 +50,13 @@ func NewCreateExpense(createExpense usecase.CreateExpense) CreateExpense {
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.UnprocessableEntityError("group_id not found in context")
+		}
+
 		expense, err := createExpense(ctx.Context(), usecase.CreateExpenseParams{
-			GroupID:     entity.GroupID{Value: req.GroupID},
+			GroupID:     entity.GroupID{Value: groupID},
 			Name:        req.Name,
 			Amount:      req.Amount,
 			Description: req.Description,

@@ -54,7 +54,7 @@ func NewGroupInvite(params GroupInviteParams) *GroupInvite {
 }
 
 func (g *GroupInvite) InviteURL(basePath string) string {
-	return fmt.Sprintf("%s/group-invite/%s", basePath, g.Token)
+	return fmt.Sprintf("%s/group/%s/accept", basePath, g.Token)
 }
 
 func (g *GroupInvite) CheckStatus() error {
