@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
-	"github.com/gofiber/fiber/v2"
 	"log/slog"
 	"regexp"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
+	"github.com/gofiber/fiber/v2"
 )
 
 func LogRequest(environment env.Environment, serviceName string) func(ctx *fiber.Ctx) error {
@@ -20,12 +21,12 @@ func LogRequest(environment env.Environment, serviceName string) func(ctx *fiber
 		}
 
 		if environment == "development" {
-			slog.Info(fmt.Sprintf("Calling %s", ctx.Path()), slog.String("request_id", requestId))
+			slog.Info(fmt.Sprintf("Calling %s %s", ctx.Method(), ctx.Path()), slog.String("request_id", requestId))
 			return ctx.Next()
 		}
 
 		params := extractRequestParams(ctx)
-		slog.Info(fmt.Sprintf("Calling %s", ctx.Path()),
+		slog.Info(fmt.Sprintf("Calling %s %s", ctx.Method(), ctx.Path()),
 			slog.String("request_id", requestId),
 			slog.Group("http_request",
 				slog.String("ip", ctx.IP()),
