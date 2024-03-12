@@ -75,6 +75,7 @@ jobs:
             ENV=${{ env.ENV }}
             JWT_KEY=${{ secrets.JWT_KEY }}
             DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
+            MAIL_API_KEY=${{ secrets.MAIL_API_KEY }}
 
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
