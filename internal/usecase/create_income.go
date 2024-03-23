@@ -40,9 +40,6 @@ func NewCreateIncome(
 			Type:      p.Type,
 			CreatedAt: p.CreatedAt,
 		})
-		if err != nil {
-			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.NewIncome: %w", err))
-		}
 
 		if err := incomeRepo.Store(ctx, income); err != nil {
 			return nil, fmt.Errorf("incomeRepo.Store: %w", err)

@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"log/slog"
+	"os"
+
 	"github.com/Beigelman/nossas-despesas/internal/boot"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
-	"log"
-	"log/slog"
-	"os"
 )
 
 func main() {

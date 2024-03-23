@@ -3,16 +3,17 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"html/template"
+	"log/slog"
+	"strings"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/google/uuid"
-	"html/template"
-	"log/slog"
-	"strings"
-	"time"
 )
 
 type (
@@ -88,8 +89,8 @@ func NewInviteUserToGroup(
 			}
 
 			if err := emailProvider.Send(ctx, vo.Email{
-				From:    "onboarding@resend.dev",
-				To:      []string{"daniel.b.beigelman@gmail.com"},
+				From:    "noreplay@nossasdespesas.com.br",
+				To:      []string{input.Email},
 				Html:    html.String(),
 				Subject: "Convite para compartilhar despesas",
 			}); err != nil {
