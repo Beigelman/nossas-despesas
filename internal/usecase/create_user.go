@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
@@ -29,10 +30,8 @@ func NewCreateUser(userRepo repository.UserRepository) CreateUser {
 			return nil, except.ConflictError("email already exists")
 		}
 
-		userID := userRepo.GetNextID()
-
 		user := entity.NewUser(entity.UserParams{
-			ID:             userID,
+			ID:             userRepo.GetNextID(),
 			Name:           p.Name,
 			Email:          p.Email,
 			ProfilePicture: p.ProfilePicture,

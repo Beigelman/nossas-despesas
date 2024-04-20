@@ -2,14 +2,15 @@ package importsplit
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 )
 
 func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error) {
@@ -52,7 +53,7 @@ func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error)
 	}
 
 	regex, _ := regexp.Compile(`reembolso|cashback|ajuste`)
-	createdAt := date.Add(time.Duration(int(rand.Float64()*86400)) * time.Millisecond)
+	createdAt := date.Add(time.Hour*4 + time.Duration(int(rand.Float64()*86400))*time.Millisecond)
 	description := "Imported from splitwise"
 	if regex.FindAllString(strings.ToLower(name), -1) != nil {
 		createdAt = time.Time{}

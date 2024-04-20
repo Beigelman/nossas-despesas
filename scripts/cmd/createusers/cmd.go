@@ -3,6 +3,7 @@ package createusers
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/authrepo"
@@ -13,8 +14,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var environment string
-var password string
+var (
+	environment string
+	password    string
+)
 
 var cmd = &cobra.Command{
 	Use: "create-users",
