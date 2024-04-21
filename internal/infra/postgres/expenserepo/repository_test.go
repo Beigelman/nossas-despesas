@@ -2,12 +2,13 @@ package expenserepo_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categorygrouprepo"
-	"testing"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/categoryrepo"
@@ -166,4 +167,31 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByID() {
 	s.Equal(expected.ID, actual.ID)
 	s.Equal(expected.Name, actual.Name)
 	s.Equal(0, actual.Version)
+}
+
+func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByGroupDate() {
+	var entities []entity.Expense
+	for i := 0; i < 3; i++ {
+		entity, err := entity.NewExpense(entity.ExpenseParams{
+			ID:          s.expenseRepo.GetNextID(),
+			Name:        "my first expense",
+			Amount:      100,
+			Description: "My Description",
+			PayerID:     s.payer.ID,
+			ReceiverID:  s.receiver.ID,
+			SplitRatio: vo.SplitRatio{
+				Payer:    50,
+				Receiver: 50,
+			},
+			CategoryID: s.category.ID,
+			GroupID:    s.group.ID,
+		})
+		s.NoError(err)
+		entities = append(entities, *entity)
+	}
+	s.NoError(s.expenseRepo.BulkStore(s.ctx, entities))
+
+	expected, err := s.expenseRepo.GetByGroupDate(s.ctx, s.group.ID, time.Now())
+	s.NoError(err)
+	s.Len(expected, 3)
 }

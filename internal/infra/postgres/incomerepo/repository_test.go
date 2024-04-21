@@ -2,10 +2,11 @@ package incomerepo
 
 import (
 	"context"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"testing"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -101,25 +102,37 @@ func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetByID() {
 }
 
 func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
+	thisMonth := time.Now()
+	lasMonth := time.Now().AddDate(0, -1, 0)
 	salary := entity.NewIncome(entity.IncomeParams{
-		ID:     s.repository.GetNextID(),
-		Amount: 100,
-		UserID: userID,
-		Type:   entity.IncomeTypes.Salary,
+		ID:        s.repository.GetNextID(),
+		Amount:    100,
+		UserID:    userID,
+		Type:      entity.IncomeTypes.Salary,
+		CreatedAt: &thisMonth,
 	})
 
 	benefit := entity.NewIncome(entity.IncomeParams{
-		ID:     s.repository.GetNextID(),
-		Amount: 200,
-		UserID: userID,
-		Type:   entity.IncomeTypes.Benefit,
+		ID:        s.repository.GetNextID(),
+		Amount:    200,
+		UserID:    userID,
+		Type:      entity.IncomeTypes.Benefit,
+		CreatedAt: &thisMonth,
+	})
+
+	other := entity.NewIncome(entity.IncomeParams{
+		ID:        s.repository.GetNextID(),
+		Amount:    200,
+		UserID:    userID,
+		Type:      entity.IncomeTypes.Benefit,
+		CreatedAt: &lasMonth,
 	})
 
 	s.NoError(s.repository.Store(s.ctx, salary))
 	s.NoError(s.repository.Store(s.ctx, benefit))
+	s.NoError(s.repository.Store(s.ctx, other))
 
-	now := time.Now()
-	incomes, err := s.repository.GetUserMonthlyIncomes(s.ctx, userID, &now)
+	incomes, err := s.repository.GetUserMonthlyIncomes(s.ctx, userID, &thisMonth)
 	s.NoError(err)
 	s.Equal(2, len(incomes))
 }

@@ -71,7 +71,7 @@ func NewCreateExpense(createExpense usecase.CreateExpense) CreateExpense {
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse[CreateExpenseResponse](http.StatusCreated, CreateExpenseResponse{
+			api.NewResponse(http.StatusCreated, CreateExpenseResponse{
 				ID:         expense.ID.Value,
 				Name:       expense.Name,
 				Amount:     float32(expense.Amount) / 100,
