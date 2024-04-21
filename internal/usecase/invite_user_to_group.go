@@ -56,7 +56,7 @@ func NewInviteUserToGroup(
 			return nil, fmt.Errorf("groupInviteRepo.GetByEmail: %w", err)
 		}
 
-		if invites != nil && len(invites) > 3 && invites[2].CreatedAt.After(time.Now().Add(-time.Hour*48)) {
+		if len(invites) > 3 && invites[2].CreatedAt.After(time.Now().Add(-time.Hour*48)) {
 			return nil, except.NewHTTPError(429, "too many invites sent to this email recently")
 		}
 

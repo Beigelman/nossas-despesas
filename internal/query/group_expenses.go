@@ -3,8 +3,9 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type (
@@ -31,13 +32,13 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
     				ex.description as description,
     				ex.group_id as group_id,
     				cat.id as category_id,
-					cat.icon as category_icon,
+					  cat.icon as category_icon,
     				ex.payer_id as payer_id,
     				ex.receiver_id as receiver_id,
     				ex.split_ratio as split_ratio,
-					ex.created_at as created_at,
-					ex.updated_at as updated_at,
-					ex.deleted_at as deleted_at
+					  ex.created_at as created_at,
+					  ex.updated_at as updated_at,
+					  ex.deleted_at as deleted_at
 				from expenses ex
          		inner join categories cat on ex.category_id = cat.id
 				where ex.group_id = $1

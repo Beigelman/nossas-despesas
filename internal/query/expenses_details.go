@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"time"
 )
 
 type (
@@ -44,14 +45,14 @@ func NewGetExpenseDetails(db db.Database) GetExpenseDetails {
     				payer_id,
     				group_id,
     				receiver_id,
-					category_id,
+  					category_id,
     				split_ratio,
-					created_at,
-					updated_at,
-					deleted_at
+	  				created_at,
+		  			updated_at,
+			  		deleted_at
 			    from expenses
-				where id = $1
-				order by version 
+				  where id = $1
+			  	order by version 
 		`, expenseID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}

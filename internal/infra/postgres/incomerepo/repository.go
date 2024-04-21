@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 type IncomePGRepository struct {
@@ -61,8 +62,9 @@ func (repo *IncomePGRepository) GetUserMonthlyIncomes(ctx context.Context, userI
 		SELECT id, user_id, amount_cents, type, created_at, updated_at, deleted_at, version
 		FROM incomes WHERE user_id = $1
 		AND EXTRACT(month FROM created_at) = $2
+		AND EXTRACT(year FROM created_at) = $3
 		AND deleted_at IS NULL
-	`, userID.Value, d.Month()); err != nil {
+	`, userID.Value, d.Month(), d.Year()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
@@ -78,7 +80,7 @@ func (repo *IncomePGRepository) GetUserMonthlyIncomes(ctx context.Context, userI
 }
 
 func (repo *IncomePGRepository) Store(ctx context.Context, entity *entity.Income) error {
-	var model = toModel(entity)
+	model := toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
 		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"incomes_pkey\"" {
 			if err := repo.update(ctx, model); err != nil {

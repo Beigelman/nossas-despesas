@@ -2,11 +2,12 @@ package groupinviterepo
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/google/uuid"
-	"testing"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -14,7 +15,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type PgAuthRepoTestSuite struct {
+type PgGroupInviteRepoTestSuite struct {
 	suite.Suite
 	repository    repository.GroupInviteRepository
 	ctx           context.Context
@@ -24,11 +25,11 @@ type PgAuthRepoTestSuite struct {
 	err           error
 }
 
-func TestPgAuthRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgAuthRepoTestSuite))
+func TestPgGroupInviteRepoTestSuite(t *testing.T) {
+	suite.Run(t, new(PgGroupInviteRepoTestSuite))
 }
 
-func (s *PgAuthRepoTestSuite) SetupSuite() {
+func (s *PgGroupInviteRepoTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
@@ -44,7 +45,7 @@ func (s *PgAuthRepoTestSuite) SetupSuite() {
 	s.NoError(s.err)
 }
 
-func (s *PgAuthRepoTestSuite) TearDownSuite() {
+func (s *PgGroupInviteRepoTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -58,17 +59,17 @@ func (s *PgAuthRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgAuthRepoTestSuite) TearDownTest() {
-	err := s.db.Clean("authentications")
+func (s *PgGroupInviteRepoTestSuite) TearDownTest() {
+	err := s.db.Clean("group_invites")
 	s.NoError(err)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_Store() {
+func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_Store() {
 	id := s.repository.GetNextID()
 	groupInvite := entity.NewGroupInvite(entity.GroupInviteParams{
 		ID:        id,
 		GroupID:   entity.GroupID{Value: 1},
-		Token:     "test123",
+		Token:     uuid.NewString(),
 		Email:     "john@email.com",
 		ExpiresAt: time.Now().Add(time.Hour * 24),
 	})
@@ -76,7 +77,7 @@ func (s *PgAuthRepoTestSuite) TestPgUserRepo_Store() {
 	s.NoError(s.repository.Store(s.ctx, groupInvite))
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByID() {
+func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected := entity.NewGroupInvite(entity.GroupInviteParams{
 		ID:        id,
@@ -95,7 +96,7 @@ func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByID() {
 	s.Equal(expected.Token, actual.Token)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByToken() {
+func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByToken() {
 	id := s.repository.GetNextID()
 	token := uuid.NewString()
 	expected := entity.NewGroupInvite(entity.GroupInviteParams{
@@ -115,7 +116,7 @@ func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByToken() {
 	s.Equal(expected.Token, actual.Token)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByEmail() {
+func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByEmail() {
 	email := "john@email.com"
 	s.NoError(s.repository.Store(s.ctx, entity.NewGroupInvite(entity.GroupInviteParams{
 		ID:        s.repository.GetNextID(),
