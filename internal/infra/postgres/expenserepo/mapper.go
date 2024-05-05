@@ -2,9 +2,10 @@ package expenserepo
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
@@ -39,6 +40,7 @@ func ToEntity(model ExpenseModel) *entity.Expense {
 			Payer:    model.SplitRatio.Payer,
 			Receiver: model.SplitRatio.Receiver,
 		},
+		SplitType:  vo.SplitType(model.SplitType),
 		PayerID:    entity.UserID{Value: model.PayerID},
 		ReceiverID: entity.UserID{Value: model.ReceiverID},
 	}
@@ -67,6 +69,7 @@ func ToModel(entity *entity.Expense) ExpenseModel {
 			Payer:    entity.SplitRatio.Payer,
 			Receiver: entity.SplitRatio.Receiver,
 		},
+		SplitType:  entity.SplitType.String(),
 		PayerID:    entity.PayerID.Value,
 		ReceiverID: entity.ReceiverID.Value,
 		CreatedAt:  entity.CreatedAt,

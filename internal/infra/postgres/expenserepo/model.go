@@ -17,6 +17,7 @@ type ExpenseModel struct {
 	GroupID           int           `db:"group_id"`
 	CategoryID        int           `db:"category_id"`
 	SplitRatio        SplitRatio    `db:"split_ratio"`
+	SplitType         string        `db:"split_type"`
 	PayerID           int           `db:"payer_id"`
 	ReceiverID        int           `db:"receiver_id"`
 	CreatedAt         time.Time     `db:"created_at"`

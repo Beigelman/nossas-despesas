@@ -2,6 +2,7 @@ package boot
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/controller/handler"
 	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/authrepo"
@@ -65,6 +66,7 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, usecase.NewCreateExpense)
 	di.Provide(c, usecase.NewUpdateExpense)
 	di.Provide(c, usecase.NewDeleteExpense)
+	di.Provide(c, usecase.NewRecalculateExpensesSplitRatio)
 	di.Provide(c, query.NewGetExpenseDetails)
 	di.Provide(c, handler.NewCreateExpense)
 	di.Provide(c, handler.NewUpdateExpense)

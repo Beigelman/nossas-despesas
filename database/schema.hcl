@@ -1,5 +1,10 @@
 schema "public" {}
 
+enum "split_type" {
+  schema = schema.public
+  values = ["equal", "proportional", "transfer"]
+}
+
 table "expenses" {
   schema = schema.public
   column "id" {
@@ -32,6 +37,10 @@ table "expenses" {
   }
   column "split_ratio" {
     type = jsonb
+    null = false
+  }
+  column "split_type" {
+    type = enum.split_type
     null = false
   }
   column "payer_id" {
