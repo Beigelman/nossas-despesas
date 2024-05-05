@@ -3,11 +3,12 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"time"
 )
 
 type (
@@ -83,15 +84,21 @@ func NewUpdateExpense(
 			}
 		}
 
-		splitRatio := expense.SplitRatio
-		if p.SplitType != nil && *p.SplitType != expense.SplitRatio.Type() {
+		var splitRatio *vo.SplitRatio
+		if p.SplitType != nil && *p.SplitType != expense.SplitType {
 			switch *p.SplitType {
 			case vo.SpliteTypes.Proportional:
+				createdAt := &expense.CreatedAt
+				if p.CreatedAt != nil {
+					createdAt = p.CreatedAt
+				}
+
 				payerID := expense.PayerID
 				if p.PayerID != nil {
 					payerID = *p.PayerID
 				}
-				payerIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, payerID, p.CreatedAt)
+
+				payerIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, payerID, createdAt)
 				if err != nil || payerIncomes == nil {
 					return nil, except.UnprocessableEntityError("payer income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
 				}
@@ -100,7 +107,7 @@ func NewUpdateExpense(
 				if p.ReceiverID != nil {
 					receiverID = *p.ReceiverID
 				}
-				receiverIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, receiverID, p.CreatedAt)
+				receiverIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, receiverID, createdAt)
 				if err != nil || receiverIncomes == nil {
 					return nil, except.UnprocessableEntityError("receiver income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
 				}
@@ -115,11 +122,14 @@ func NewUpdateExpense(
 					totalReceiverIncome += income.Amount
 				}
 
-				splitRatio = vo.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+				split := vo.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+				splitRatio = &split
 			case vo.SpliteTypes.Transfer:
-				splitRatio = vo.NewTransferRatio()
+				split := vo.NewTransferRatio()
+				splitRatio = &split
 			default:
-				splitRatio = vo.NewEqualSplitRatio()
+				split := vo.NewEqualSplitRatio()
+				splitRatio = &split
 			}
 		}
 
@@ -129,7 +139,8 @@ func NewUpdateExpense(
 			RefundAmount: p.RefundAmount,
 			Description:  p.Description,
 			CategoryID:   p.CategoryID,
-			SplitRatio:   &splitRatio,
+			SplitRatio:   splitRatio,
+			SplitType:    p.SplitType,
 			PayerID:      p.PayerID,
 			ReceiverID:   p.ReceiverID,
 			CreatedAt:    p.CreatedAt,

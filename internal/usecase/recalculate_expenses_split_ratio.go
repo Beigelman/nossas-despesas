@@ -13,8 +13,9 @@ import (
 
 type (
 	RecalculateExpensesSplitRatioInput struct {
-		GroupID entity.GroupID
-		Date    time.Time
+		EventName string
+		GroupID   entity.GroupID
+		Date      time.Time
 	}
 
 	RecalculateExpensesSplitRatio func(ctx context.Context, input RecalculateExpensesSplitRatioInput) error
@@ -25,6 +26,7 @@ func NewRecalculateExpensesSplitRatio(
 	incomeRepo repository.IncomeRepository,
 ) RecalculateExpensesSplitRatio {
 	return func(ctx context.Context, input RecalculateExpensesSplitRatioInput) error {
+		slog.InfoContext(ctx, "Recalculating expenses split ratio", slog.Int("group", input.GroupID.Value), slog.Time("date", input.Date), slog.String("event", input.EventName))
 		expenses, err := expenseRepo.GetByGroupDate(ctx, input.GroupID, input.Date)
 		if err != nil {
 			return fmt.Errorf("expensesRepo.GetByGroupDate: %w", err)
@@ -32,7 +34,7 @@ func NewRecalculateExpensesSplitRatio(
 
 		var proportionalExpenses []entity.Expense
 		for _, expense := range expenses {
-			if expense.SplitRatio.Type() == vo.SpliteTypes.Proportional {
+			if expense.SplitType == vo.SpliteTypes.Proportional {
 				proportionalExpenses = append(proportionalExpenses, expense)
 			}
 		}
@@ -66,6 +68,8 @@ func NewRecalculateExpensesSplitRatio(
 		if err := expenseRepo.BulkStore(ctx, proportionalExpenses); err != nil {
 			return fmt.Errorf("expense.BulkStore: %w", err)
 		}
+
+		slog.InfoContext(ctx, "Expenses split ratio recalculated successfully", slog.Int("count", len(proportionalExpenses)))
 
 		return nil
 	}

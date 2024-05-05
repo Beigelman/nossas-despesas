@@ -3,11 +3,12 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"time"
 )
 
 type (
@@ -103,16 +104,15 @@ func NewCreateExpense(
 			splitRatio = vo.NewEqualSplitRatio()
 		}
 
-		expenseID := expenseRepo.GetNextID()
-
 		expense, err := entity.NewExpense(entity.ExpenseParams{
-			ID:          expenseID,
+			ID:          expenseRepo.GetNextID(),
 			Name:        p.Name,
 			Amount:      p.Amount,
 			Description: p.Description,
 			GroupID:     p.GroupID,
 			CategoryID:  p.CategoryID,
 			SplitRatio:  splitRatio,
+			SplitType:   p.SplitType,
 			PayerID:     p.PayerID,
 			ReceiverID:  p.ReceiverID,
 			CreatedAt:   p.CreatedAt,

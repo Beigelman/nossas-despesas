@@ -43,9 +43,11 @@ var PubSubModule = eon.NewModule("Pubsub", func(ctx context.Context, c *di.Conta
 					}
 
 					if err := recalculateExpenses(ctx, usecase.RecalculateExpensesSplitRatioInput{
-						GroupID: payload.GroupID,
-						Date:    payload.Income.CreatedAt,
+						EventName: payload.Type,
+						GroupID:   payload.GroupID,
+						Date:      payload.Income.CreatedAt,
 					}); err != nil {
+						slog.ErrorContext(ctx, "failed to recalculate expenses spit ratio", "error", err)
 						msg.Nack()
 						continue
 					}

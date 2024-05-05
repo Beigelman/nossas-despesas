@@ -1,5 +1,7 @@
 package vo
 
+import "math"
+
 type SplitType string
 
 var SpliteTypes = struct {
@@ -42,7 +44,7 @@ func NewEqualSplitRatio() SplitRatio {
 
 func NewProportionalSplitRatio(payerIncome, receiverIncome int) SplitRatio {
 	totalIncome := payerIncome + receiverIncome
-	payerRatio := payerIncome * 100 / totalIncome
+	payerRatio := int(math.Round(float64(payerIncome) * 100.0 / float64(totalIncome)))
 
 	receiverRatio := 100 - payerRatio
 

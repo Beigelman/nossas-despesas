@@ -23,6 +23,7 @@ type (
 		ReceiverID   int                    `db:"receiver_id" json:"receiver_id"`
 		GroupID      int                    `db:"group_id" json:"group_id"`
 		SplitRatio   expenserepo.SplitRatio `db:"split_ratio" json:"split_ratio"`
+		SplitType    string                 `db:"split_type" json:"split_type"`
 		CreatedAt    time.Time              `db:"created_at" json:"created_at"`
 		UpdatedAt    time.Time              `db:"updated_at" json:"updated_at"`
 		DeletedAt    *time.Time             `db:"deleted_at" json:"deleted_at"`
@@ -47,6 +48,7 @@ func NewGetExpenseDetails(db db.Database) GetExpenseDetails {
     				receiver_id,
   					category_id,
     				split_ratio,
+            split_type,
 	  				created_at,
 		  			updated_at,
 			  		deleted_at

@@ -36,6 +36,7 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
     				ex.payer_id as payer_id,
     				ex.receiver_id as receiver_id,
     				ex.split_ratio as split_ratio,
+            ex.split_type as split_type,
 					  ex.created_at as created_at,
 					  ex.updated_at as updated_at,
 					  ex.deleted_at as deleted_at
@@ -45,7 +46,7 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 				and ex.created_at < $2
 				order by ex.id desc, ex.version desc
 			)
-			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, created_at, updated_at, deleted_at from base b
+			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, split_type, created_at, updated_at, deleted_at from base b
 			where b.deleted_at is null
 			order by b.created_at desc
 			limit $3
