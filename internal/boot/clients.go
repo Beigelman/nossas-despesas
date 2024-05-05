@@ -17,7 +17,6 @@ import (
 
 var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var dbClient db.Database
-
 	di.Provide(c, func(cfg *config.Config) service.TokenProvider {
 		return jwt.NewJWTProvider(cfg.JWTSecret)
 	})
@@ -25,6 +24,7 @@ var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Con
 		dbClient = db.New(cfg)
 		return dbClient
 	})
+
 	di.Provide(c, func(cfg *config.Config) service.EmailProvider {
 		if cfg.Env == env.Development {
 			return email.NewMailTrapEmailProvider(cfg.Mail.ApiKey)
@@ -40,6 +40,7 @@ var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Con
 				return fmt.Errorf("dbClient.Close: %w", err)
 			}
 		}
+
 		return nil
 	})
 })

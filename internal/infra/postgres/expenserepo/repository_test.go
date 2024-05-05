@@ -133,6 +133,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_Store() {
 			Payer:    50,
 			Receiver: 50,
 		},
+		SplitType:  vo.SpliteTypes.Equal,
 		CategoryID: s.category.ID,
 		GroupID:    s.group.ID,
 	})
@@ -154,6 +155,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByID() {
 			Payer:    50,
 			Receiver: 50,
 		},
+		SplitType:  vo.SpliteTypes.Equal,
 		CategoryID: s.category.ID,
 		GroupID:    s.group.ID,
 	})
@@ -183,6 +185,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByGroupDate() {
 				Payer:    50,
 				Receiver: 50,
 			},
+			SplitType:  vo.SpliteTypes.Equal,
 			CategoryID: s.category.ID,
 			GroupID:    s.group.ID,
 		})

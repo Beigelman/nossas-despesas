@@ -2,8 +2,9 @@ package entity
 
 import (
 	"fmt"
-	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 	"time"
+
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
@@ -19,6 +20,7 @@ type Expense struct {
 	GroupID      GroupID
 	CategoryID   CategoryID
 	SplitRatio   vo.SplitRatio
+	SplitType    vo.SplitType
 	PayerID      UserID
 	ReceiverID   UserID
 }
@@ -31,6 +33,7 @@ type ExpenseParams struct {
 	GroupID     GroupID
 	CategoryID  CategoryID
 	SplitRatio  vo.SplitRatio
+	SplitType   vo.SplitType
 	PayerID     UserID
 	ReceiverID  UserID
 	CreatedAt   *time.Time
@@ -43,6 +46,7 @@ type ExpenseUpdateParams struct {
 	Description  *string
 	CategoryID   *CategoryID
 	SplitRatio   *vo.SplitRatio
+	SplitType    *vo.SplitType
 	PayerID      *UserID
 	ReceiverID   *UserID
 	CreatedAt    *time.Time
@@ -66,6 +70,7 @@ func NewExpense(p ExpenseParams) (*Expense, error) {
 		GroupID:     p.GroupID,
 		CategoryID:  p.CategoryID,
 		SplitRatio:  p.SplitRatio,
+		SplitType:   p.SplitType,
 		PayerID:     p.PayerID,
 		ReceiverID:  p.ReceiverID,
 	}
@@ -96,6 +101,9 @@ func (e *Expense) Update(p ExpenseUpdateParams) error {
 	if p.SplitRatio != nil {
 		e.SplitRatio = *p.SplitRatio
 	}
+	if p.SplitType != nil {
+		e.SplitType = *p.SplitType
+	}
 	if p.PayerID != nil {
 		e.PayerID = *p.PayerID
 	}
@@ -124,6 +132,10 @@ func (e *Expense) Delete() {
 
 func (e *Expense) validate() error {
 	if e.SplitRatio.Payer+e.SplitRatio.Receiver != 100 || e.SplitRatio.Payer > 99 {
+		return ErrInvalidSplitRatio
+	}
+
+	if e.SplitType == vo.SpliteTypes.Equal && e.SplitRatio.Payer != 50 {
 		return ErrInvalidSplitRatio
 	}
 

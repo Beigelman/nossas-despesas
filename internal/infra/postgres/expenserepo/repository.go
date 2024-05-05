@@ -25,8 +25,8 @@ func (repo *ExpensePGRepository) BulkStore(ctx context.Context, expenses []entit
 	}
 
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents,  description, group_id, category_id, split_ratio, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :amount_cents, :refund_amount_cents, :description, :group_id, :category_id, :split_ratio, :payer_id, :receiver_id, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
+    VALUES (:id, :name, :amount_cents, :refund_amount_cents, :description, :group_id, :category_id, :split_ratio, :split_type, :payer_id, :receiver_id, :created_at, :updated_at, :deleted_at, :version)
 	`, models); err != nil {
 		return fmt.Errorf("db.ExecContext: %w", err)
 	}
@@ -49,6 +49,7 @@ func (repo *ExpensePGRepository) GetByGroupDate(ctx context.Context, groupId ent
     				payer_id,
     				receiver_id,
     				split_ratio,
+            split_type,
 					  created_at,
 					  updated_at,
 					  deleted_at,
@@ -93,7 +94,7 @@ func (repo *ExpensePGRepository) GetByID(ctx context.Context, id entity.ExpenseI
 
 	if err := repo.db.QueryRowxContext(ctx, `
 		WITH base AS (
-			SELECT id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, payer_id, receiver_id, created_at, updated_at, deleted_at, version
+			SELECT id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version
 			FROM expenses WHERE id = $1
 			ORDER BY version DESC
 			LIMIT 1
@@ -114,8 +115,8 @@ func (repo *ExpensePGRepository) Store(ctx context.Context, entity *entity.Expen
 	model := ToModel(entity)
 
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents,  description, group_id, category_id, split_ratio, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :amount_cents, :refund_amount_cents, :description, :group_id, :category_id, :split_ratio, :payer_id, :receiver_id, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents,  description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
+    VALUES (:id, :name, :amount_cents, :refund_amount_cents, :description, :group_id, :category_id, :split_ratio, :split_type, :payer_id, :receiver_id, :created_at, :updated_at, :deleted_at, :version)
 	`, &model); err != nil {
 		return fmt.Errorf("db.ExecContext: %w", err)
 	}

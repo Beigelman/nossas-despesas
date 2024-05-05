@@ -2,8 +2,9 @@ package db
 
 import (
 	"fmt"
-	"github.com/golang-migrate/migrate/v4"
 	"log"
+
+	"github.com/golang-migrate/migrate/v4"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
@@ -37,10 +38,10 @@ func New(c *config.Config) Database {
 	}
 
 	if c.Env == env.Production {
-		db.DB.SetMaxIdleConns(c.Db.MaxIdleConns)
-		db.DB.SetMaxOpenConns(c.Db.MaxOpenConns)
-		db.DB.SetConnMaxLifetime(c.Db.MaxLifeTime)
-		db.DB.SetConnMaxIdleTime(c.Db.MaxIdleTime)
+		db.SetMaxIdleConns(c.Db.MaxIdleConns)
+		db.SetMaxOpenConns(c.Db.MaxOpenConns)
+		db.SetConnMaxLifetime(c.Db.MaxLifeTime)
+		db.SetConnMaxIdleTime(c.Db.MaxIdleTime)
 	}
 
 	return &SQLDatabase{

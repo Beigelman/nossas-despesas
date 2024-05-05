@@ -1,16 +1,22 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/infra/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"github.com/Beigelman/nossas-despesas/internal/usecase"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
-	"time"
+	"github.com/google/uuid"
+	"golang.org/x/exp/slog"
 )
 
 type (
@@ -27,12 +33,17 @@ type (
 	}
 )
 
-func NewUpdateIncome(updateIncome usecase.UpdateIncome) UpdateIncome {
+func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publisher) UpdateIncome {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		userID, ok := ctx.Locals("user_id").(int)
 		if !ok {
 			return except.BadRequestError("invalid user id")
+		}
+
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid group id")
 		}
 
 		incomeID, err := strconv.Atoi(ctx.Params("income_id"))
@@ -64,6 +75,24 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome) UpdateIncome {
 		})
 		if err != nil {
 			return fmt.Errorf("updateIncome: %w", err)
+		}
+
+		event, err := json.Marshal(pubsub.IncomeEvent{
+			Event: pubsub.Event{
+				SentAt:  time.Now(),
+				Type:    "income_created",
+				UserID:  entity.UserID{Value: userID},
+				GroupID: entity.GroupID{Value: groupID},
+			},
+			Income: *income,
+		})
+		if err == nil {
+			if err := publisher.Publish(
+				pubsub.IncomesTopic,
+				message.NewMessage(uuid.NewString(), event),
+			); err != nil {
+				slog.ErrorContext(ctx.Context(), "failed to publish income updated event")
+			}
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
