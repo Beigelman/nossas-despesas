@@ -52,6 +52,15 @@ func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error)
 		Receiver: receiverRatio,
 	}
 
+	var splitType vo.SplitType
+	if payerRatio == 50 || receiverRatio == 50 {
+		splitType = vo.SpliteTypes.Equal
+	} else if receiverRatio == 100 {
+		splitType = vo.SpliteTypes.Transfer
+	} else {
+		splitType = vo.SpliteTypes.Proportional
+	}
+
 	regex, _ := regexp.Compile(`reembolso|cashback|ajuste`)
 	createdAt := date.Add(time.Hour*4 + time.Duration(int(rand.Float64()*86400))*time.Millisecond)
 	description := "Imported from splitwise"
@@ -68,6 +77,7 @@ func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error)
 		GroupID:     entity.GroupID{Value: groupId},
 		CategoryID:  entity.CategoryID{Value: category},
 		SplitRatio:  splitRatio,
+		SplitType:   splitType,
 		PayerID:     entity.UserID{Value: payer},
 		ReceiverID:  entity.UserID{Value: receiver},
 		CreatedAt:   &createdAt,

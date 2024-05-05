@@ -17,7 +17,6 @@ type ExpensePGRepository struct {
 	db *sqlx.DB
 }
 
-// BulkInsert implements repository.ExpenseRepository.
 func (repo *ExpensePGRepository) BulkStore(ctx context.Context, expenses []entity.Expense) error {
 	var models []ExpenseModel
 	for _, expense := range expenses {
@@ -34,26 +33,26 @@ func (repo *ExpensePGRepository) BulkStore(ctx context.Context, expenses []entit
 	return nil
 }
 
-// GetByGroupDate implements repository.ExpenseRepository.
 func (repo *ExpensePGRepository) GetByGroupDate(ctx context.Context, groupId entity.GroupID, date time.Time) ([]entity.Expense, error) {
 	var models []ExpenseModel
 	if err := repo.db.SelectContext(ctx, &models, ` 
       with base as (
 				select
-    				distinct on (id) id as id,
-    				name,
-    				amount_cents,
-    				refund_amount_cents,
-    				description,
-    				group_id,
-    				payer_id,
-    				receiver_id,
-    				split_ratio,
-            split_type,
-					  created_at,
-					  updated_at,
-					  deleted_at,
-            version
+    			distinct on (id) id as id,
+    			name, 
+          amount_cents, 
+          refund_amount_cents, 
+          description, 
+          group_id, 
+          category_id, 
+          payer_id,   
+          receiver_id, 
+          split_ratio, 
+          split_type, 
+          created_at, 
+          updated_at, 
+          deleted_at, 
+          version
 				from expenses
 				where group_id = $1
         AND EXTRACT(month FROM created_at) = $2
@@ -77,7 +76,6 @@ func (repo *ExpensePGRepository) GetByGroupDate(ctx context.Context, groupId ent
 	return expenses, nil
 }
 
-// GetNextID implements expense.UserRepository.
 func (repo *ExpensePGRepository) GetNextID() entity.ExpenseID {
 	var nextValue int
 
@@ -88,13 +86,27 @@ func (repo *ExpensePGRepository) GetNextID() entity.ExpenseID {
 	return entity.ExpenseID{Value: nextValue}
 }
 
-// GetByID implements expense.UserRepository.
 func (repo *ExpensePGRepository) GetByID(ctx context.Context, id entity.ExpenseID) (*entity.Expense, error) {
 	var model ExpenseModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
 		WITH base AS (
-			SELECT id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version
+			SELECT 
+        id, 
+        name, 
+        amount_cents, 
+        refund_amount_cents, 
+        description, 
+        group_id, 
+        category_id, 
+        payer_id,   
+        receiver_id, 
+        split_ratio, 
+        split_type, 
+        created_at, 
+        updated_at, 
+        deleted_at, 
+        version
 			FROM expenses WHERE id = $1
 			ORDER BY version DESC
 			LIMIT 1
@@ -115,7 +127,7 @@ func (repo *ExpensePGRepository) Store(ctx context.Context, entity *entity.Expen
 	model := ToModel(entity)
 
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents,  description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
+		INSERT INTO expenses (id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, created_at, updated_at, deleted_at, version)
     VALUES (:id, :name, :amount_cents, :refund_amount_cents, :description, :group_id, :category_id, :split_ratio, :split_type, :payer_id, :receiver_id, :created_at, :updated_at, :deleted_at, :version)
 	`, &model); err != nil {
 		return fmt.Errorf("db.ExecContext: %w", err)

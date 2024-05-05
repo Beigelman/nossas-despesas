@@ -3,6 +3,9 @@ package importincomes
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/incomerepo"
@@ -11,8 +14,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
-	"strconv"
-	"time"
 )
 
 var cmd = &cobra.Command{
@@ -20,8 +21,10 @@ var cmd = &cobra.Command{
 	Run: run,
 }
 
-var danId, luId int
-var environment string
+var (
+	danId, luId int
+	environment string
+)
 
 func run(cmd *cobra.Command, args []string) {
 	ctx := context.Background()
@@ -41,12 +44,14 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	bar := progressbar.Default(int64(len(file)))
 	for _, line := range file {
-		//Data			Daniel Beigelman		Luíza Brito
-		//2023-06-01	100000					12000
+		// Data			Daniel Beigelman		Luíza Brito
+		// 2023-06-01	100000					12000
 		date, err := time.Parse("2006/01/02", line[0])
 		if err != nil {
 			panic(fmt.Errorf("error parsing date: %w", err))
 		}
+
+		offsetDate := date.Add(12 * time.Hour)
 
 		danAmount, err := strconv.ParseFloat(line[1], 64)
 		if err != nil {
@@ -65,7 +70,7 @@ func run(cmd *cobra.Command, args []string) {
 			UserID:    entity.UserID{Value: danId},
 			Amount:    danIncomeCents,
 			Type:      entity.IncomeTypes.Salary,
-			CreatedAt: &date,
+			CreatedAt: &offsetDate,
 		})
 
 		luIncome := entity.NewIncome(entity.IncomeParams{
@@ -73,7 +78,7 @@ func run(cmd *cobra.Command, args []string) {
 			UserID:    entity.UserID{Value: luId},
 			Amount:    luIncomeCents,
 			Type:      entity.IncomeTypes.Salary,
-			CreatedAt: &date,
+			CreatedAt: &offsetDate,
 		})
 
 		if err := incomesRepo.Store(ctx, danIncome); err != nil {
