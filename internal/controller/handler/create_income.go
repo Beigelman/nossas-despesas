@@ -41,6 +41,10 @@ func NewCreateIncome(createIncome usecase.CreateIncome, publisher message.Publis
 			return except.UnprocessableEntityError().SetInternal(err)
 		}
 
+		if err := valid.Validate(req); err != nil {
+			return except.BadRequestError("invalid request body").SetInternal(err)
+		}
+
 		var (
 			userID int
 			ok     bool
@@ -57,10 +61,6 @@ func NewCreateIncome(createIncome usecase.CreateIncome, publisher message.Publis
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
 			return except.BadRequestError("missing context group_id")
-		}
-
-		if err := valid.Validate(req); err != nil {
-			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
 		income, err := createIncome(ctx.Context(), usecase.CreateIncomeParams{

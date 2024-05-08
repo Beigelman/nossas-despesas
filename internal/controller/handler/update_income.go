@@ -36,14 +36,14 @@ type (
 func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publisher) UpdateIncome {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
-		userID, ok := ctx.Locals("user_id").(int)
-		if !ok {
-			return except.BadRequestError("invalid user id")
-		}
-
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
 			return except.BadRequestError("invalid group id")
+		}
+
+		userID, ok := ctx.Locals("user_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid user id")
 		}
 
 		incomeID, err := strconv.Atoi(ctx.Params("income_id"))
@@ -61,8 +61,9 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 		}
 
 		income, err := updateIncome(ctx.Context(), usecase.UpdateIncomeParams{
-			ID:     entity.IncomeID{Value: incomeID},
-			UserID: entity.UserID{Value: userID},
+			ID:      entity.IncomeID{Value: incomeID},
+			UserID:  entity.UserID{Value: userID},
+			GroupID: entity.GroupID{Value: groupID},
 			Type: func() *entity.IncomeType {
 				if req.Type == nil {
 					return nil
@@ -80,7 +81,7 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 		event, err := json.Marshal(pubsub.IncomeEvent{
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
-				Type:    "income_created",
+				Type:    "income_updated",
 				UserID:  entity.UserID{Value: userID},
 				GroupID: entity.GroupID{Value: groupID},
 			},
