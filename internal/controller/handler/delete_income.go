@@ -1,14 +1,21 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/infra/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/usecase"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
+	"github.com/google/uuid"
+	"golang.org/x/exp/slog"
 )
 
 type (
@@ -19,11 +26,16 @@ type (
 	}
 )
 
-func NewDeleteIncome(deleteIncome usecase.DeleteIncome) DeleteIncome {
+func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publisher) DeleteIncome {
 	return func(ctx *fiber.Ctx) error {
 		userID, ok := ctx.Locals("user_id").(int)
 		if !ok {
 			return except.BadRequestError("invalid user id")
+		}
+
+		groupID, ok := ctx.Locals("group_id").(int)
+		if !ok {
+			return except.BadRequestError("invalid group id")
 		}
 
 		incomeID, err := strconv.Atoi(ctx.Params("income_id"))
@@ -32,11 +44,30 @@ func NewDeleteIncome(deleteIncome usecase.DeleteIncome) DeleteIncome {
 		}
 
 		income, err := deleteIncome(ctx.Context(), usecase.DeleteIncomeParams{
-			ID:     entity.IncomeID{Value: incomeID},
-			UserID: entity.UserID{Value: userID},
+			ID:      entity.IncomeID{Value: incomeID},
+			UserID:  entity.UserID{Value: userID},
+			GroupID: entity.GroupID{Value: groupID},
 		})
 		if err != nil {
 			return fmt.Errorf("updateIncome: %w", err)
+		}
+
+		event, err := json.Marshal(pubsub.IncomeEvent{
+			Event: pubsub.Event{
+				SentAt:  time.Now(),
+				Type:    "income_created",
+				UserID:  entity.UserID{Value: userID},
+				GroupID: entity.GroupID{Value: groupID},
+			},
+			Income: *income,
+		})
+		if err == nil {
+			if err := publisher.Publish(
+				pubsub.IncomesTopic,
+				message.NewMessage(uuid.NewString(), event),
+			); err != nil {
+				slog.ErrorContext(ctx.Context(), "failed to publish income created event", "error", err)
+			}
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(

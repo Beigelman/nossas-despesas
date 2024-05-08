@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
@@ -10,8 +11,9 @@ import (
 
 type (
 	DeleteIncomeParams struct {
-		ID     entity.IncomeID
-		UserID entity.UserID
+		ID      entity.IncomeID
+		UserID  entity.UserID
+		GroupID entity.GroupID
 	}
 	DeleteIncome func(ctx context.Context, p DeleteIncomeParams) (*entity.Income, error)
 )
@@ -25,8 +27,9 @@ func NewDeleteIncome(
 			return nil, fmt.Errorf("incomeRepo.GetByID: %w", err)
 		}
 
-		if income.UserID != p.UserID {
-			return nil, except.BadRequestError("user mismatch")
+		// TODO: Bypass para permitir a Lu editar minhas receitas. Pensar em uma solução mais estruturante no futuro
+		if p.GroupID.Value != 1 && income.UserID != p.UserID {
+			return nil, except.ForbiddenError("user mismatch")
 		}
 
 		income.Delete()

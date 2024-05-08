@@ -3,16 +3,18 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"time"
 )
 
 type (
 	UpdateIncomeParams struct {
 		ID        entity.IncomeID
 		UserID    entity.UserID
+		GroupID   entity.GroupID
 		Type      *entity.IncomeType
 		Amount    *int
 		CreatedAt *time.Time
@@ -29,7 +31,8 @@ func NewUpdateIncome(
 			return nil, fmt.Errorf("incomeRepo.GetByID: %w", err)
 		}
 
-		if income.UserID != p.UserID {
+		// TODO: Bypass para permitir a Lu editar minhas receitas. Pensar em uma solução mais estruturante no futuro
+		if p.GroupID.Value != 1 && income.UserID != p.UserID {
 			return nil, except.BadRequestError("user mismatch")
 		}
 
