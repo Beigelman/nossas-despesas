@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -51,6 +52,12 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 			order by b.created_at desc
 			limit $3
 		`, input.GroupID, input.LastExpenseDate, input.Limit); err != nil {
+			slog.DebugContext(ctx, "Failed to get group expenses",
+				slog.Int("group_id", input.GroupID),
+				slog.Int("limit", input.Limit),
+				slog.Time("LastExpenseDate", input.LastExpenseDate),
+				"error", err,
+			)
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}
 
