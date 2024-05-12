@@ -3,6 +3,7 @@ package logger
 import (
 	"log/slog"
 	"os"
+	"strings"
 )
 
 func New(handler slog.Handler) *slog.Logger {
@@ -46,7 +47,7 @@ func getLogLevel(logLevel ...string) slog.Level {
 }
 
 func LogLevelMap(level string) slog.Level {
-	switch level {
+	switch strings.ToUpper(level) {
 	case "DEBUG":
 		return slog.LevelDebug
 	case "INFO":
