@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"time"
 )
 
 type GetExpensesPerPeriod func(ctx *fiber.Ctx) error
@@ -40,6 +41,6 @@ func NewGetExpensesPerPeriod(getExpensesPerCategory query.GetExpensesPerPeriod) 
 			return fmt.Errorf("query.GetExpensesPerPeriod: %w", err)
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[[]query.ExpensesPerPeriod](http.StatusOK, expensesPerPeriod))
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, expensesPerPeriod))
 	}
 }

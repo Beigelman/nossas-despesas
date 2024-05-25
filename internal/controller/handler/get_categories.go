@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type GetCategories func(ctx *fiber.Ctx) error
@@ -17,6 +18,6 @@ func NewGetCategories(getCategories query.GetCategories) GetCategories {
 			return fmt.Errorf("query.getCategories: %w", err)
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[[]query.CategoryGroup](http.StatusOK, categories))
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, categories))
 	}
 }

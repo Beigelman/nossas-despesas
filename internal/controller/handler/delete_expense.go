@@ -2,9 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"net/http"
 	"strconv"
+
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
@@ -47,7 +48,7 @@ func NewDeleteExpense(deleteExpense usecase.DeleteExpense) DeleteExpense {
 		}
 
 		return ctx.Status(http.StatusOK).JSON(
-			api.NewResponse[DeleteExpenseResponse](http.StatusOK, DeleteExpenseResponse{
+			api.NewResponse(http.StatusOK, DeleteExpenseResponse{
 				ID: expense.ID.Value,
 			}),
 		)

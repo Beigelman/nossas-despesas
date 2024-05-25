@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"time"
 )
 
 type (
@@ -42,7 +43,7 @@ func NewGetGroupMonthlyIncome(getGroupMonthlyIncome query.GetGroupMonthlyIncome)
 			totalIncome += income.Amount
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[GetGroupMonthlyIncomeResponse](http.StatusOK, GetGroupMonthlyIncomeResponse{
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetGroupMonthlyIncomeResponse{
 			GroupID: groupID,
 			Incomes: incomes,
 			Total:   totalIncome,
