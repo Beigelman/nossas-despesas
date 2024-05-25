@@ -4,12 +4,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"time"
 )
 
 type (
@@ -49,7 +50,7 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 		}
 
 		nextToken := ""
-		if expenses != nil && len(expenses) == defaultLimit {
+		if len(expenses) == defaultLimit {
 			nextToken, err = encodeCursor(&GetGroupExpensesCursor{
 				LastExpenseDate: expenses[len(expenses)-1].CreatedAt,
 			})
@@ -58,7 +59,7 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 			}
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[GetGroupExpensesResponse](http.StatusOK, GetGroupExpensesResponse{
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetGroupExpensesResponse{
 			Expenses:  expenses,
 			NextToken: nextToken,
 		}))

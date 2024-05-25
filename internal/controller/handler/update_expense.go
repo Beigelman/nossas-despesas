@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
@@ -94,7 +95,7 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse[UpdateExpenseResponse](http.StatusCreated, UpdateExpenseResponse{
+			api.NewResponse(http.StatusCreated, UpdateExpenseResponse{
 				ID:         expense.ID.Value,
 				Name:       expense.Name,
 				Amount:     float32(expense.Amount) / 100,

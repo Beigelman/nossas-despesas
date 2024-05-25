@@ -2,11 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (
@@ -30,7 +31,7 @@ func NewGetGroupBalance(getGroupBalance query.GetGroupBalance) GetGroupBalance {
 			return fmt.Errorf("query.GetGroupBalance: %w", err)
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[GetGroupBalanceResponse](http.StatusOK, GetGroupBalanceResponse{
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetGroupBalanceResponse{
 			GroupID:  groupID,
 			Balances: balances,
 		}))

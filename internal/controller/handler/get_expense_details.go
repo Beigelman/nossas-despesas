@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
 )
 
 type (
@@ -39,6 +40,6 @@ func NewGetExpenseDetails(getGroupExpenses query.GetExpenseDetails) GetExpenseDe
 			return except.ForbiddenError("group mismatch")
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[[]query.ExpenseDetails](http.StatusOK, expenseDetails))
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, expenseDetails))
 	}
 }

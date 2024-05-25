@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"github.com/Beigelman/nossas-despesas/internal/usecase"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (
@@ -46,11 +47,10 @@ func NewInviteUserToGroup(inviteUserToGroup usecase.InviteUserToGroup) InviteUse
 			Email:   request.Email,
 			BaseURL: request.BaseURL,
 		})
-
 		if err != nil {
 			return fmt.Errorf("usecase.InviteUserToGroup: %w", err)
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[*entity.GroupInvite](http.StatusOK, invite))
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, invite))
 	}
 }

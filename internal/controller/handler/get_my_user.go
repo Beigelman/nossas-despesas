@@ -2,11 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/query"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (
@@ -25,6 +26,6 @@ func NewGetMe(getUserID query.GetUserByID) GetMe {
 			return fmt.Errorf("query.getUser: %w", err)
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse[*query.User](http.StatusOK, user))
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, user))
 	}
 }
