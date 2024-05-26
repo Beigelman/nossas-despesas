@@ -16,10 +16,10 @@ migrate-hash:
 	 atlas migrate hash -c file://database/atlas.hcl --env local
 
 migrate-up:
-	./database/scripts/migrate.sh up "./database/migrations"
+	./database/migrate.sh up "./database/migrations"
 
 migrate-down:
-	./database/scripts/migrate.sh down "./database/migrations"
+	./database/migrate.sh down "./database/migrations"
 
 migrate-force:
 	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" force $(version)
