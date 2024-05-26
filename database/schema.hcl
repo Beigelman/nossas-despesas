@@ -51,6 +51,13 @@ table "expenses" {
     type = bigint
     null = false
   }
+  column "document_search" {
+    type = tsvector
+    as {
+      expr = "setweight(to_tsvector('portuguese', coalesce(name, '')), 'A') || setweight(to_tsvector('portuguese', coalesce(description, '')), 'B')"
+      type = STORED
+    }
+  }
   column "created_at" {
     type = timestamptz
     null = false
@@ -91,7 +98,13 @@ table "expenses" {
     columns = [column.category_id]
     ref_columns = [table.categories.column.id]
   }
+
+  index "document_search_idx" {
+    type = GIN
+    columns = [column.document_search]
+  }
 }
+
 
 table "groups" {
   schema = schema.public
