@@ -50,9 +50,6 @@ func (c *Config) LoadConfig() error {
 func (c *Config) DBConnectionString() string {
 	if c.Db.ConnectionString != "" {
 		return c.Db.ConnectionString
-	} else if c.Db.Type == "postgres" {
-		return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", c.Db.Host, c.Db.Port, c.Db.User, c.Db.Name, c.Db.Password)
 	}
-
-	panic("Invalid database type")
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", c.Db.Host, c.Db.Port, c.Db.User, c.Db.Name, c.Db.Password)
 }
