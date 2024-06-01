@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
@@ -14,7 +15,6 @@ type Db struct {
 	Name             string        `mapstructure:"DB_NAME"`
 	User             string        `mapstructure:"DB_USER"`
 	Password         string        `mapstructure:"DB_PASSWORD"`
-	Type             string        `mapstructure:"DB_TYPE"`
 	ConnectionString string        `mapstructure:"DB_CONNECTION_STRING"`
 	MigrationPath    string        `mapstructure:"DB_MIGRATION_PATH"`
 	MaxIdleConns     int           `mapstructure:"DB_MAX_IDLE_CONNS"`
@@ -46,7 +46,6 @@ func New(env env.Environment) Config {
 		Port:     "8080",
 		LogLevel: "INFO",
 		Db: Db{
-			Type:         "postgres",
 			MaxOpenConns: 4,
 		},
 	}
@@ -65,7 +64,6 @@ func NewTestConfig(dbPort, dbHost, dbType string) Config {
 			Name:          "test",
 			User:          "root",
 			Password:      "root",
-			Type:          dbType,
 			MigrationPath: migrationPath,
 			MaxOpenConns:  4,
 		},

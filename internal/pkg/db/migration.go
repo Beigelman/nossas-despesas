@@ -2,10 +2,9 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 )
 
@@ -44,21 +43,9 @@ func (sql *SQLDatabase) getMigrateClient() (*migrate.Migrate, error) {
 		return sql.migrateClient, nil
 	}
 
-	var (
-		driver database.Driver
-		err    error
-	)
-	if sql.kind == "mysql" {
-		driver, err = mysql.WithInstance(sql.db.DB, &mysql.Config{
-			DatabaseName: sql.name,
-		})
-	} else if sql.kind == "postgres" {
-		driver, err = postgres.WithInstance(sql.db.DB, &postgres.Config{
-			DatabaseName: sql.name,
-		})
-	} else {
-		return nil, fmt.Errorf("unsupported database type: %s", sql.kind)
-	}
+	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
+		DatabaseName: sql.name,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get DB instance: %w", err)
 	}

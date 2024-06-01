@@ -2,7 +2,7 @@
 db:
 	docker compose up db -d
 # Run
-dev:
+dev: db
 	ENV=development go run main.go
 
 # Migrations

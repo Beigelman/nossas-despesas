@@ -8,8 +8,8 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
-	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -32,7 +32,7 @@ type SQLDatabase struct {
 }
 
 func New(c *config.Config) Database {
-	db, err := sqlx.Open(c.Db.Type, c.DBConnectionString())
+	db, err := sqlx.Open("pgx", c.DBConnectionString())
 	if err != nil {
 		log.Fatal("Failed to connect to database", err)
 	}
@@ -49,7 +49,6 @@ func New(c *config.Config) Database {
 		env:           c.Env,
 		name:          c.Db.Name,
 		migrationPath: c.Db.MigrationPath,
-		kind:          c.Db.Type,
 	}
 }
 
