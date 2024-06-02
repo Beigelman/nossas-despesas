@@ -13,6 +13,7 @@ func Router(
 	createCategoryHandler handler.CreateCategory,
 	createCategoryGroupHandler handler.CreateCategoryGroup,
 	getGroupExpenseHandler handler.GetGroupExpenses,
+	getExpensesPerSearch handler.GetExpensesPerSearch,
 	getGroupHandler handler.GetGroup,
 	getMyUserHandler handler.GetMe,
 	getCategoriesHandler handler.GetCategories,
@@ -65,6 +66,7 @@ func Router(
 		// Expense routes
 		expense := v1.Group("expense", authMiddleware)
 		expense.Post("/", createExpenseHandler)
+		expense.Get("/", getExpensesPerSearch)
 		expense.Get("/:expense_id/details", getExpenseDetailsHandler)
 		expense.Patch("/:expense_id", updateExpenseHandler)
 		expense.Delete("/:expense_id", deleteExpenseHandler)
