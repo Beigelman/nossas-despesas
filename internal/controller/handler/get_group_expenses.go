@@ -17,6 +17,7 @@ type (
 	GetGroupExpenses func(ctx *fiber.Ctx) error
 
 	GetGroupExpensesCursor struct {
+		LastExpenseID   int       `json:"last_expense_id"`
 		LastExpenseDate time.Time `json:"last_expense_date"`
 	}
 
@@ -43,6 +44,7 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 		expenses, err := getGroupExpenses(ctx.Context(), query.GetGroupExpensesInput{
 			GroupID:         groupID,
 			LastExpenseDate: token.LastExpenseDate,
+			LastExpenseID:   token.LastExpenseID,
 			Limit:           defaultLimit,
 		})
 		if err != nil {
@@ -51,8 +53,10 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 
 		nextToken := ""
 		if len(expenses) == defaultLimit {
+			lastExpense := expenses[len(expenses)-1]
 			nextToken, err = encodeCursor(&GetGroupExpensesCursor{
-				LastExpenseDate: expenses[len(expenses)-1].CreatedAt,
+				LastExpenseDate: lastExpense.CreatedAt,
+				LastExpenseID:   lastExpense.ID,
 			})
 			if err != nil {
 				return fmt.Errorf("encodeCursor: %w", err)

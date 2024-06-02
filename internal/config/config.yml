@@ -21,7 +21,6 @@ stg:
 
 prd:
   <<: [*default]
-  LGO_LEVEL: "debug"
 
 test:
   <<: *default

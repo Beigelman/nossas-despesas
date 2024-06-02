@@ -3,7 +3,6 @@ package query
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -15,6 +14,7 @@ type (
 	GetGroupExpensesInput struct {
 		GroupID         int
 		LastExpenseDate time.Time
+		LastExpenseID   int
 		Limit           int
 	}
 )
@@ -44,20 +44,14 @@ func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
 				from expenses ex
          		inner join categories cat on ex.category_id = cat.id
 				where ex.group_id = $1
-				and ex.created_at < $2
+				and (ex.created_at < $2 or (ex.created_at = $2 and ex.id < $3))
 				order by ex.id desc, ex.version desc
 			)
 			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, split_type, created_at, updated_at, deleted_at from base b
 			where b.deleted_at is null
-			order by b.created_at desc
-			limit $3
-		`, input.GroupID, input.LastExpenseDate, input.Limit); err != nil {
-			slog.DebugContext(ctx, "Failed to get group expenses",
-				slog.Int("group_id", input.GroupID),
-				slog.Int("limit", input.Limit),
-				slog.Time("LastExpenseDate", input.LastExpenseDate),
-				"error", err,
-			)
+			order by b.created_at desc, b.id desc
+			limit $4
+		`, input.GroupID, input.LastExpenseDate, input.LastExpenseID, input.Limit); err != nil {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}
 
