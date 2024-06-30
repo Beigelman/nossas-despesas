@@ -85,6 +85,5 @@ func Router(
 		insights.Get("/expenses", getExpensesPerPeriodHandler)
 		insights.Get("/expenses/category", getExpensesPerCategoryHandler)
 		insights.Get("/incomes", getIncomesPerPeriodHandler)
-
 	}
 }
