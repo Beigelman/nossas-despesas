@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -88,9 +90,9 @@ func (repo *GroupInvitePGRepository) GetGroupInvitesByEmail(ctx context.Context,
 }
 
 func (repo *GroupInvitePGRepository) Store(ctx context.Context, entity *entity.GroupInvite) error {
-	var model = toModel(entity)
+	model := toModel(entity)
 	if err := repo.create(ctx, model); err != nil {
-		if err.Error() == "db.Insert: pq: duplicate key value violates unique constraint \"group_invites_pkey\"" {
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			if err := repo.update(ctx, model); err != nil {
 				return fmt.Errorf("repo.update: %w", err)
 			}
