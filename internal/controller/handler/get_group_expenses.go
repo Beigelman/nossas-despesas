@@ -41,11 +41,14 @@ func NewGetGroupExpenses(getGroupExpenses query.GetGroupExpenses) GetGroupExpens
 			return except.BadRequestError("invalid next token").SetInternal(err)
 		}
 
+		search := ctx.Query("search")
+
 		expenses, err := getGroupExpenses(ctx.Context(), query.GetGroupExpensesInput{
 			GroupID:         groupID,
 			LastExpenseDate: token.LastExpenseDate,
 			LastExpenseID:   token.LastExpenseID,
 			Limit:           defaultLimit,
+			Search:          search,
 		})
 		if err != nil {
 			return fmt.Errorf("query.GetGroupExpenses: %w", err)
