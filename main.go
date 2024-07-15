@@ -31,6 +31,7 @@ func main() {
 		boot.ClientsModule,
 		boot.PubSubModule,
 		boot.ServerModule,
+		boot.UserModule,
 		boot.ApplicationModule,
 	).Start(); err != nil {
 		log.Fatal("failed to start application: ", err)

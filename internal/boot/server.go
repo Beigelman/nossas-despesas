@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"log/slog"
+	"net/http"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/controller"
 	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"log"
-	"log/slog"
-	"net/http"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
@@ -38,6 +39,8 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		server.Use(recover.New())
 		server.Use(requestid.New())
 		server.Use(middleware.LogRequest(cfg.Env, info.ServiceName))
+
+		server.Get("health-check", func(c *fiber.Ctx) error { return c.SendString("OK") })
 
 		return server
 	})

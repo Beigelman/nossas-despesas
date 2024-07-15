@@ -12,7 +12,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/groupinviterepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/incomerepo"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/query"
@@ -39,11 +38,6 @@ var ApplicationModule = eon.NewModule("Application", func(ctx context.Context, c
 	di.Provide(c, handler.NewCreateIncome)
 	di.Provide(c, handler.NewUpdateIncome)
 	di.Provide(c, handler.NewDeleteIncome)
-	// user
-	di.Provide(c, userrepo.NewPGRepository)
-	di.Provide(c, usecase.NewCreateUser)
-	di.Provide(c, query.NewGetUserByID)
-	di.Provide(c, handler.NewGetMe)
 	// group
 	di.Provide(c, groupinviterepo.NewPGRepository)
 	di.Provide(c, grouprepo.NewPGRepository)

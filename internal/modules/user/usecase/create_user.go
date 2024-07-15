@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
@@ -17,10 +17,10 @@ type CreateUserParams struct {
 	GroupID          *entity.GroupID
 }
 
-type CreateUser func(ctx context.Context, p CreateUserParams) (*entity.User, error)
+type CreateUser func(ctx context.Context, p CreateUserParams) (*user.User, error)
 
-func NewCreateUser(userRepo repository.UserRepository) CreateUser {
-	return func(ctx context.Context, p CreateUserParams) (*entity.User, error) {
+func NewCreateUser(userRepo user.Repository) CreateUser {
+	return func(ctx context.Context, p CreateUserParams) (*user.User, error) {
 		alreadyExists, err := userRepo.GetByEmail(ctx, p.Email)
 		if err != nil {
 			return nil, fmt.Errorf("userRepo.GetByName: %w", err)
@@ -30,7 +30,7 @@ func NewCreateUser(userRepo repository.UserRepository) CreateUser {
 			return nil, except.ConflictError("email already exists")
 		}
 
-		user := entity.NewUser(entity.UserParams{
+		usr := user.New(user.Attributes{
 			ID:             userRepo.GetNextID(),
 			Name:           p.Name,
 			Email:          p.Email,
@@ -38,10 +38,10 @@ func NewCreateUser(userRepo repository.UserRepository) CreateUser {
 			GroupID:        p.GroupID,
 		})
 
-		if err := userRepo.Store(ctx, user); err != nil {
+		if err := userRepo.Store(ctx, usr); err != nil {
 			return nil, fmt.Errorf("userRepo.Store: %w", err)
 		}
 
-		return user, nil
+		return usr, nil
 	}
 }

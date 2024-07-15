@@ -15,7 +15,6 @@ func Router(
 	getGroupExpenseHandler handler.GetGroupExpenses,
 	getExpensesPerSearch handler.GetExpensesPerSearch,
 	getGroupHandler handler.GetGroup,
-	getMyUserHandler handler.GetMe,
 	getCategoriesHandler handler.GetCategories,
 	updateExpenseHandler handler.UpdateExpense,
 	deleteExpenseHandler handler.DeleteExpense,
@@ -51,9 +50,6 @@ func Router(
 		auth.Post("/sign-in/google", signInWithGoogleHandler)
 		auth.Post("/sign-up/credentials", signUpWithCredentialsHandler)
 		auth.Post("refresh-token", refreshAuthTokenHandler)
-		// User routes
-		user := v1.Group("user", authMiddleware)
-		user.Get("/me", getMyUserHandler)
 		// Group routes
 		group := v1.Group("group", authMiddleware)
 		group.Post("/", createGroupHandler)
