@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/Beigelman/nossas-despesas/internal/controller/handler"
-	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -35,9 +35,6 @@ func Router(
 	inviteUserToGroupHandler handler.InviteUserToGroup,
 	acceptGroupInviteHandler handler.AcceptGroupInvite,
 ) {
-	server.Get("healthcheck", func(c *fiber.Ctx) error {
-		return c.SendString("OK")
-	})
 
 	// Api group
 	api := server.Group("api")

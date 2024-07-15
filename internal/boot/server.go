@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/controller"
-	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/middleware"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 
@@ -25,6 +25,8 @@ import (
 
 var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var server *fiber.App
+
+	di.Provide(c, middleware.NewAuthMiddleware)
 
 	di.Provide(c, func(cfg *config.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
