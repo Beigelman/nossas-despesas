@@ -22,7 +22,7 @@ type Attributes struct {
 	CategoryGroupID GroupID
 }
 
-func NewCategory(p Attributes) *Category {
+func New(p Attributes) *Category {
 	return &Category{
 		Entity: ddd.Entity[ID]{
 			ID:        p.ID,

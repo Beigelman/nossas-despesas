@@ -10,7 +10,7 @@ import (
 	"log/slog"
 )
 
-var DatabaseModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var DatabaseModule = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var dbClient db.Database
 
 	di.Provide(c, func(cfg *config.Config) db.Database {

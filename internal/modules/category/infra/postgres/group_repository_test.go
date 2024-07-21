@@ -1,8 +1,9 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
+	"github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
 	"testing"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type PgCategoryGroupTestSuite struct {
+type CategoryGroupTestSuite struct {
 	suite.Suite
 	repository    category.GroupRepository
 	ctx           context.Context
@@ -22,11 +23,11 @@ type PgCategoryGroupTestSuite struct {
 	err           error
 }
 
-func TestPgUserRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgCategoryGroupTestSuite))
+func TestCategoryGroupTestSuite(t *testing.T) {
+	suite.Run(t, new(CategoryGroupTestSuite))
 }
 
-func (s *PgCategoryGroupTestSuite) SetupSuite() {
+func (s *CategoryGroupTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
@@ -36,13 +37,13 @@ func (s *PgCategoryGroupTestSuite) SetupSuite() {
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
-	s.repository = NewPGRepository(s.db)
+	s.repository = postgres.NewCategoryGroupRepository(s.db)
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 }
 
-func (s *PgCategoryGroupTestSuite) TearDownSuite() {
+func (s *CategoryGroupTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -56,14 +57,14 @@ func (s *PgCategoryGroupTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgCategoryGroupTestSuite) TearDownSubTest() {
+func (s *CategoryGroupTestSuite) TearDownSubTest() {
 	err := s.db.Clean()
 	s.NoError(err)
 }
 
-func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_Store() {
+func (s *CategoryGroupTestSuite) TestPgCategoryRepo_Store() {
 	id := s.repository.GetNextID()
-	groupCategory := category.NewCategoryGroup(category.GroupAttributes{
+	groupCategory := category.NewGroup(category.GroupAttributes{
 		ID:   id,
 		Name: "shopping",
 		Icon: "test",
@@ -72,9 +73,9 @@ func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_Store() {
 	s.NoError(s.repository.Store(s.ctx, groupCategory))
 }
 
-func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_GetByID() {
+func (s *CategoryGroupTestSuite) TestPgCategoryRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := category.NewCategoryGroup(category.GroupAttributes{
+	expected := category.NewGroup(category.GroupAttributes{
 		ID:   id,
 		Name: "shopping",
 		Icon: "test",
@@ -90,9 +91,9 @@ func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_GetByID() {
 	s.Equal(expected.Name, actual.Name)
 }
 
-func (s *PgCategoryGroupTestSuite) TestPgCategoryRepo_GetByName() {
+func (s *CategoryGroupTestSuite) TestPgCategoryRepo_GetByName() {
 	id := s.repository.GetNextID()
-	expected := category.NewCategoryGroup(category.GroupAttributes{
+	expected := category.NewGroup(category.GroupAttributes{
 		ID:   id,
 		Name: "shopping2",
 		Icon: "test",

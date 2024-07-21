@@ -6,11 +6,11 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
@@ -65,8 +65,8 @@ func NewCreateIncome(createIncome usecase.CreateIncome, publisher message.Publis
 			return except.BadRequestError("missing context group_id")
 		}
 
-		income, err := createIncome(ctx.Context(), usecase.CreateIncomeParams{
-			UserID:    entity.UserID{Value: userID},
+		inc, err := createIncome(ctx.Context(), usecase.CreateIncomeParams{
+			UserID:    user.ID{Value: userID},
 			Type:      income.Type(req.Type),
 			Amount:    req.Amount,
 			CreatedAt: req.CreatedAt,
@@ -79,10 +79,10 @@ func NewCreateIncome(createIncome usecase.CreateIncome, publisher message.Publis
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
 				Type:    "income_created",
-				UserID:  entity.UserID{Value: userID},
+				UserID:  user.ID{Value: userID},
 				GroupID: group.ID{Value: groupID},
 			},
-			Income: *income,
+			Income: *inc,
 		})
 		if err == nil {
 			if err := publisher.Publish(
@@ -94,7 +94,7 @@ func NewCreateIncome(createIncome usecase.CreateIncome, publisher message.Publis
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse(http.StatusCreated, CreateIncomeResponse{ID: income.ID.Value}),
+			api.NewResponse(http.StatusCreated, CreateIncomeResponse{ID: inc.ID.Value}),
 		)
 	}
 }

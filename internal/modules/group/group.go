@@ -18,7 +18,7 @@ type Attributes struct {
 	Name string
 }
 
-func NewGroup(p Attributes) *Group {
+func New(p Attributes) *Group {
 	return &Group{
 		Entity: ddd.Entity[ID]{
 			ID:        p.ID,

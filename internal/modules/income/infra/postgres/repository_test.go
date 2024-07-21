@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var userID = entity.UserID{Value: 1}
+var userID = user.ID{Value: 1}
 
 type PgIncomeRepoTestSuite struct {
 	suite.Suite

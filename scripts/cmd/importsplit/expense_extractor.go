@@ -2,16 +2,16 @@ package importsplit
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 )
 
 func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {
@@ -21,7 +21,7 @@ func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {
 	}
 
 	name := line[1]
-	category := SplitCategoryToCategory(line[2])
+	categoryId := SplitCategoryToCategory(line[2])
 	amount, err := strconv.ParseFloat(line[3], 64)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing amount %w", err)
@@ -76,11 +76,11 @@ func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {
 		Amount:      amountCents,
 		Description: description,
 		GroupID:     group.ID{Value: groupId},
-		CategoryID:  category.CategoryID{Value: category},
+		CategoryID:  category.ID{Value: categoryId},
 		SplitRatio:  splitRatio,
 		SplitType:   splitType,
-		PayerID:     entity.UserID{Value: payer},
-		ReceiverID:  entity.UserID{Value: receiver},
+		PayerID:     user.ID{Value: payer},
+		ReceiverID:  user.ID{Value: receiver},
 		CreatedAt:   &createdAt,
 	})
 }

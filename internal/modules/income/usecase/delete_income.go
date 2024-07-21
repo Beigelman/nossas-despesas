@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
 type (
 	DeleteIncomeParams struct {
 		ID      income.ID
-		UserID  entity.UserID
+		UserID  user.ID
 		GroupID group.ID
 	}
 	DeleteIncome func(ctx context.Context, p DeleteIncomeParams) (*income.Income, error)

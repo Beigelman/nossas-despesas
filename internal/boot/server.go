@@ -4,42 +4,41 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	middleware2 "github.com/Beigelman/nossas-despesas/internal/shared/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
+	"github.com/bytedance/sonic"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
-
-	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
-	"github.com/bytedance/sonic"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var server *fiber.App
 
-	di.Provide(c, middleware2.NewAuthMiddleware)
+	di.Provide(c, middleware.NewAuthMiddleware)
 
 	di.Provide(c, func(cfg *config.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
-			AppName:      info.ServiceName,
-			ReadTimeout:  5 * time.Second,
-			JSONEncoder:  sonic.Marshal,
-			JSONDecoder:  sonic.Unmarshal,
-			ErrorHandler: api.ErrorHandler,
+			AppName:           info.ServiceName,
+			ReadTimeout:       5 * time.Second,
+			JSONEncoder:       sonic.Marshal,
+			JSONDecoder:       sonic.Unmarshal,
+			ErrorHandler:      api.ErrorHandler,
+			EnablePrintRoutes: true,
 		})
 
 		server.Use(cors.New())
 		server.Use(recover.New())
 		server.Use(requestid.New())
-		server.Use(middleware2.LogRequest(cfg.Env, info.ServiceName))
+		server.Use(middleware.LogRequest(cfg.Env, info.ServiceName))
 
 		server.Get("health-check", func(c *fiber.Ctx) error { return c.SendString("OK") })
 

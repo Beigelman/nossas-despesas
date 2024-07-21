@@ -15,7 +15,7 @@ type (
 	GetExpenseDetails func(ctx *fiber.Ctx) error
 )
 
-func NewGetExpenseDetails(getGroupExpenses query.GetExpenseDetails) GetExpenseDetails {
+func NewGetExpenseDetails(getExpenseDetails query.GetExpenseDetails) GetExpenseDetails {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
@@ -27,7 +27,7 @@ func NewGetExpenseDetails(getGroupExpenses query.GetExpenseDetails) GetExpenseDe
 			return except.BadRequestError("invalid expense id")
 		}
 
-		expenseDetails, err := getGroupExpenses(ctx.Context(), expenseID)
+		expenseDetails, err := getExpenseDetails(ctx.Context(), expenseID)
 		if err != nil {
 			return fmt.Errorf("query.GetExpenseDetails: %w", err)
 		}

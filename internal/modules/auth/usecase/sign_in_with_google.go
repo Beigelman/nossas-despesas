@@ -3,11 +3,10 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
-	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 	"google.golang.org/api/idtoken"
 )
 
@@ -16,14 +15,14 @@ type SignInWithGoogleParams struct {
 }
 
 type SignInWithGoogleResponse struct {
-	User         *entity.User
+	User         *user.User
 	Token        string
 	RefreshToken string
 }
 
 type SignInWithGoogle func(ctx context.Context, p SignInWithGoogleParams) (*SignInWithGoogleResponse, error)
 
-func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo auth.Repository, tokenProvider service.TokenProvider) SignInWithGoogle {
+func NewSignInWithGoogle(userRepo user.Repository, authRepo auth.Repository, tokenProvider service.TokenProvider) SignInWithGoogle {
 	return func(ctx context.Context, p SignInWithGoogleParams) (*SignInWithGoogleResponse, error) {
 		token, err := idtoken.Validate(ctx, p.IdToken, "")
 		if err != nil {
@@ -59,7 +58,7 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo auth.Repos
 			return nil, fmt.Errorf("userRepo.GetByEmail: %w", err)
 		}
 
-		var user *entity.User
+		var usr *user.User
 		if existingUser != nil {
 			if existingUser.ProfilePicture == nil && profilePicture != nil {
 				existingUser.ProfilePicture = profilePicture
@@ -67,16 +66,16 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo auth.Repos
 					return nil, fmt.Errorf("userRepo.Store: %w", err)
 				}
 			}
-			user = existingUser
+			usr = existingUser
 		} else {
-			user = entity.NewUser(entity.UserParams{
+			usr = user.New(user.Attributes{
 				ID:             userRepo.GetNextID(),
 				Name:           name,
 				Email:          email,
 				ProfilePicture: profilePicture,
 			})
 
-			if err := userRepo.Store(ctx, user); err != nil {
+			if err := userRepo.Store(ctx, usr); err != nil {
 				return nil, fmt.Errorf("userRepo.Store: %w", err)
 			}
 		}
@@ -86,27 +85,27 @@ func NewSignInWithGoogle(userRepo repository.UserRepository, authRepo auth.Repos
 		if err != nil {
 			return nil, fmt.Errorf("authRepo.GetByEmail: %w", err)
 		}
-
+		// TODO: isso aqui faz sentido?? Não deveria ser == nil?
 		if existingAuth != nil {
-			auth := auth.NewGoogleAuth(auth.GoogleAuthAttributes{
+			authentic := auth.NewGoogleAuth(auth.GoogleAuthAttributes{
 				ID:         authRepo.GetNextID(),
 				Email:      email,
 				ProviderID: providerId,
 			})
 
-			if err := authRepo.Store(ctx, auth); err != nil {
+			if err := authRepo.Store(ctx, authentic); err != nil {
 				return nil, fmt.Errorf("authRepo.Store: %w", err)
 			}
 		}
 
 		// Geração do token de autenticação
-		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*user)
+		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*usr)
 		if err != nil {
 			return nil, fmt.Errorf("tokenProvider.GenerateUserTokens: %w", err)
 		}
 
 		return &SignInWithGoogleResponse{
-			User:         user,
+			User:         usr,
 			Token:        authToken,
 			RefreshToken: refreshToken,
 		}, nil

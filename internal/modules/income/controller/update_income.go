@@ -6,12 +6,12 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
@@ -62,9 +62,9 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
-		income, err := updateIncome(ctx.Context(), usecase.UpdateIncomeParams{
+		inc, err := updateIncome(ctx.Context(), usecase.UpdateIncomeParams{
 			ID:      income.ID{Value: incomeID},
-			UserID:  entity.UserID{Value: userID},
+			UserID:  user.ID{Value: userID},
 			GroupID: group.ID{Value: groupID},
 			Type: func() *income.Type {
 				if req.Type == nil {
@@ -84,10 +84,10 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
 				Type:    "income_updated",
-				UserID:  entity.UserID{Value: userID},
+				UserID:  user.ID{Value: userID},
 				GroupID: group.ID{Value: groupID},
 			},
-			Income: *income,
+			Income: *inc,
 		})
 		if err == nil {
 			if err := publisher.Publish(
@@ -99,7 +99,7 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse(http.StatusCreated, UpdateIncomeResponse{ID: income.ID.Value}),
+			api.NewResponse(http.StatusCreated, UpdateIncomeResponse{ID: inc.ID.Value}),
 		)
 	}
 }

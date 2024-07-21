@@ -11,21 +11,21 @@ type DeleteExpense func(ctx context.Context, expenseID expense.ID) (*expense.Exp
 
 func NewDeleteExpense(expenseRepo expense.Repository) DeleteExpense {
 	return func(ctx context.Context, expenseID expense.ID) (*expense.Expense, error) {
-		expense, err := expenseRepo.GetByID(ctx, expenseID)
+		expns, err := expenseRepo.GetByID(ctx, expenseID)
 		if err != nil {
 			return nil, fmt.Errorf("expenseRepo.GetByID: %w", err)
 		}
 
-		if expense == nil {
+		if expns == nil {
 			return nil, except.NotFoundError("expense not found")
 		}
 
-		expense.Delete()
+		expns.Delete()
 
-		if err := expenseRepo.Store(ctx, expense); err != nil {
+		if err := expenseRepo.Store(ctx, expns); err != nil {
 			return nil, fmt.Errorf("expenseRepo.Store: %w", err)
 		}
 
-		return expense, nil
+		return expns, nil
 	}
 }

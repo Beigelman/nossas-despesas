@@ -9,9 +9,9 @@ import (
 )
 
 type (
-	GetGroupExpenses func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error)
+	GetExpenses func(ctx context.Context, input GetExpensesInput) ([]ExpenseDetails, error)
 
-	GetGroupExpensesInput struct {
+	GetExpensesInput struct {
 		GroupID         int
 		LastExpenseDate time.Time
 		LastExpenseID   int
@@ -81,9 +81,9 @@ var (
   `
 )
 
-func NewGetGroupExpenses(db db.Database) GetGroupExpenses {
+func NewGetExpenses(db db.Database) GetExpenses {
 	dbClient := db.Client()
-	return func(ctx context.Context, input GetGroupExpensesInput) ([]ExpenseDetails, error) {
+	return func(ctx context.Context, input GetExpensesInput) ([]ExpenseDetails, error) {
 		var expenses []ExpenseDetails
 
 		query := expensesQuery

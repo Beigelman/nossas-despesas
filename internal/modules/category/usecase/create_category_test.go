@@ -15,7 +15,7 @@ func TestCreateCategory(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	repo := mockrepository.NewMockCategoryRepository(t)
-	existingCategory := category.NewCategory(category.Attributes{
+	existingCategory := category.New(category.Attributes{
 		ID:              category.ID{Value: 1},
 		Name:            "My test category",
 		Icon:            "icon1",

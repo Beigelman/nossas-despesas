@@ -12,7 +12,6 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
@@ -26,7 +25,7 @@ type PgExpenseRepoTestSuite struct {
 	testContainer *tests.PostgresContainer
 
 	expenseRepo       expense.Repository
-	userRepo          repository.UserRepository
+	userRepo          user.Repository
 	categoryRepo      category.Repository
 	categoryGroupRepo category.GroupRepository
 	groupRepo         group.Repository
@@ -64,32 +63,32 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 
-	s.payer = entity.NewUser(entity.UserParams{
+	s.payer = user.New(user.Attributes{
 		ID:    s.userRepo.GetNextID(),
 		Name:  "Payer",
 		Email: "payer@email.com",
 	})
 
-	s.receiver = entity.NewUser(entity.UserParams{
+	s.receiver = user.New(user.Attributes{
 		ID:    s.userRepo.GetNextID(),
 		Name:  "Receiver",
 		Email: "receiver@email.com",
 	})
 
-	s.categoryGroup = category.NewCategoryGroup(category.GroupAttributes{
+	s.categoryGroup = category.NewGroup(category.GroupAttributes{
 		ID:   s.categoryGroupRepo.GetNextID(),
 		Name: "Category",
 		Icon: "test",
 	})
 
-	s.category = category.NewCategory(category.Attributes{
+	s.category = category.New(category.Attributes{
 		ID:              s.categoryRepo.GetNextID(),
 		Name:            "Category",
 		Icon:            "test",
 		CategoryGroupID: s.categoryGroup.ID,
 	})
 
-	s.group = group.NewGroup(group.Attributes{
+	s.group = group.New(group.Attributes{
 		ID:   s.groupRepo.GetNextID(),
 		Name: "Group",
 	})

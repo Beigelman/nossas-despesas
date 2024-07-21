@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	vo "github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
+	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 	"html/template"
 	"log/slog"
 	"strings"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
-	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/google/uuid"
 )
@@ -27,18 +27,18 @@ type (
 )
 
 func NewInviteUserToGroup(
-	userRepo repository.UserRepository,
+	userRepo user.Repository,
 	groupRepo group.Repository,
 	groupInviteRepo group.InviteRepository,
 	emailProvider service.EmailProvider,
 ) InviteUserToGroup {
 	return func(ctx context.Context, input InviteUserToGroupInput) (*group.Invite, error) {
-		group, err := groupRepo.GetByID(ctx, input.GroupID)
+		grp, err := groupRepo.GetByID(ctx, input.GroupID)
 		if err != nil {
 			return nil, fmt.Errorf("groupRepo.GetByID: %w", err)
 		}
 
-		if group == nil {
+		if grp == nil {
 			return nil, except.NotFoundError("group not found")
 		}
 
@@ -51,7 +51,7 @@ func NewInviteUserToGroup(
 			return nil, except.UnprocessableEntityError("user already in a group")
 		}
 
-		invites, err := groupInviteRepo.GetGroupInvitesByEmail(ctx, group.ID, input.Email)
+		invites, err := groupInviteRepo.GetGroupInvitesByEmail(ctx, grp.ID, input.Email)
 		if err != nil {
 			return nil, fmt.Errorf("groupInviteRepo.GetByEmail: %w", err)
 		}
@@ -60,9 +60,9 @@ func NewInviteUserToGroup(
 			return nil, except.NewHTTPError(429, "too many invites sent to this email recently")
 		}
 
-		groupInvite := group.NewGroupInvite(group.GroupInviteParams{
+		groupInvite := group.NewInvite(group.InviteAttributes{
 			ID:        groupInviteRepo.GetNextID(),
-			GroupID:   group.ID,
+			GroupID:   grp.ID,
 			Token:     uuid.NewString(),
 			Email:     input.Email,
 			ExpiresAt: time.Now().Add(time.Hour * 48),
@@ -72,6 +72,7 @@ func NewInviteUserToGroup(
 			return nil, fmt.Errorf("groupInviteRepo.Store: %w", err)
 		}
 
+		// TODO: mudar isso para subscriber a adicionar evento de convite para grupo criado.
 		go func() {
 			tmpl, err := template.ParseFiles("./templates/group_invite.html")
 			if err != nil {
@@ -81,8 +82,8 @@ func NewInviteUserToGroup(
 
 			html := strings.Builder{}
 			if err := tmpl.Execute(&html, map[string]any{
-				"GroupName": group.Name,
-				"Link":      groupInvite.InviteURL(input.BaseURL),
+				"GroupName": grp.Name,
+				"Link":      groupInvite.Url(input.BaseURL),
 			}); err != nil {
 				slog.Error("failed to execute template", "error", err)
 				return

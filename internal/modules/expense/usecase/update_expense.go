@@ -6,10 +6,9 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
@@ -20,10 +19,10 @@ type (
 		Amount       *int
 		RefundAmount *int
 		Description  *string
-		CategoryID   *category.CategoryID
+		CategoryID   *category.ID
 		SplitType    *expense.SplitType
-		PayerID      *entity.UserID
-		ReceiverID   *entity.UserID
+		PayerID      *user.ID
+		ReceiverID   *user.ID
 		CreatedAt    *time.Time
 	}
 	UpdateExpense func(ctx context.Context, p UpdateExpenseParams) (*expense.Expense, error)
@@ -31,17 +30,17 @@ type (
 
 func NewUpdateExpense(
 	expenseRepo expense.Repository,
-	userRepo repository.UserRepository,
+	userRepo user.Repository,
 	categoryRepo category.Repository,
 	incomeRepo income.Repository,
 ) UpdateExpense {
 	return func(ctx context.Context, p UpdateExpenseParams) (*expense.Expense, error) {
-		expense, err := expenseRepo.GetByID(ctx, p.ID)
+		expns, err := expenseRepo.GetByID(ctx, p.ID)
 		if err != nil {
 			return nil, fmt.Errorf("expenseRepo.GetByID: %w", err)
 		}
 
-		if expense == nil {
+		if expns == nil {
 			return nil, except.NotFoundError("expense not found")
 		}
 
@@ -55,7 +54,7 @@ func NewUpdateExpense(
 				return nil, except.NotFoundError("payer not found")
 			}
 
-			if payer.GroupID == nil || expense.GroupID != *payer.GroupID {
+			if payer.GroupID == nil || expns.GroupID != *payer.GroupID {
 				return nil, except.UnprocessableEntityError("group mismatch")
 			}
 		}
@@ -70,32 +69,32 @@ func NewUpdateExpense(
 				return nil, except.NotFoundError("receiver not found")
 			}
 
-			if receiver.GroupID == nil || expense.GroupID != *receiver.GroupID {
+			if receiver.GroupID == nil || expns.GroupID != *receiver.GroupID {
 				return nil, except.UnprocessableEntityError("group mismatch")
 			}
 		}
 
 		if p.CategoryID != nil {
-			category, err := categoryRepo.GetByID(ctx, *p.CategoryID)
+			catgry, err := categoryRepo.GetByID(ctx, *p.CategoryID)
 			if err != nil {
 				return nil, fmt.Errorf("categoryRepo.GetByID: %w", err)
 			}
 
-			if category == nil {
+			if catgry == nil {
 				return nil, except.NotFoundError("category not found")
 			}
 		}
 
 		var splitRatio *expense.SplitRatio
-		if p.SplitType != nil && *p.SplitType != expense.SplitType {
+		if p.SplitType != nil && *p.SplitType != expns.SplitType {
 			switch *p.SplitType {
-			case expense.SpliteTypes.Proportional:
-				createdAt := &expense.CreatedAt
+			case expense.SplitTypes.Proportional:
+				createdAt := &expns.CreatedAt
 				if p.CreatedAt != nil {
 					createdAt = p.CreatedAt
 				}
 
-				payerID := expense.PayerID
+				payerID := expns.PayerID
 				if p.PayerID != nil {
 					payerID = *p.PayerID
 				}
@@ -105,7 +104,7 @@ func NewUpdateExpense(
 					return nil, except.UnprocessableEntityError("payer income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
 				}
 
-				receiverID := expense.ReceiverID
+				receiverID := expns.ReceiverID
 				if p.ReceiverID != nil {
 					receiverID = *p.ReceiverID
 				}
@@ -115,18 +114,18 @@ func NewUpdateExpense(
 				}
 
 				totalPayerIncome := 0
-				for _, income := range payerIncomes {
-					totalPayerIncome += income.Amount
+				for _, incm := range payerIncomes {
+					totalPayerIncome += incm.Amount
 				}
 
 				totalReceiverIncome := 0
-				for _, income := range receiverIncomes {
-					totalReceiverIncome += income.Amount
+				for _, incm := range receiverIncomes {
+					totalReceiverIncome += incm.Amount
 				}
 
 				split := expense.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
 				splitRatio = &split
-			case expense.SpliteTypes.Transfer:
+			case expense.SplitTypes.Transfer:
 				split := expense.NewTransferRatio()
 				splitRatio = &split
 			default:
@@ -135,7 +134,7 @@ func NewUpdateExpense(
 			}
 		}
 
-		if err := expense.Update(expense.ExpenseUpdateParams{
+		if err := expns.Update(expense.UpdateAttributes{
 			Name:         p.Name,
 			Amount:       p.Amount,
 			RefundAmount: p.RefundAmount,
@@ -150,10 +149,10 @@ func NewUpdateExpense(
 			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("expense.Update: %w", err))
 		}
 
-		if err := expenseRepo.Store(ctx, expense); err != nil {
+		if err := expenseRepo.Store(ctx, expns); err != nil {
 			return nil, fmt.Errorf("expenseRepo.Store: %w", err)
 		}
 
-		return expense, nil
+		return expns, nil
 	}
 }

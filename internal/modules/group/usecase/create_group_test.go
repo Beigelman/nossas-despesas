@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	"github.com/stretchr/testify/assert"
@@ -16,8 +15,8 @@ func TestCreateGroup(t *testing.T) {
 	ctx := context.Background()
 	groupRepo := mockrepository.NewMockGroupRepository(t)
 	userRepo := mockrepository.NewMockUserRepository(t)
-	user := entity.NewUser(entity.UserParams{
-		ID:    entity.UserID{Value: 1},
+	user := user.New(user.Attributes{
+		ID:    user.ID{Value: 1},
 		Name:  "test",
 		Email: "",
 	})

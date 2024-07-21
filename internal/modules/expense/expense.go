@@ -2,9 +2,9 @@ package expense
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
@@ -22,8 +22,8 @@ type Expense struct {
 	CategoryID   category.ID
 	SplitRatio   SplitRatio
 	SplitType    SplitType
-	PayerID      entity.UserID
-	ReceiverID   entity.UserID
+	PayerID      user.ID
+	ReceiverID   user.ID
 }
 
 type Attributes struct {
@@ -35,8 +35,8 @@ type Attributes struct {
 	CategoryID  category.ID
 	SplitRatio  SplitRatio
 	SplitType   SplitType
-	PayerID     entity.UserID
-	ReceiverID  entity.UserID
+	PayerID     user.ID
+	ReceiverID  user.ID
 	CreatedAt   *time.Time
 }
 
@@ -48,8 +48,8 @@ type UpdateAttributes struct {
 	CategoryID   *category.ID
 	SplitRatio   *SplitRatio
 	SplitType    *SplitType
-	PayerID      *entity.UserID
-	ReceiverID   *entity.UserID
+	PayerID      *user.ID
+	ReceiverID   *user.ID
 	CreatedAt    *time.Time
 }
 

@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +20,7 @@ func TestAcceptGroupInvite(t *testing.T) {
 
 	acceptGroupInvite := NewAcceptGroupInvite(userRepo, groupInviteRepo)
 	groupID := group.ID{Value: 1}
-	userID := entity.UserID{Value: 1}
+	userID := user.ID{Value: 1}
 	input := AcceptGroupInviteInput{
 		Email: "test@gmail.com",
 		Token: "token",
@@ -33,9 +32,9 @@ func TestAcceptGroupInvite(t *testing.T) {
 		Email:     input.Email,
 		ExpiresAt: time.Now().Add(time.Hour),
 	})
-	newGroup := group.NewGroup(group.Attributes{ID: groupID})
-	user := entity.NewUser(entity.UserParams{ID: userID, GroupID: &newGroup.ID})
-	userWithOutGroup := entity.NewUser(entity.UserParams{ID: userID, Email: input.Email})
+	newGroup := group.New(group.Attributes{ID: groupID})
+	user := user.New(user.Attributes{ID: userID, GroupID: &newGroup.ID})
+	userWithOutGroup := user.New(user.Attributes{ID: userID, Email: input.Email})
 
 	t.Run("if user repo fails it returns error", func(t *testing.T) {
 		userRepo.EXPECT().GetByEmail(ctx, input.Email).Return(nil, errors.New("test error")).Once()

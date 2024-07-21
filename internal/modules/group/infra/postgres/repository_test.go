@@ -63,7 +63,7 @@ func (s *PgGroupRepoTestSuite) TearDownSubTest() {
 
 func (s *PgGroupRepoTestSuite) TestPgGroupRepo_Store() {
 	id := s.repository.GetNextID()
-	group := group.NewGroup(group.Attributes{
+	group := group.New(group.Attributes{
 		ID:   id,
 		Name: "My Group",
 	})
@@ -74,7 +74,7 @@ func (s *PgGroupRepoTestSuite) TestPgGroupRepo_Store() {
 
 func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := group.NewGroup(group.Attributes{
+	expected := group.New(group.Attributes{
 		ID:   id,
 		Name: "My Group",
 	})
@@ -90,7 +90,7 @@ func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
 
 func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByName() {
 	id := s.repository.GetNextID()
-	expected := group.NewGroup(group.Attributes{
+	expected := group.New(group.Attributes{
 		ID:   id,
 		Name: "My Group 2",
 	})

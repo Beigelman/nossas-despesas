@@ -3,7 +3,6 @@ package usecase_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
@@ -21,13 +20,13 @@ func TestInviteUserToGroup(t *testing.T) {
 	groupInviteRepo := mockrepository.NewMockGroupInviteRepository(t)
 	emailProvider := mockservice.NewMockEmailProvider(t)
 
-	group := group.NewGroup(group.Attributes{
+	group := group.New(group.Attributes{
 		ID:   group.ID{Value: 1},
 		Name: "name",
 	})
 
-	invitee := entity.NewUser(entity.UserParams{
-		ID:      entity.UserID{Value: 1},
+	invitee := user.New(user.Attributes{
+		ID:      user.ID{Value: 1},
 		Name:    "john",
 		Email:   "john@email.com",
 		GroupID: &group.ID,

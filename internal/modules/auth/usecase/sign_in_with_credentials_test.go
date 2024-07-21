@@ -3,9 +3,9 @@ package usecase_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
 	"github.com/stretchr/testify/assert"
@@ -19,8 +19,8 @@ func TestSignInWithCredentials(t *testing.T) {
 	authRepo := mockrepository.NewMockAuthRepository(t)
 	tokenProvider := mockservice.NewMockTokenProvider(t)
 
-	user := entity.NewUser(entity.UserParams{
-		ID:             entity.UserID{Value: 3},
+	usr := user.New(user.Attributes{
+		ID:             user.ID{Value: 3},
 		Name:           "test",
 		Email:          "test@email.com",
 		ProfilePicture: nil,
@@ -92,8 +92,8 @@ func TestSignInWithCredentials(t *testing.T) {
 
 	t.Run("should return error if tokenProvide fails", func(t *testing.T) {
 		authRepo.EXPECT().GetByEmail(ctx, "test@email.com", auth.Types.Credentials).Return(authorization, nil).Once()
-		userRepo.EXPECT().GetByEmail(ctx, "test@email.com").Return(user, nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("", "", errors.New("test error")).Once()
+		userRepo.EXPECT().GetByEmail(ctx, "test@email.com").Return(usr, nil).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("", "", errors.New("test error")).Once()
 		resp, err := signInWithCredentials(ctx, usecase.SignInWithCredentialsParams{
 			Email:    "test@email.com",
 			Password: "12345678",
@@ -104,8 +104,8 @@ func TestSignInWithCredentials(t *testing.T) {
 
 	t.Run("happy path", func(t *testing.T) {
 		authRepo.EXPECT().GetByEmail(ctx, "test@email.com", auth.Types.Credentials).Return(authorization, nil).Once()
-		userRepo.EXPECT().GetByEmail(ctx, "test@email.com").Return(user, nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("new_token", "new_refresh_token", nil).Once()
+		userRepo.EXPECT().GetByEmail(ctx, "test@email.com").Return(usr, nil).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("new_token", "new_refresh_token", nil).Once()
 
 		resp, err := signInWithCredentials(ctx, usecase.SignInWithCredentialsParams{
 			Email:    "test@email.com",
@@ -114,6 +114,6 @@ func TestSignInWithCredentials(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, resp.Token, "new_token")
 		assert.Equal(t, resp.RefreshToken, "new_refresh_token")
-		assert.Equal(t, resp.User.Name, user.Name)
+		assert.Equal(t, resp.User.Name, usr.Name)
 	})
 }

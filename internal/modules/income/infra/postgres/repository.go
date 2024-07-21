@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"strings"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"
 )
@@ -51,7 +51,7 @@ func (repo *IncomeRepository) GetByID(ctx context.Context, id income.ID) (*incom
 	return toEntity(model), nil
 }
 
-func (repo *IncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userID entity.UserID, date *time.Time) ([]income.Income, error) {
+func (repo *IncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userID user.ID, date *time.Time) ([]income.Income, error) {
 	var incomes []IncomeModel
 
 	d := time.Now()

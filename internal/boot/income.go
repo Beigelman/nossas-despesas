@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
@@ -15,9 +16,13 @@ var IncomeModule = eon.NewModule("Income", func(ctx context.Context, c *di.Conta
 	di.Provide(c, usecase.NewCreateIncome)
 	di.Provide(c, usecase.NewUpdateIncome)
 	di.Provide(c, usecase.NewDeleteIncome)
+	di.Provide(c, query.NewGetIncomesPerPeriod)
+	di.Provide(c, query.NewGetMonthlyIncome)
 	di.Provide(c, controller.NewCreateIncome)
 	di.Provide(c, controller.NewUpdateIncome)
 	di.Provide(c, controller.NewDeleteIncome)
+	di.Provide(c, controller.NewGetMonthlyIncome)
+	di.Provide(c, controller.NewGetIncomesPerPeriod)
 	// Register routes
 	lc.OnBooted(eon.HookOrders.APPEND, func() error { return di.Call(c, controller.Router) })
 })

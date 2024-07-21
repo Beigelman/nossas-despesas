@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"time"
 
@@ -23,7 +24,7 @@ func toEntity(model IncomeModel) *income.Income {
 			DeletedAt: deletedAt,
 			Version:   model.Version,
 		},
-		UserID: entity.UserID{Value: model.UserID},
+		UserID: user.ID{Value: model.UserID},
 		Amount: model.Amount,
 		Type:   income.Type(model.Type),
 	}
@@ -37,7 +38,7 @@ func toModel(entity *income.Income) IncomeModel {
 
 	return IncomeModel{
 		ID:        entity.ID.Value,
-		UserID:    entity.UserID.Value,
+		UserID:    entity.ID.Value,
 		Amount:    entity.Amount,
 		Type:      entity.Type.String(),
 		CreatedAt: entity.CreatedAt,

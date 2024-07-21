@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"strconv"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
@@ -68,7 +68,7 @@ func run(cmd *cobra.Command, args []string) {
 
 		danIncome := income.New(income.Attributes{
 			ID:        incomesRepo.GetNextID(),
-			UserID:    entity.UserID{Value: danId},
+			UserID:    user.ID{Value: danId},
 			Amount:    danIncomeCents,
 			Type:      income.Types.Salary,
 			CreatedAt: &offsetDate,
@@ -76,7 +76,7 @@ func run(cmd *cobra.Command, args []string) {
 
 		luIncome := income.New(income.Attributes{
 			ID:        incomesRepo.GetNextID(),
-			UserID:    entity.UserID{Value: luId},
+			UserID:    user.ID{Value: luId},
 			Amount:    luIncomeCents,
 			Type:      income.Types.Salary,
 			CreatedAt: &offsetDate,

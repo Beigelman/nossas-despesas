@@ -6,12 +6,13 @@ import (
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"io"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	mockusecase "github.com/Beigelman/nossas-despesas/internal/tests/mocks/usecase"
@@ -27,8 +28,8 @@ func TestCreateExpenseHandler(t *testing.T) {
 	})
 
 	createExpense := mockusecase.NewMockCreateExpense(t)
-	createExpenseHandler := NewCreateExpense(createExpense.Execute)
-	bodyReq := CreateExpenseRequest{
+	createExpenseHandler := controller.NewCreateExpense(createExpense.Execute)
+	bodyReq := controller.CreateExpenseRequest{
 		Name:        "Test Expense",
 		Amount:      100,
 		Description: "My first expense",
@@ -44,10 +45,10 @@ func TestCreateExpenseHandler(t *testing.T) {
 		Amount:      100,
 		Description: "My first expense",
 		GroupID:     group.ID{Value: 1},
-		CategoryID:  category.CategoryID{Value: 1},
+		CategoryID:  category.ID{Value: 1},
 		SplitRatio:  expense.SplitRatio{Payer: 50, Receiver: 50},
-		PayerID:     entity.UserID{Value: 1},
-		ReceiverID:  entity.UserID{Value: 2},
+		PayerID:     user.ID{Value: 1},
+		ReceiverID:  user.ID{Value: 2},
 	})
 
 	app.Post("/expenses", func(c *fiber.Ctx) error {
@@ -66,7 +67,7 @@ func TestCreateExpenseHandler(t *testing.T) {
 		assert.Nil(t, err)
 		body, err := io.ReadAll(resp.Body)
 		assert.Nil(t, err)
-		var response api.Response[CreateExpenseResponse]
+		var response api.Response[controller.CreateExpenseResponse]
 		assert.Nil(t, json.Unmarshal(body, &response))
 		assert.Equal(t, 201, response.StatusCode)
 		assert.Equal(t, float32(1), response.Data.Amount)

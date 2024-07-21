@@ -82,7 +82,7 @@ func (_c *MockUserRepository_GetByEmail_Call) RunAndReturn(run func(context.Cont
 }
 
 // GetByID provides a mock function with given fields: ctx, id
-func (_m *MockUserRepository) GetByID(ctx context.Context, id entity.UserID) (*entity.User, error) {
+func (_m *MockUserRepository) GetByID(ctx context.Context, id user.ID) (*entity.User, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -91,10 +91,10 @@ func (_m *MockUserRepository) GetByID(ctx context.Context, id entity.UserID) (*e
 
 	var r0 *entity.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, entity.UserID) (*entity.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, user.ID) (*entity.User, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, entity.UserID) *entity.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, user.ID) *entity.User); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -102,7 +102,7 @@ func (_m *MockUserRepository) GetByID(ctx context.Context, id entity.UserID) (*e
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, entity.UserID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, user.ID) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -118,14 +118,14 @@ type MockUserRepository_GetByID_Call struct {
 
 // GetByID is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id entity.UserID
+//   - id user.ID
 func (_e *MockUserRepository_Expecter) GetByID(ctx interface{}, id interface{}) *MockUserRepository_GetByID_Call {
 	return &MockUserRepository_GetByID_Call{Call: _e.mock.On("GetByID", ctx, id)}
 }
 
-func (_c *MockUserRepository_GetByID_Call) Run(run func(ctx context.Context, id entity.UserID)) *MockUserRepository_GetByID_Call {
+func (_c *MockUserRepository_GetByID_Call) Run(run func(ctx context.Context, id user.ID)) *MockUserRepository_GetByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(entity.UserID))
+		run(args[0].(context.Context), args[1].(user.ID))
 	})
 	return _c
 }
@@ -135,24 +135,24 @@ func (_c *MockUserRepository_GetByID_Call) Return(_a0 *entity.User, _a1 error) *
 	return _c
 }
 
-func (_c *MockUserRepository_GetByID_Call) RunAndReturn(run func(context.Context, entity.UserID) (*entity.User, error)) *MockUserRepository_GetByID_Call {
+func (_c *MockUserRepository_GetByID_Call) RunAndReturn(run func(context.Context, user.ID) (*entity.User, error)) *MockUserRepository_GetByID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetNextID provides a mock function with given fields:
-func (_m *MockUserRepository) GetNextID() entity.UserID {
+func (_m *MockUserRepository) GetNextID() user.ID {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetNextID")
 	}
 
-	var r0 entity.UserID
-	if rf, ok := ret.Get(0).(func() entity.UserID); ok {
+	var r0 user.ID
+	if rf, ok := ret.Get(0).(func() user.ID); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(entity.UserID)
+		r0 = ret.Get(0).(user.ID)
 	}
 
 	return r0
@@ -175,12 +175,12 @@ func (_c *MockUserRepository_GetNextID_Call) Run(run func()) *MockUserRepository
 	return _c
 }
 
-func (_c *MockUserRepository_GetNextID_Call) Return(_a0 entity.UserID) *MockUserRepository_GetNextID_Call {
+func (_c *MockUserRepository_GetNextID_Call) Return(_a0 user.ID) *MockUserRepository_GetNextID_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *MockUserRepository_GetNextID_Call) RunAndReturn(run func() entity.UserID) *MockUserRepository_GetNextID_Call {
+func (_c *MockUserRepository_GetNextID_Call) RunAndReturn(run func() user.ID) *MockUserRepository_GetNextID_Call {
 	_c.Call.Return(run)
 	return _c
 }

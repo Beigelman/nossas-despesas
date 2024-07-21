@@ -1,7 +1,7 @@
 package income
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"time"
 )
@@ -30,14 +30,14 @@ type ID struct{ Value int }
 
 type Income struct {
 	ddd.Entity[ID]
-	UserID entity.UserID
+	UserID user.ID
 	Amount int
 	Type   Type
 }
 
 type Attributes struct {
 	ID        ID
-	UserID    entity.UserID
+	UserID    user.ID
 	Amount    int
 	Type      Type
 	CreatedAt *time.Time

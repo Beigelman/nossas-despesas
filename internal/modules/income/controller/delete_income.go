@@ -6,12 +6,12 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -45,9 +45,9 @@ func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publis
 			return except.BadRequestError("invalid income id")
 		}
 
-		income, err := deleteIncome(ctx.Context(), usecase.DeleteIncomeParams{
+		inc, err := deleteIncome(ctx.Context(), usecase.DeleteIncomeParams{
 			ID:      income.ID{Value: incomeID},
-			UserID:  entity.UserID{Value: userID},
+			UserID:  user.ID{Value: userID},
 			GroupID: group.ID{Value: groupID},
 		})
 		if err != nil {
@@ -58,10 +58,10 @@ func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publis
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
 				Type:    "income_created",
-				UserID:  entity.UserID{Value: userID},
+				UserID:  user.ID{Value: userID},
 				GroupID: group.ID{Value: groupID},
 			},
-			Income: *income,
+			Income: *inc,
 		})
 		if err == nil {
 			if err := publisher.Publish(
@@ -73,7 +73,7 @@ func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publis
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
-			api.NewResponse(http.StatusCreated, DeleteIncomeResponse{ID: income.ID.Value}),
+			api.NewResponse(http.StatusCreated, DeleteIncomeResponse{ID: inc.ID.Value}),
 		)
 	}
 }

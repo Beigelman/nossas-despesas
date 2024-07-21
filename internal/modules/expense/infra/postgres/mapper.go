@@ -5,10 +5,9 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
+	"time"
 )
 
 func ToEntity(model ExpenseModel) *expense.Expense {
@@ -36,14 +35,14 @@ func ToEntity(model ExpenseModel) *expense.Expense {
 		RefundAmount: refundAmount,
 		Description:  model.Description,
 		GroupID:      group.ID{Value: model.GroupID},
-		CategoryID:   category.CategoryID{Value: model.CategoryID},
+		CategoryID:   category.ID{Value: model.CategoryID},
 		SplitRatio: expense.SplitRatio{
 			Payer:    model.SplitRatio.Payer,
 			Receiver: model.SplitRatio.Receiver,
 		},
 		SplitType:  expense.SplitType(model.SplitType),
-		PayerID:    entity.UserID{Value: model.PayerID},
-		ReceiverID: entity.UserID{Value: model.ReceiverID},
+		PayerID:    user.ID{Value: model.PayerID},
+		ReceiverID: user.ID{Value: model.ReceiverID},
 	}
 }
 

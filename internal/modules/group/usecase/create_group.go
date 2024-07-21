@@ -3,31 +3,30 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
 type CreateGroupInput struct {
 	Name   string
-	UserID entity.UserID
+	UserID user.ID
 }
 
 type CreateGroup func(ctx context.Context, params CreateGroupInput) (*group.Group, error)
 
-func NewCreateGroup(userRepo repository.UserRepository, groupRepo group.Repository) CreateGroup {
+func NewCreateGroup(userRepo user.Repository, groupRepo group.Repository) CreateGroup {
 	return func(ctx context.Context, params CreateGroupInput) (*group.Group, error) {
-		user, err := userRepo.GetByID(ctx, params.UserID)
+		usr, err := userRepo.GetByID(ctx, params.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("userRepo.GetByID: %w", err)
 		}
 
-		if user.GroupID != nil {
+		if usr.GroupID != nil {
 			return nil, except.UnprocessableEntityError("user already in a group")
 		}
 
-		newGroup := group.NewGroup(group.Attributes{
+		newGroup := group.New(group.Attributes{
 			ID:   groupRepo.GetNextID(),
 			Name: params.Name,
 		})
@@ -36,9 +35,9 @@ func NewCreateGroup(userRepo repository.UserRepository, groupRepo group.Reposito
 			return nil, fmt.Errorf("groupRepo.Store: %w", err)
 		}
 
-		user.AssignGroup(newGroup.ID)
+		usr.AssignGroup(newGroup.ID)
 
-		if err := userRepo.Store(ctx, user); err != nil {
+		if err := userRepo.Store(ctx, usr); err != nil {
 			return nil, fmt.Errorf("userRepo.Store: %w", err)
 		}
 

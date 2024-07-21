@@ -27,15 +27,18 @@ func main() {
 	app := eon.New("Nossas Despesas", eon.WithLogger(lgr))
 
 	if err := app.BootStrap(
+		// Common Modules
 		boot.ConfigModule,
-		boot.ClientsModule,
-		boot.PubSubModule,
+		boot.DatabaseModule,
 		boot.ServerModule,
-		boot.UserModule,
+		boot.ClientsModule,
+		// Domain Modules
 		boot.AuthModule,
 		boot.CategoryModule,
+		boot.ExpenseModule,
 		boot.GroupModule,
 		boot.IncomeModule,
+		boot.UserModule,
 	).Start(); err != nil {
 		log.Fatal("failed to start application: ", err)
 	}

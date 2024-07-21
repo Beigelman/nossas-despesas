@@ -6,10 +6,10 @@ import (
 	vo "github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
@@ -62,10 +62,10 @@ func NewCreateExpense(createExpense usecase.CreateExpense) CreateExpense {
 			Name:        req.Name,
 			Amount:      req.Amount,
 			Description: req.Description,
-			CategoryID:  category.CategoryID{Value: req.CategoryID},
+			CategoryID:  category.ID{Value: req.CategoryID},
 			SplitType:   vo.SplitType(req.SplitType),
-			PayerID:     entity.UserID{Value: req.PayerID},
-			ReceiverID:  entity.UserID{Value: req.ReceiverID},
+			PayerID:     user.ID{Value: req.PayerID},
+			ReceiverID:  user.ID{Value: req.ReceiverID},
 			CreatedAt:   req.CreatedAt,
 		})
 		if err != nil {

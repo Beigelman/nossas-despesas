@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
@@ -18,16 +18,16 @@ type (
 )
 
 func NewAcceptGroupInvite(
-	userRepository repository.UserRepository,
+	userRepository user.Repository,
 	groupInviteRepository group.InviteRepository,
 ) AcceptGroupInvite {
 	return func(ctx context.Context, input AcceptGroupInviteInput) error {
-		user, err := userRepository.GetByEmail(ctx, input.Email)
+		usr, err := userRepository.GetByEmail(ctx, input.Email)
 		if err != nil {
 			return fmt.Errorf("userRepository.GetByEmail: %w", err)
 		}
 
-		if user.GroupID != nil {
+		if usr.GroupID != nil {
 			return except.UnprocessableEntityError("user already in a group")
 		}
 
@@ -44,13 +44,13 @@ func NewAcceptGroupInvite(
 			return except.UnprocessableEntityError("invalid invite").SetInternal(err)
 		}
 
-		if groupInvite.Email != user.Email {
+		if groupInvite.Email != usr.Email {
 			return except.UnprocessableEntityError("invalid invite email")
 		}
 
-		user.AssignGroup(groupInvite.GroupID)
+		usr.AssignGroup(groupInvite.GroupID)
 
-		if err := userRepository.Store(ctx, user); err != nil {
+		if err := userRepository.Store(ctx, usr); err != nil {
 			return fmt.Errorf("userRepository.Store: %w", err)
 		}
 

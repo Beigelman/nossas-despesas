@@ -16,10 +16,10 @@ type (
 		CreatedAt time.Time `db:"created_at" json:"created_at"`
 	}
 
-	GetGroupMonthlyIncome func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error)
+	GetMonthlyIncome func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error)
 )
 
-func NewGetGroupMonthlyIncome(db db.Database) GetGroupMonthlyIncome {
+func NewGetMonthlyIncome(db db.Database) GetMonthlyIncome {
 	dbClient := db.Client()
 	return func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error) {
 		var balances []UserIncome

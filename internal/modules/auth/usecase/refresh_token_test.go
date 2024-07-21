@@ -3,9 +3,9 @@ package usecase_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
 	"github.com/stretchr/testify/assert"
@@ -28,8 +28,8 @@ func TestRefreshToken(t *testing.T) {
 		IsValid: true,
 	}
 
-	user := entity.NewUser(entity.UserParams{
-		ID:             entity.UserID{Value: 0},
+	usr := user.New(user.Attributes{
+		ID:             user.ID{Value: 0},
 		Name:           "test",
 		Email:          "test@gmail.com",
 		ProfilePicture: nil,
@@ -48,7 +48,7 @@ func TestRefreshToken(t *testing.T) {
 
 	t.Run("should return error if userRepo fails", func(t *testing.T) {
 		tokenProvider.EXPECT().ParseRefreshToken("validToken").Return(&validToken, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, entity.UserID{Value: 0}).Return(nil, errors.New("test error")).Once()
+		userRepo.EXPECT().GetByID(ctx, user.ID{Value: 0}).Return(nil, errors.New("test error")).Once()
 
 		resp, err := refreshToken(ctx, usecase.RefreshAuthTokenParams{RefreshToken: "validToken"})
 		assert.Errorf(t, err, "tokenProvider.ParseRefreshToken(): invalid token")
@@ -57,7 +57,7 @@ func TestRefreshToken(t *testing.T) {
 
 	t.Run("should return error if user is not found fails", func(t *testing.T) {
 		tokenProvider.EXPECT().ParseRefreshToken("validToken").Return(&validToken, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, entity.UserID{Value: 0}).Return(nil, nil).Once()
+		userRepo.EXPECT().GetByID(ctx, user.ID{Value: 0}).Return(nil, nil).Once()
 
 		resp, err := refreshToken(ctx, usecase.RefreshAuthTokenParams{RefreshToken: "validToken"})
 		assert.Errorf(t, err, "user not found")
@@ -66,8 +66,8 @@ func TestRefreshToken(t *testing.T) {
 
 	t.Run("should return error if new generated token fails", func(t *testing.T) {
 		tokenProvider.EXPECT().ParseRefreshToken("validToken").Return(&validToken, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, entity.UserID{Value: 0}).Return(user, nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("", "", errors.New("test error")).Once()
+		userRepo.EXPECT().GetByID(ctx, user.ID{Value: 0}).Return(usr, nil).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("", "", errors.New("test error")).Once()
 
 		resp, err := refreshToken(ctx, usecase.RefreshAuthTokenParams{RefreshToken: "validToken"})
 		assert.Errorf(t, err, "tokenProvider.GenerateUserTokens: test error")
@@ -76,13 +76,13 @@ func TestRefreshToken(t *testing.T) {
 
 	t.Run("happy path", func(t *testing.T) {
 		tokenProvider.EXPECT().ParseRefreshToken("validToken").Return(&validToken, nil).Once()
-		userRepo.EXPECT().GetByID(ctx, entity.UserID{Value: 0}).Return(user, nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("new_token", "new_refresh_token", nil).Once()
+		userRepo.EXPECT().GetByID(ctx, user.ID{Value: 0}).Return(usr, nil).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("new_token", "new_refresh_token", nil).Once()
 
 		resp, err := refreshToken(ctx, usecase.RefreshAuthTokenParams{RefreshToken: "validToken"})
 		assert.Nil(t, err)
 		assert.Equal(t, resp.Token, "new_token")
 		assert.Equal(t, resp.RefreshToken, "new_refresh_token")
-		assert.Equal(t, resp.User.Name, user.Name)
+		assert.Equal(t, resp.User.Name, usr.Name)
 	})
 }

@@ -28,17 +28,17 @@ func NewCreateCategory(categoryRepo category.Repository) CreateCategory {
 
 		categoryID := categoryRepo.GetNextID()
 
-		category := category.NewCategory(category.Attributes{
+		newCategory := category.New(category.Attributes{
 			ID:              categoryID,
 			Name:            input.Name,
 			Icon:            input.Icon,
 			CategoryGroupID: input.CategoryGroupID,
 		})
 
-		if err := categoryRepo.Store(ctx, category); err != nil {
+		if err := categoryRepo.Store(ctx, newCategory); err != nil {
 			return nil, fmt.Errorf("categoryRepo.Store: %w", err)
 		}
 
-		return category, nil
+		return newCategory, nil
 	}
 }

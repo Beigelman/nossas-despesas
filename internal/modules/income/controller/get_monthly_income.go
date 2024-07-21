@@ -12,9 +12,9 @@ import (
 )
 
 type (
-	GetGroupMonthlyIncome func(ctx *fiber.Ctx) error
+	GetMonthlyIncome func(ctx *fiber.Ctx) error
 
-	GetGroupMonthlyIncomeResponse struct {
+	GetMonthlyIncomeResponse struct {
 		GroupID int                `json:"group_id"`
 		Incomes []query.UserIncome `json:"incomes"`
 		Total   int                `json:"total"`
@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func NewGetGroupMonthlyIncome(getGroupMonthlyIncome query.GetGroupMonthlyIncome) GetGroupMonthlyIncome {
+func NewGetMonthlyIncome(getGroupMonthlyIncome query.GetMonthlyIncome) GetMonthlyIncome {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
@@ -33,19 +33,19 @@ func NewGetGroupMonthlyIncome(getGroupMonthlyIncome query.GetGroupMonthlyIncome)
 			return except.BadRequestError("invalid date")
 		}
 
-		incomes, err := getGroupMonthlyIncome(ctx.Context(), groupID, date)
+		incs, err := getGroupMonthlyIncome(ctx.Context(), groupID, date)
 		if err != nil {
 			return fmt.Errorf("query.GetGroupMonthlyIncome: %w", err)
 		}
 
 		var totalIncome int
-		for _, income := range incomes {
-			totalIncome += income.Amount
+		for _, inc := range incs {
+			totalIncome += inc.Amount
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetGroupMonthlyIncomeResponse{
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetMonthlyIncomeResponse{
 			GroupID: groupID,
-			Incomes: incomes,
+			Incomes: incs,
 			Total:   totalIncome,
 			Month:   date.Month(),
 		}))

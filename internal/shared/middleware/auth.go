@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 	"github.com/gofiber/fiber/v2"
 	"strings"
 )

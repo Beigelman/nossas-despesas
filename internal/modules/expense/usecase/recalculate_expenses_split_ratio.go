@@ -6,10 +6,9 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"log/slog"
 	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 )
 
 type (
@@ -34,9 +33,9 @@ func NewRecalculateExpensesSplitRatio(
 		}
 
 		var proportionalExpenses []expense.Expense
-		for _, expense := range expenses {
-			if expense.SplitType == expense.SpliteTypes.Proportional {
-				proportionalExpenses = append(proportionalExpenses, expense)
+		for _, expns := range expenses {
+			if expns.SplitType == expense.SplitTypes.Proportional {
+				proportionalExpenses = append(proportionalExpenses, expns)
 			}
 		}
 
@@ -45,8 +44,8 @@ func NewRecalculateExpensesSplitRatio(
 			return nil
 		}
 
-		usersIDs := []entity.UserID{proportionalExpenses[0].PayerID, proportionalExpenses[0].ReceiverID}
-		usersIncomes := map[entity.UserID]int{}
+		usersIDs := []user.ID{proportionalExpenses[0].PayerID, proportionalExpenses[0].ReceiverID}
+		usersIncomes := map[user.ID]int{}
 		for _, userID := range usersIDs {
 			incomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, userID, &input.Date)
 			if err != nil || incomes == nil {
@@ -54,16 +53,18 @@ func NewRecalculateExpensesSplitRatio(
 			}
 
 			totalIncome := 0
-			for _, income := range incomes {
-				totalIncome += income.Amount
+			for _, incm := range incomes {
+				totalIncome += incm.Amount
 			}
 
 			usersIncomes[userID] = totalIncome
 		}
 
-		for i, expense := range proportionalExpenses {
-			newSplitRatio := expense.NewProportionalSplitRatio(usersIncomes[expense.PayerID], usersIncomes[expense.ReceiverID])
-			proportionalExpenses[i].Update(expense.ExpenseUpdateParams{SplitRatio: &newSplitRatio})
+		for i, expns := range proportionalExpenses {
+			newSplitRatio := expense.NewProportionalSplitRatio(usersIncomes[expns.PayerID], usersIncomes[expns.ReceiverID])
+			if err := proportionalExpenses[i].Update(expense.UpdateAttributes{SplitRatio: &newSplitRatio}); err != nil {
+				return fmt.Errorf("proportionalExpenses[%d]: %w", i, err)
+			}
 		}
 
 		if err := expenseRepo.BulkStore(ctx, proportionalExpenses); err != nil {

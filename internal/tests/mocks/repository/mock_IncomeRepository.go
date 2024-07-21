@@ -130,7 +130,7 @@ func (_c *MockIncomeRepository_GetNextID_Call) RunAndReturn(run func() income.ID
 }
 
 // GetUserMonthlyIncomes provides a mock function with given fields: ctx, userID, date
-func (_m *MockIncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userID entity.UserID, date *time.Time) ([]income.Income, error) {
+func (_m *MockIncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userID user.ID, date *time.Time) ([]income.Income, error) {
 	ret := _m.Called(ctx, userID, date)
 
 	if len(ret) == 0 {
@@ -139,10 +139,10 @@ func (_m *MockIncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userI
 
 	var r0 []income.Income
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, entity.UserID, *time.Time) ([]income.Income, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, user.ID, *time.Time) ([]income.Income, error)); ok {
 		return rf(ctx, userID, date)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, entity.UserID, *time.Time) []income.Income); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, user.ID, *time.Time) []income.Income); ok {
 		r0 = rf(ctx, userID, date)
 	} else {
 		if ret.Get(0) != nil {
@@ -150,7 +150,7 @@ func (_m *MockIncomeRepository) GetUserMonthlyIncomes(ctx context.Context, userI
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, entity.UserID, *time.Time) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, user.ID, *time.Time) error); ok {
 		r1 = rf(ctx, userID, date)
 	} else {
 		r1 = ret.Error(1)
@@ -166,15 +166,15 @@ type MockIncomeRepository_GetUserMonthlyIncomes_Call struct {
 
 // GetUserMonthlyIncomes is a helper method to define mock.On call
 //   - ctx context.Context
-//   - userID entity.UserID
+//   - userID user.ID
 //   - date *time.Time
 func (_e *MockIncomeRepository_Expecter) GetUserMonthlyIncomes(ctx interface{}, userID interface{}, date interface{}) *MockIncomeRepository_GetUserMonthlyIncomes_Call {
 	return &MockIncomeRepository_GetUserMonthlyIncomes_Call{Call: _e.mock.On("GetUserMonthlyIncomes", ctx, userID, date)}
 }
 
-func (_c *MockIncomeRepository_GetUserMonthlyIncomes_Call) Run(run func(ctx context.Context, userID entity.UserID, date *time.Time)) *MockIncomeRepository_GetUserMonthlyIncomes_Call {
+func (_c *MockIncomeRepository_GetUserMonthlyIncomes_Call) Run(run func(ctx context.Context, userID user.ID, date *time.Time)) *MockIncomeRepository_GetUserMonthlyIncomes_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(entity.UserID), args[2].(*time.Time))
+		run(args[0].(context.Context), args[1].(user.ID), args[2].(*time.Time))
 	})
 	return _c
 }
@@ -184,7 +184,7 @@ func (_c *MockIncomeRepository_GetUserMonthlyIncomes_Call) Return(_a0 []income.I
 	return _c
 }
 
-func (_c *MockIncomeRepository_GetUserMonthlyIncomes_Call) RunAndReturn(run func(context.Context, entity.UserID, *time.Time) ([]income.Income, error)) *MockIncomeRepository_GetUserMonthlyIncomes_Call {
+func (_c *MockIncomeRepository_GetUserMonthlyIncomes_Call) RunAndReturn(run func(context.Context, user.ID, *time.Time) ([]income.Income, error)) *MockIncomeRepository_GetUserMonthlyIncomes_Call {
 	_c.Call.Return(run)
 	return _c
 }

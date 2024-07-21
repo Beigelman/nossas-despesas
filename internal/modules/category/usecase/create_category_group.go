@@ -27,7 +27,7 @@ func NewCreateCategoryGroup(categoryGroupRepo category.GroupRepository) CreateCa
 
 		categoryGroupID := categoryGroupRepo.GetNextID()
 
-		categoryGroup := category.NewCategoryGroup(category.GroupAttributes{
+		categoryGroup := category.NewGroup(category.GroupAttributes{
 			ID:   categoryGroupID,
 			Name: input.Name,
 			Icon: input.Icon,

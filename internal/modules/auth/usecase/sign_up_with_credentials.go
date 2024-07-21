@@ -3,12 +3,11 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
-	"github.com/Beigelman/nossas-despesas/internal/domain/service"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 )
 
 type SignUpWithCredentialsParams struct {
@@ -21,14 +20,14 @@ type SignUpWithCredentialsParams struct {
 }
 
 type SignUpWithCredentialsResponse struct {
-	User         *entity.User
+	User         *user.User
 	Token        string
 	RefreshToken string
 }
 
 type SignUpWithCredentials func(ctx context.Context, p SignUpWithCredentialsParams) (*SignUpWithCredentialsResponse, error)
 
-func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo auth.Repository, tokenProvider service.TokenProvider) SignUpWithCredentials {
+func NewSignUpWithCredentials(userRepo user.Repository, authRepo auth.Repository, tokenProvider service.TokenProvider) SignUpWithCredentials {
 	return func(ctx context.Context, p SignUpWithCredentialsParams) (*SignUpWithCredentialsResponse, error) {
 		existingAuth, err := authRepo.GetByEmail(ctx, p.Email, auth.Types.Credentials)
 		if err != nil {
@@ -48,11 +47,11 @@ func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo auth.
 			return nil, fmt.Errorf("userRepo.GetByEmail: %w", err)
 		}
 
-		var user *entity.User
+		var usr *user.User
 		if existingUser != nil {
-			user = existingUser
+			usr = existingUser
 		} else {
-			user = entity.NewUser(entity.UserParams{
+			usr = user.New(user.Attributes{
 				ID:             userRepo.GetNextID(),
 				Name:           p.Name,
 				Email:          p.Email,
@@ -60,31 +59,31 @@ func NewSignUpWithCredentials(userRepo repository.UserRepository, authRepo auth.
 				GroupID:        p.GroupID,
 			})
 
-			if err := userRepo.Store(ctx, user); err != nil {
+			if err := userRepo.Store(ctx, usr); err != nil {
 				return nil, fmt.Errorf("userRepo.Store: %w", err)
 			}
 		}
 
-		auth, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
+		authentic, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
 			ID:       authRepo.GetNextID(),
-			Email:    user.Email,
+			Email:    usr.Email,
 			Password: p.Password,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("entity.NewCredentialAuth: %w", err)
+			return nil, fmt.Errorf("auth.NewCredentialAuth: %w", err)
 		}
 
-		if err := authRepo.Store(ctx, auth); err != nil {
+		if err := authRepo.Store(ctx, authentic); err != nil {
 			return nil, fmt.Errorf("authRepo.Store: %w", err)
 		}
 
-		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*user)
+		authToken, refreshToken, err := tokenProvider.GenerateUserTokens(*usr)
 		if err != nil {
 			return nil, fmt.Errorf("tokenProvider.GenerateUserTokens: %w", err)
 		}
 
 		return &SignUpWithCredentialsResponse{
-			User:         user,
+			User:         usr,
 			Token:        authToken,
 			RefreshToken: refreshToken,
 		}, nil

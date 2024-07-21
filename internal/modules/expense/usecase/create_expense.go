@@ -7,10 +7,9 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/domain/repository"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
@@ -20,10 +19,10 @@ type (
 		Name        string
 		Amount      int
 		Description string
-		CategoryID  category.CategoryID
+		CategoryID  category.ID
 		SplitType   expense.SplitType
-		PayerID     entity.UserID
-		ReceiverID  entity.UserID
+		PayerID     user.ID
+		ReceiverID  user.ID
 		CreatedAt   *time.Time
 	}
 	CreateExpense func(ctx context.Context, p CreateExpenseParams) (*expense.Expense, error)
@@ -31,7 +30,7 @@ type (
 
 func NewCreateExpense(
 	expenseRepo expense.Repository,
-	userRepo repository.UserRepository,
+	userRepo user.Repository,
 	groupRepo group.Repository,
 	categoryRepo category.Repository,
 	incomeRepo income.Repository,
@@ -55,25 +54,25 @@ func NewCreateExpense(
 			return nil, except.NotFoundError("receiver not found")
 		}
 
-		group, err := groupRepo.GetByID(ctx, p.GroupID)
+		grp, err := groupRepo.GetByID(ctx, p.GroupID)
 		if err != nil {
 			return nil, fmt.Errorf("groupRepo.GetByID: %w", err)
 		}
 
-		if group == nil {
+		if grp == nil {
 			return nil, except.NotFoundError("group not found")
 		}
 
-		if payer.GroupID == nil || receiver.GroupID == nil || group.ID != *payer.GroupID || group.ID != *receiver.GroupID {
+		if payer.GroupID == nil || receiver.GroupID == nil || grp.ID != *payer.GroupID || grp.ID != *receiver.GroupID {
 			return nil, except.UnprocessableEntityError("group mismatch")
 		}
 
-		category, err := categoryRepo.GetByID(ctx, p.CategoryID)
+		cat, err := categoryRepo.GetByID(ctx, p.CategoryID)
 		if err != nil {
 			return nil, fmt.Errorf("categoryRepo.GetByID: %w", err)
 		}
 
-		if category == nil {
+		if cat == nil {
 			return nil, except.NotFoundError("category not found")
 		}
 
@@ -91,13 +90,13 @@ func NewCreateExpense(
 			}
 
 			totalPayerIncome := 0
-			for _, income := range payerIncomes {
-				totalPayerIncome += income.Amount
+			for _, incm := range payerIncomes {
+				totalPayerIncome += incm.Amount
 			}
 
 			totalReceiverIncome := 0
-			for _, income := range receiverIncomes {
-				totalReceiverIncome += income.Amount
+			for _, incm := range receiverIncomes {
+				totalReceiverIncome += incm.Amount
 			}
 
 			splitRatio = expense.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
@@ -107,7 +106,7 @@ func NewCreateExpense(
 			splitRatio = expense.NewEqualSplitRatio()
 		}
 
-		expense, err := expense.New(expense.Attributes{
+		newExpense, err := expense.New(expense.Attributes{
 			ID:          expenseRepo.GetNextID(),
 			Name:        p.Name,
 			Amount:      p.Amount,
@@ -124,10 +123,10 @@ func NewCreateExpense(
 			return nil, except.UnprocessableEntityError().SetInternal(fmt.Errorf("entity.New: %w", err))
 		}
 
-		if err := expenseRepo.Store(ctx, expense); err != nil {
+		if err := expenseRepo.Store(ctx, newExpense); err != nil {
 			return nil, fmt.Errorf("expenseRepo.Store: %w", err)
 		}
 
-		return expense, nil
+		return newExpense, nil
 	}
 }

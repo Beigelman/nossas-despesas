@@ -19,7 +19,7 @@ type GroupAttributes struct {
 	Icon string
 }
 
-func NewCategoryGroup(p GroupAttributes) *Group {
+func NewGroup(p GroupAttributes) *Group {
 	return &Group{
 		Entity: ddd.Entity[GroupID]{
 			ID:        p.ID,

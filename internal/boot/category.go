@@ -12,7 +12,7 @@ import (
 
 var CategoryModule = eon.NewModule("Category", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, postgres.NewCategoryRepository)
-	di.Provide(c, postgres.NewGroupCategoryRepository)
+	di.Provide(c, postgres.NewCategoryGroupRepository)
 	di.Provide(c, usecase.NewCreateCategory)
 	di.Provide(c, usecase.NewCreateCategoryGroup)
 	di.Provide(c, query.NewGetCategories)

@@ -10,15 +10,14 @@ type MailTrapEmailProvider struct {
 	client *resty.Client
 	apiKey string
 }
-
-type email struct {
+type mailTrapEmail struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
 }
 
-type MailTrapBody struct {
-	From    email
-	To      []email
+type mailTrapBody struct {
+	From    mailTrapEmail
+	To      []mailTrapEmail
 	Subject string
 	Html    string
 }
@@ -27,17 +26,17 @@ func NewMailTrapEmailProvider(apiKey string) *MailTrapEmailProvider {
 	return &MailTrapEmailProvider{client: resty.New(), apiKey: apiKey}
 }
 
-func (p *MailTrapEmailProvider) Send(ctx context.Context, email email) error {
-	var to []email
+func (p *MailTrapEmailProvider) Send(ctx context.Context, email Email) error {
+	var to []mailTrapEmail
 	for _, e := range email.To {
-		to = append(to, email{Email: e, Name: "test"})
+		to = append(to, mailTrapEmail{Email: e, Name: "test"})
 	}
 
 	req, err := p.client.R().
 		SetContext(ctx).
 		SetHeader("Api-Token", p.apiKey).
-		SetBody(&MailTrapBody{
-			From: email{
+		SetBody(&mailTrapBody{
+			From: mailTrapEmail{
 				Email: email.From,
 				Name:  "Nossas Despesas",
 			},

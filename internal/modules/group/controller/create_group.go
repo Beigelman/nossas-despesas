@@ -2,8 +2,8 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"net/http"
@@ -44,7 +44,7 @@ func NewCreateGroup(createGroup usecase.CreateGroup) CreateGroup {
 
 		group, err := createGroup(ctx.Context(), usecase.CreateGroupInput{
 			Name:   req.Name,
-			UserID: entity.UserID{Value: userID},
+			UserID: user.ID{Value: userID},
 		})
 		if err != nil {
 			return fmt.Errorf("createGroup: %w", err)

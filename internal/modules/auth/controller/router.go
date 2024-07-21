@@ -10,7 +10,6 @@ func Router(
 	signUpWithCredentialsHandler SignUpWithCredentials,
 	signInWithGoogleHandler SignInWithGoogle,
 	refreshAuthTokenHandler RefreshAuthToken,
-
 ) {
 
 	// Api group

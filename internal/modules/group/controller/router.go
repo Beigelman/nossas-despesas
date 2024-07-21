@@ -8,9 +8,7 @@ import (
 func Router(
 	server *fiber.App,
 	createGroupHandler CreateGroup,
-
 	getGroupHandler GetGroup,
-
 	authMiddleware middleware.AuthMiddleware,
 	inviteUserToGroupHandler InviteUserToGroup,
 	acceptGroupInviteHandler AcceptGroupInvite,

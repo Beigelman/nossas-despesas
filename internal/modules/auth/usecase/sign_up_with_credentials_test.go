@@ -3,9 +3,9 @@ package usecase_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
 	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
 	"github.com/stretchr/testify/assert"
@@ -20,8 +20,8 @@ func TestSignUpWithCredentials(t *testing.T) {
 	authRepo := mockrepository.NewMockAuthRepository(t)
 	tokenProvider := mockservice.NewMockTokenProvider(t)
 
-	user := entity.NewUser(entity.UserParams{
-		ID:             entity.UserID{Value: 1},
+	usr := user.New(user.Attributes{
+		ID:             user.ID{Value: 1},
 		Name:           "test",
 		Email:          "test@email.com",
 		ProfilePicture: nil,
@@ -90,7 +90,7 @@ func TestSignUpWithCredentials(t *testing.T) {
 
 	t.Run("should return error if authRepo fails", func(t *testing.T) {
 		authRepo.EXPECT().GetByEmail(ctx, "test@email.com", auth.Types.Credentials).Return(nil, nil).Once()
-		userRepo.EXPECT().GetByEmail(ctx, user.Email).Return(user, nil).Once()
+		userRepo.EXPECT().GetByEmail(ctx, usr.Email).Return(usr, nil).Once()
 		authRepo.EXPECT().GetNextID().Return(auth.ID{Value: 1}).Once()
 		authRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
 
@@ -106,10 +106,10 @@ func TestSignUpWithCredentials(t *testing.T) {
 
 	t.Run("should return error if tokenProvider fails", func(t *testing.T) {
 		authRepo.EXPECT().GetByEmail(ctx, "test@email.com", auth.Types.Credentials).Return(nil, nil).Once()
-		userRepo.EXPECT().GetByEmail(ctx, user.Email).Return(user, nil).Once()
+		userRepo.EXPECT().GetByEmail(ctx, usr.Email).Return(usr, nil).Once()
 		authRepo.EXPECT().GetNextID().Return(auth.ID{Value: 1}).Once()
 		authRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("", "", errors.New("test error")).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("", "", errors.New("test error")).Once()
 
 		resp, err := signUpWithCredentials(ctx, usecase.SignUpWithCredentialsParams{
 			Name:                 "test",
@@ -123,10 +123,10 @@ func TestSignUpWithCredentials(t *testing.T) {
 
 	t.Run("happy path", func(t *testing.T) {
 		authRepo.EXPECT().GetByEmail(ctx, "test@email.com", auth.Types.Credentials).Return(nil, nil).Once()
-		userRepo.EXPECT().GetByEmail(ctx, user.Email).Return(user, nil).Once()
+		userRepo.EXPECT().GetByEmail(ctx, usr.Email).Return(usr, nil).Once()
 		authRepo.EXPECT().GetNextID().Return(auth.ID{Value: 1}).Once()
 		authRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
-		tokenProvider.EXPECT().GenerateUserTokens(*user).Return("token", "refresh_token", nil).Once()
+		tokenProvider.EXPECT().GenerateUserTokens(*usr).Return("token", "refresh_token", nil).Once()
 
 		resp, err := signUpWithCredentials(ctx, usecase.SignUpWithCredentialsParams{
 			Name:                 "test",
@@ -137,7 +137,7 @@ func TestSignUpWithCredentials(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, resp.Token, "token")
 		assert.Equal(t, resp.RefreshToken, "refresh_token")
-		assert.Equal(t, resp.User.Name, user.Name)
+		assert.Equal(t, resp.User.Name, usr.Name)
 	})
 
 }

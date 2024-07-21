@@ -1,8 +1,9 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
+	"github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
 	"testing"
 	"time"
 
@@ -37,7 +38,7 @@ func (s *PgCategoryRepoTestSuite) SetupSuite() {
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
-	s.repository = NewPGRepository(s.db)
+	s.repository = postgres.NewCategoryRepository(s.db)
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
@@ -64,19 +65,19 @@ func (s *PgCategoryRepoTestSuite) TearDownSubTest() {
 
 func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_Store() {
 	id := s.repository.GetNextID()
-	category := category.NewCategory(category.Attributes{
+	catgry := category.New(category.Attributes{
 		ID:              id,
 		Name:            "shopping",
 		Icon:            "test",
 		CategoryGroupID: category.GroupID{Value: 1},
 	})
 
-	s.NoError(s.repository.Store(s.ctx, category))
+	s.NoError(s.repository.Store(s.ctx, catgry))
 }
 
 func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByID() {
 	id := s.repository.GetNextID()
-	expected := category.NewCategory(category.Attributes{
+	expected := category.New(category.Attributes{
 		ID:              id,
 		Name:            "shopping",
 		Icon:            "test",
@@ -96,7 +97,7 @@ func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByID() {
 
 func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByName() {
 	id := s.repository.GetNextID()
-	expected := category.NewCategory(category.Attributes{
+	expected := category.New(category.Attributes{
 		ID:              id,
 		Name:            "shopping2",
 		Icon:            "test",

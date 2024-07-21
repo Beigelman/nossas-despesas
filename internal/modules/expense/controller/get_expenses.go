@@ -14,20 +14,20 @@ import (
 )
 
 type (
-	GetGroupExpenses func(ctx *fiber.Ctx) error
+	GetExpenses func(ctx *fiber.Ctx) error
 
-	GetGroupExpensesCursor struct {
+	GetExpensesCursor struct {
 		LastExpenseID   int       `json:"last_expense_id"`
 		LastExpenseDate time.Time `json:"last_expense_date"`
 	}
 
-	GetGroupExpensesResponse struct {
+	GetExpensesResponse struct {
 		Expenses  []query2.ExpenseDetails `json:"expenses"`
 		NextToken string                  `json:"next_token"`
 	}
 )
 
-func NewGetGroupExpenses(getGroupExpenses query2.GetGroupExpenses) GetGroupExpenses {
+func NewGetExpenses(getGroupExpenses query2.GetExpenses) GetExpenses {
 	const defaultLimit = 25
 
 	return func(ctx *fiber.Ctx) error {
@@ -43,7 +43,7 @@ func NewGetGroupExpenses(getGroupExpenses query2.GetGroupExpenses) GetGroupExpen
 
 		search := ctx.Query("search")
 
-		expenses, err := getGroupExpenses(ctx.Context(), query2.GetGroupExpensesInput{
+		expenses, err := getGroupExpenses(ctx.Context(), query2.GetExpensesInput{
 			GroupID:         groupID,
 			LastExpenseDate: token.LastExpenseDate,
 			LastExpenseID:   token.LastExpenseID,
@@ -51,13 +51,13 @@ func NewGetGroupExpenses(getGroupExpenses query2.GetGroupExpenses) GetGroupExpen
 			Search:          search,
 		})
 		if err != nil {
-			return fmt.Errorf("query.GetGroupExpenses: %w", err)
+			return fmt.Errorf("query.GetExpenses: %w", err)
 		}
 
 		nextToken := ""
 		if len(expenses) == defaultLimit {
 			lastExpense := expenses[len(expenses)-1]
-			nextToken, err = encodeCursor(&GetGroupExpensesCursor{
+			nextToken, err = encodeCursor(&GetExpensesCursor{
 				LastExpenseDate: lastExpense.CreatedAt,
 				LastExpenseID:   lastExpense.ID,
 			})
@@ -66,14 +66,14 @@ func NewGetGroupExpenses(getGroupExpenses query2.GetGroupExpenses) GetGroupExpen
 			}
 		}
 
-		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetGroupExpensesResponse{
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, GetExpensesResponse{
 			Expenses:  expenses,
 			NextToken: nextToken,
 		}))
 	}
 }
 
-func encodeCursor(cursor *GetGroupExpensesCursor) (string, error) {
+func encodeCursor(cursor *GetExpensesCursor) (string, error) {
 	serializedCursor, err := json.Marshal(cursor)
 	if err != nil {
 		return "", err
@@ -82,19 +82,19 @@ func encodeCursor(cursor *GetGroupExpensesCursor) (string, error) {
 	return base64.StdEncoding.EncodeToString(serializedCursor), nil
 }
 
-func decodeCursor(cursor string) (*GetGroupExpensesCursor, error) {
+func decodeCursor(cursor string) (*GetExpensesCursor, error) {
 	decodedCursor, err := base64.StdEncoding.DecodeString(cursor)
 	if err != nil {
 		return nil, err
 	}
 
 	if string(decodedCursor) == "" {
-		return &GetGroupExpensesCursor{
+		return &GetExpensesCursor{
 			LastExpenseDate: time.Now().AddDate(0, 2, 0),
 		}, nil
 	}
 
-	var cur *GetGroupExpensesCursor
+	var cur *GetExpensesCursor
 	if err := json.Unmarshal(decodedCursor, &cur); err != nil {
 		return nil, err
 	}

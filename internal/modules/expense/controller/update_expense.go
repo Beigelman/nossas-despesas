@@ -5,16 +5,14 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
+	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
-
-	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/gofiber/fiber/v2"
 )
 
 type (
@@ -58,15 +56,15 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
-		expense, err := updateExpense(ctx.Context(), usecase.UpdateExpenseParams{
+		expns, err := updateExpense(ctx.Context(), usecase.UpdateExpenseParams{
 			ID:           expense.ID{Value: expenseID},
 			Name:         req.Name,
 			Amount:       req.Amount,
 			RefundAmount: req.RefundAmount,
 			Description:  req.Description,
-			CategoryID: func() *category.CategoryID {
+			CategoryID: func() *category.ID {
 				if req.CategoryID != nil {
-					return &category.CategoryID{Value: *req.CategoryID}
+					return &category.ID{Value: *req.CategoryID}
 				}
 				return nil
 			}(),
@@ -77,15 +75,15 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 				}
 				return nil
 			}(),
-			PayerID: func() *entity.UserID {
+			PayerID: func() *user.ID {
 				if req.PayerID != nil {
-					return &entity.UserID{Value: *req.PayerID}
+					return &user.ID{Value: *req.PayerID}
 				}
 				return nil
 			}(),
-			ReceiverID: func() *entity.UserID {
+			ReceiverID: func() *user.ID {
 				if req.ReceiverID != nil {
-					return &entity.UserID{Value: *req.ReceiverID}
+					return &user.ID{Value: *req.ReceiverID}
 				}
 				return nil
 			}(),
@@ -97,11 +95,11 @@ func NewUpdateExpense(updateExpense usecase.UpdateExpense) UpdateExpense {
 
 		return ctx.Status(http.StatusCreated).JSON(
 			api.NewResponse(http.StatusCreated, UpdateExpenseResponse{
-				ID:         expense.ID.Value,
-				Name:       expense.Name,
-				Amount:     float32(expense.Amount) / 100,
-				PayerID:    expense.PayerID.Value,
-				ReceiverID: expense.ReceiverID.Value,
+				ID:         expns.ID.Value,
+				Name:       expns.Name,
+				Amount:     float32(expns.Amount) / 100,
+				PayerID:    expns.PayerID.Value,
+				ReceiverID: expns.ReceiverID.Value,
 			}),
 		)
 	}
