@@ -3,11 +3,13 @@ package createusers
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
+	postgres2 "github.com/Beigelman/nossas-despesas/internal/modules/auth/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/authrepo"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/grouprepo"
 	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
@@ -34,11 +36,11 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	database := db.New(&cfg)
-	groupRepo := grouprepo.NewPGRepository(database)
+	groupRepo := postgres.NewGroupRepository(database)
 	usersRepo := userrepo.NewPGRepository(database)
-	authRepo := authrepo.NewPGRepository(database)
+	authRepo := postgres2.NewAuthRepository(database)
 
-	group := entity.NewGroup(entity.GroupParams{
+	group := group.NewGroup(group.Attributes{
 		ID:   groupRepo.GetNextID(),
 		Name: "Luiel",
 	})
@@ -58,7 +60,7 @@ func run(cmd *cobra.Command, args []string) {
 		panic(fmt.Errorf("error saving user: %w", err))
 	}
 
-	danCreds, _ := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+	danCreds, _ := auth.NewCredentialAuth(auth.CredentialsAttributes{
 		ID:       authRepo.GetNextID(),
 		Email:    dan.Email,
 		Password: password,
@@ -79,7 +81,7 @@ func run(cmd *cobra.Command, args []string) {
 		panic(fmt.Errorf("error saving user: %w", err))
 	}
 
-	luCreds, _ := entity.NewCredentialAuth(entity.CredentialsAuthParams{
+	luCreds, _ := auth.NewCredentialAuth(auth.CredentialsAttributes{
 		ID:       authRepo.GetNextID(),
 		Email:    lu.Email,
 		Password: password,

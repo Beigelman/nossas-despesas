@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/modules/user/controller/handler"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Router(
 	server *fiber.App,
-	getMyUserHandler handler.GetMe,
+	getMyUserHandler GetMe,
 	authMiddleware middleware.AuthMiddleware,
 ) {
 	// Api group

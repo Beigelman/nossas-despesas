@@ -2,6 +2,8 @@ package importsplit
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"math"
 	"math/rand"
 	"regexp"
@@ -10,10 +12,9 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	vo "github.com/Beigelman/nossas-despesas/internal/domain/valueobject"
 )
 
-func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error) {
+func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {
 	date, err := time.Parse("2006-01-02", line[0])
 	if err != nil {
 		panic(fmt.Errorf("error parsing date: %w", err))
@@ -47,18 +48,18 @@ func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error)
 		payerRatio = 100 - receiverRatio
 	}
 
-	splitRatio := vo.SplitRatio{
+	splitRatio := expense.SplitRatio{
 		Payer:    payerRatio,
 		Receiver: receiverRatio,
 	}
 
-	var splitType vo.SplitType
+	var splitType expense.SplitType
 	if payerRatio == 50 || receiverRatio == 50 {
-		splitType = vo.SpliteTypes.Equal
+		splitType = expense.SplitTypes.Equal
 	} else if receiverRatio == 100 {
-		splitType = vo.SpliteTypes.Transfer
+		splitType = expense.SplitTypes.Transfer
 	} else {
-		splitType = vo.SpliteTypes.Proportional
+		splitType = expense.SplitTypes.Proportional
 	}
 
 	regex, _ := regexp.Compile(`reembolso|cashback|ajuste`)
@@ -69,13 +70,13 @@ func extractExpense(line []string, id entity.ExpenseID) (*entity.Expense, error)
 		description = fmt.Sprintf("Imported from splitwise. Essa é uma transação legado que tem o objetivo de manter o balanço das contas. Data original: %s", date.Format("2006-01-02"))
 	}
 
-	return entity.NewExpense(entity.ExpenseParams{
+	return expense.New(expense.Attributes{
 		ID:          id,
 		Name:        name,
 		Amount:      amountCents,
 		Description: description,
-		GroupID:     entity.GroupID{Value: groupId},
-		CategoryID:  entity.CategoryID{Value: category},
+		GroupID:     group.ID{Value: groupId},
+		CategoryID:  category.CategoryID{Value: category},
 		SplitRatio:  splitRatio,
 		SplitType:   splitType,
 		PayerID:     entity.UserID{Value: payer},

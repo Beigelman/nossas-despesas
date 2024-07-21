@@ -4,8 +4,8 @@ package mockusecase
 
 import (
 	context "context"
+	entity "github.com/Beigelman/nossas-despesas/internal/modules/expense"
 
-	entity "github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -23,7 +23,7 @@ func (_m *MockDeleteExpense) EXPECT() *MockDeleteExpense_Expecter {
 }
 
 // Execute provides a mock function with given fields: ctx, expenseID
-func (_m *MockDeleteExpense) Execute(ctx context.Context, expenseID entity.ExpenseID) (*entity.Expense, error) {
+func (_m *MockDeleteExpense) Execute(ctx context.Context, expenseID entity.ID) (*entity.Expense, error) {
 	ret := _m.Called(ctx, expenseID)
 
 	if len(ret) == 0 {
@@ -32,10 +32,10 @@ func (_m *MockDeleteExpense) Execute(ctx context.Context, expenseID entity.Expen
 
 	var r0 *entity.Expense
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, entity.ExpenseID) (*entity.Expense, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, entity.ID) (*entity.Expense, error)); ok {
 		return rf(ctx, expenseID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, entity.ExpenseID) *entity.Expense); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, entity.ID) *entity.Expense); ok {
 		r0 = rf(ctx, expenseID)
 	} else {
 		if ret.Get(0) != nil {
@@ -43,7 +43,7 @@ func (_m *MockDeleteExpense) Execute(ctx context.Context, expenseID entity.Expen
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, entity.ExpenseID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, entity.ID) error); ok {
 		r1 = rf(ctx, expenseID)
 	} else {
 		r1 = ret.Error(1)
@@ -59,14 +59,14 @@ type MockDeleteExpense_Execute_Call struct {
 
 // Execute is a helper method to define mock.On call
 //   - ctx context.Context
-//   - expenseID entity.ExpenseID
+//   - expenseID entity.ID
 func (_e *MockDeleteExpense_Expecter) Execute(ctx interface{}, expenseID interface{}) *MockDeleteExpense_Execute_Call {
 	return &MockDeleteExpense_Execute_Call{Call: _e.mock.On("Execute", ctx, expenseID)}
 }
 
-func (_c *MockDeleteExpense_Execute_Call) Run(run func(ctx context.Context, expenseID entity.ExpenseID)) *MockDeleteExpense_Execute_Call {
+func (_c *MockDeleteExpense_Execute_Call) Run(run func(ctx context.Context, expenseID entity.ID)) *MockDeleteExpense_Execute_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(entity.ExpenseID))
+		run(args[0].(context.Context), args[1].(entity.ID))
 	})
 	return _c
 }
@@ -76,7 +76,7 @@ func (_c *MockDeleteExpense_Execute_Call) Return(_a0 *entity.Expense, _a1 error)
 	return _c
 }
 
-func (_c *MockDeleteExpense_Execute_Call) RunAndReturn(run func(context.Context, entity.ExpenseID) (*entity.Expense, error)) *MockDeleteExpense_Execute_Call {
+func (_c *MockDeleteExpense_Execute_Call) RunAndReturn(run func(context.Context, entity.ID) (*entity.Expense, error)) *MockDeleteExpense_Execute_Call {
 	_c.Call.Return(run)
 	return _c
 }

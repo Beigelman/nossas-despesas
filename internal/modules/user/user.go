@@ -1,9 +1,9 @@
 package user
 
 import (
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
@@ -14,7 +14,7 @@ type User struct {
 	Name           string
 	Email          string
 	ProfilePicture *string
-	GroupID        *entity.GroupID
+	GroupID        *group.ID
 }
 
 type Attributes struct {
@@ -22,7 +22,7 @@ type Attributes struct {
 	Name           string
 	Email          string
 	ProfilePicture *string
-	GroupID        *entity.GroupID
+	GroupID        *group.ID
 }
 
 func New(p Attributes) *User {
@@ -44,6 +44,6 @@ func (u *User) SetEmail(email string) {
 	u.Email = email
 }
 
-func (u *User) AssignGroup(g entity.GroupID) {
+func (u *User) AssignGroup(g group.ID) {
 	u.GroupID = &g
 }

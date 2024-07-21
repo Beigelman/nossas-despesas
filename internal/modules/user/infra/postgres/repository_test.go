@@ -1,7 +1,8 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user/infra/postgres"
 	"testing"
 	"time"
 
@@ -37,7 +38,7 @@ func (s *UserRepositoryTestSuite) SetupSuite() {
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
 
 	s.db = db.New(&s.cfg)
-	s.repository = NewUserRepository(s.db)
+	s.repository = postgres.NewUserRepository(s.db)
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
@@ -59,13 +60,13 @@ func (s *UserRepositoryTestSuite) TearDownSuite() {
 
 func (s *UserRepositoryTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	user := user.New(user.Attributes{
+	usr := user.New(user.Attributes{
 		ID:    id,
 		Name:  "John Doe",
 		Email: "john@email.com",
 	})
 
-	s.NoError(s.repository.Store(s.ctx, user))
+	s.NoError(s.repository.Store(s.ctx, usr))
 }
 
 func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByID() {

@@ -4,8 +4,8 @@ package mockrepository
 
 import (
 	context "context"
+	entity "github.com/Beigelman/nossas-despesas/internal/modules/category"
 
-	entity "github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -23,23 +23,23 @@ func (_m *MockGroupCategoryRepository) EXPECT() *MockGroupCategoryRepository_Exp
 }
 
 // GetByID provides a mock function with given fields: ctx, id
-func (_m *MockGroupCategoryRepository) GetByID(ctx context.Context, id entity.CategoryGroupID) (*entity.CategoryGroup, error) {
+func (_m *MockGroupCategoryRepository) GetByID(ctx context.Context, id entity.GroupID) (*entity.Group, error) {
 	ret := _m.Called(ctx, id)
 
-	var r0 *entity.CategoryGroup
+	var r0 *entity.Group
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, entity.CategoryGroupID) (*entity.CategoryGroup, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GroupID) (*entity.Group, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, entity.CategoryGroupID) *entity.CategoryGroup); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, entity.GroupID) *entity.Group); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.CategoryGroup)
+			r0 = ret.Get(0).(*entity.Group)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, entity.CategoryGroupID) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, entity.GroupID) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -55,42 +55,42 @@ type MockGroupCategoryRepository_GetByID_Call struct {
 
 // GetByID is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id entity.CategoryGroupID
+//   - id entity.GroupID
 func (_e *MockGroupCategoryRepository_Expecter) GetByID(ctx interface{}, id interface{}) *MockGroupCategoryRepository_GetByID_Call {
 	return &MockGroupCategoryRepository_GetByID_Call{Call: _e.mock.On("GetByID", ctx, id)}
 }
 
-func (_c *MockGroupCategoryRepository_GetByID_Call) Run(run func(ctx context.Context, id entity.CategoryGroupID)) *MockGroupCategoryRepository_GetByID_Call {
+func (_c *MockGroupCategoryRepository_GetByID_Call) Run(run func(ctx context.Context, id entity.GroupID)) *MockGroupCategoryRepository_GetByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(entity.CategoryGroupID))
+		run(args[0].(context.Context), args[1].(entity.GroupID))
 	})
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetByID_Call) Return(_a0 *entity.CategoryGroup, _a1 error) *MockGroupCategoryRepository_GetByID_Call {
+func (_c *MockGroupCategoryRepository_GetByID_Call) Return(_a0 *entity.Group, _a1 error) *MockGroupCategoryRepository_GetByID_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetByID_Call) RunAndReturn(run func(context.Context, entity.CategoryGroupID) (*entity.CategoryGroup, error)) *MockGroupCategoryRepository_GetByID_Call {
+func (_c *MockGroupCategoryRepository_GetByID_Call) RunAndReturn(run func(context.Context, entity.GroupID) (*entity.Group, error)) *MockGroupCategoryRepository_GetByID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetByName provides a mock function with given fields: ctx, name
-func (_m *MockGroupCategoryRepository) GetByName(ctx context.Context, name string) (*entity.CategoryGroup, error) {
+func (_m *MockGroupCategoryRepository) GetByName(ctx context.Context, name string) (*entity.Group, error) {
 	ret := _m.Called(ctx, name)
 
-	var r0 *entity.CategoryGroup
+	var r0 *entity.Group
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.CategoryGroup, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.Group, error)); ok {
 		return rf(ctx, name)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.CategoryGroup); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.Group); ok {
 		r0 = rf(ctx, name)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.CategoryGroup)
+			r0 = ret.Get(0).(*entity.Group)
 		}
 	}
 
@@ -122,25 +122,25 @@ func (_c *MockGroupCategoryRepository_GetByName_Call) Run(run func(ctx context.C
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetByName_Call) Return(_a0 *entity.CategoryGroup, _a1 error) *MockGroupCategoryRepository_GetByName_Call {
+func (_c *MockGroupCategoryRepository_GetByName_Call) Return(_a0 *entity.Group, _a1 error) *MockGroupCategoryRepository_GetByName_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetByName_Call) RunAndReturn(run func(context.Context, string) (*entity.CategoryGroup, error)) *MockGroupCategoryRepository_GetByName_Call {
+func (_c *MockGroupCategoryRepository_GetByName_Call) RunAndReturn(run func(context.Context, string) (*entity.Group, error)) *MockGroupCategoryRepository_GetByName_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetNextID provides a mock function with given fields:
-func (_m *MockGroupCategoryRepository) GetNextID() entity.CategoryGroupID {
+func (_m *MockGroupCategoryRepository) GetNextID() entity.GroupID {
 	ret := _m.Called()
 
-	var r0 entity.CategoryGroupID
-	if rf, ok := ret.Get(0).(func() entity.CategoryGroupID); ok {
+	var r0 entity.GroupID
+	if rf, ok := ret.Get(0).(func() entity.GroupID); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(entity.CategoryGroupID)
+		r0 = ret.Get(0).(entity.GroupID)
 	}
 
 	return r0
@@ -163,22 +163,22 @@ func (_c *MockGroupCategoryRepository_GetNextID_Call) Run(run func()) *MockGroup
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetNextID_Call) Return(_a0 entity.CategoryGroupID) *MockGroupCategoryRepository_GetNextID_Call {
+func (_c *MockGroupCategoryRepository_GetNextID_Call) Return(_a0 entity.GroupID) *MockGroupCategoryRepository_GetNextID_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_GetNextID_Call) RunAndReturn(run func() entity.CategoryGroupID) *MockGroupCategoryRepository_GetNextID_Call {
+func (_c *MockGroupCategoryRepository_GetNextID_Call) RunAndReturn(run func() entity.GroupID) *MockGroupCategoryRepository_GetNextID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Store provides a mock function with given fields: ctx, _a1
-func (_m *MockGroupCategoryRepository) Store(ctx context.Context, _a1 *entity.CategoryGroup) error {
+func (_m *MockGroupCategoryRepository) Store(ctx context.Context, _a1 *entity.Group) error {
 	ret := _m.Called(ctx, _a1)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.CategoryGroup) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.Group) error); ok {
 		r0 = rf(ctx, _a1)
 	} else {
 		r0 = ret.Error(0)
@@ -194,14 +194,14 @@ type MockGroupCategoryRepository_Store_Call struct {
 
 // Store is a helper method to define mock.On call
 //   - ctx context.Context
-//   - _a1 *entity.CategoryGroup
+//   - _a1 *entity.Group
 func (_e *MockGroupCategoryRepository_Expecter) Store(ctx interface{}, _a1 interface{}) *MockGroupCategoryRepository_Store_Call {
 	return &MockGroupCategoryRepository_Store_Call{Call: _e.mock.On("Store", ctx, _a1)}
 }
 
-func (_c *MockGroupCategoryRepository_Store_Call) Run(run func(ctx context.Context, _a1 *entity.CategoryGroup)) *MockGroupCategoryRepository_Store_Call {
+func (_c *MockGroupCategoryRepository_Store_Call) Run(run func(ctx context.Context, _a1 *entity.Group)) *MockGroupCategoryRepository_Store_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*entity.CategoryGroup))
+		run(args[0].(context.Context), args[1].(*entity.Group))
 	})
 	return _c
 }
@@ -211,7 +211,7 @@ func (_c *MockGroupCategoryRepository_Store_Call) Return(_a0 error) *MockGroupCa
 	return _c
 }
 
-func (_c *MockGroupCategoryRepository_Store_Call) RunAndReturn(run func(context.Context, *entity.CategoryGroup) error) *MockGroupCategoryRepository_Store_Call {
+func (_c *MockGroupCategoryRepository_Store_Call) RunAndReturn(run func(context.Context, *entity.Group) error) *MockGroupCategoryRepository_Store_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"log/slog"
 
-	"github.com/Beigelman/nossas-despesas/internal/infra/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
-	"github.com/Beigelman/nossas-despesas/internal/usecase"
 	"github.com/ThreeDotsLabs/watermill/message"
 )
 
@@ -20,7 +20,7 @@ var PubSubModule = eon.NewModule("Pubsub", func(ctx context.Context, c *di.Conta
 	})
 
 	di.Provide(c, func(db db.Database) (message.Subscriber, error) {
-		return pubsub.NewSqlSubiscriber(db.Client())
+		return pubsub.NewSqlSubscriber(db.Client())
 	})
 
 	lc.OnRunning(eon.HookOrders.APPEND, func() error {

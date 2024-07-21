@@ -4,8 +4,8 @@ package mockusecase
 
 import (
 	context "context"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 
-	usecase "github.com/Beigelman/nossas-despesas/internal/usecase"
 	mock "github.com/stretchr/testify/mock"
 )
 

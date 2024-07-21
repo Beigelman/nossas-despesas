@@ -2,9 +2,9 @@ package postgres
 
 import (
 	"database/sql"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
@@ -21,9 +21,9 @@ func toEntity(model UserModel) *user.User {
 		deletedAt = &model.DeletedAt.Time
 	}
 
-	var groupID *entity.GroupID
+	var groupID *group.ID
 	if model.GroupID.Valid {
-		groupID = &entity.GroupID{Value: int(model.GroupID.Int64)}
+		groupID = &group.ID{Value: int(model.GroupID.Int64)}
 	}
 
 	return &user.User{

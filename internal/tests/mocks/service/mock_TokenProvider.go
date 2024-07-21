@@ -4,6 +4,7 @@ package mockservice
 
 import (
 	entity "github.com/Beigelman/nossas-despesas/internal/domain/entity"
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -84,23 +85,23 @@ func (_c *MockTokenProvider_GenerateUserTokens_Call) RunAndReturn(run func(entit
 }
 
 // ParseRefreshToken provides a mock function with given fields: token
-func (_m *MockTokenProvider) ParseRefreshToken(token string) (*entity.Token, error) {
+func (_m *MockTokenProvider) ParseRefreshToken(token string) (*auth.Token, error) {
 	ret := _m.Called(token)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ParseRefreshToken")
 	}
 
-	var r0 *entity.Token
+	var r0 *auth.Token
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (*entity.Token, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (*auth.Token, error)); ok {
 		return rf(token)
 	}
-	if rf, ok := ret.Get(0).(func(string) *entity.Token); ok {
+	if rf, ok := ret.Get(0).(func(string) *auth.Token); ok {
 		r0 = rf(token)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.Token)
+			r0 = ret.Get(0).(*auth.Token)
 		}
 	}
 
@@ -131,34 +132,34 @@ func (_c *MockTokenProvider_ParseRefreshToken_Call) Run(run func(token string)) 
 	return _c
 }
 
-func (_c *MockTokenProvider_ParseRefreshToken_Call) Return(_a0 *entity.Token, _a1 error) *MockTokenProvider_ParseRefreshToken_Call {
+func (_c *MockTokenProvider_ParseRefreshToken_Call) Return(_a0 *auth.Token, _a1 error) *MockTokenProvider_ParseRefreshToken_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockTokenProvider_ParseRefreshToken_Call) RunAndReturn(run func(string) (*entity.Token, error)) *MockTokenProvider_ParseRefreshToken_Call {
+func (_c *MockTokenProvider_ParseRefreshToken_Call) RunAndReturn(run func(string) (*auth.Token, error)) *MockTokenProvider_ParseRefreshToken_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // ParseToken provides a mock function with given fields: token
-func (_m *MockTokenProvider) ParseToken(token string) (*entity.Token, error) {
+func (_m *MockTokenProvider) ParseToken(token string) (*auth.Token, error) {
 	ret := _m.Called(token)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ParseToken")
 	}
 
-	var r0 *entity.Token
+	var r0 *auth.Token
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (*entity.Token, error)); ok {
+	if rf, ok := ret.Get(0).(func(string) (*auth.Token, error)); ok {
 		return rf(token)
 	}
-	if rf, ok := ret.Get(0).(func(string) *entity.Token); ok {
+	if rf, ok := ret.Get(0).(func(string) *auth.Token); ok {
 		r0 = rf(token)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.Token)
+			r0 = ret.Get(0).(*auth.Token)
 		}
 	}
 
@@ -189,12 +190,12 @@ func (_c *MockTokenProvider_ParseToken_Call) Run(run func(token string)) *MockTo
 	return _c
 }
 
-func (_c *MockTokenProvider_ParseToken_Call) Return(_a0 *entity.Token, _a1 error) *MockTokenProvider_ParseToken_Call {
+func (_c *MockTokenProvider_ParseToken_Call) Return(_a0 *auth.Token, _a1 error) *MockTokenProvider_ParseToken_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockTokenProvider_ParseToken_Call) RunAndReturn(run func(string) (*entity.Token, error)) *MockTokenProvider_ParseToken_Call {
+func (_c *MockTokenProvider_ParseToken_Call) RunAndReturn(run func(string) (*auth.Token, error)) *MockTokenProvider_ParseToken_Call {
 	_c.Call.Return(run)
 	return _c
 }

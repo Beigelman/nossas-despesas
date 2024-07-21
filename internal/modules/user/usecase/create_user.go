@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
@@ -14,7 +14,7 @@ type CreateUserParams struct {
 	Email            string
 	ProfilePicture   *string
 	AuthenticationID *string
-	GroupID          *entity.GroupID
+	GroupID          *group.ID
 }
 
 type CreateUser func(ctx context.Context, p CreateUserParams) (*user.User, error)

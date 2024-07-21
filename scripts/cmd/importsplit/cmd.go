@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/expenserepo"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
@@ -30,7 +30,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	database := db.New(&cfg)
-	expensesRepo := expenserepo.NewPGRepository(database)
+	expensesRepo := postgres.NewExpenseRepository(database)
 
 	file, err := utils.ReadCSVFile("./scripts/data/luiel.csv")
 	if err != nil {
