@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -14,8 +14,8 @@ import (
 func TestCreateIncome(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	incomeRepo := mockrepository.NewMockIncomeRepository(t)
-	userRepo := mockrepository.NewMockUserRepository(t)
+	incomeRepo := mocks.NewMockincomeRepository(t)
+	userRepo := mocks.NewMockuserRepository(t)
 
 	usr := user.New(user.Attributes{
 		ID:    user.ID{Value: 1},

@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -13,9 +14,9 @@ import (
 func TestCreateGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	groupRepo := mockrepository.NewMockGroupRepository(t)
-	userRepo := mockrepository.NewMockUserRepository(t)
-	user := user.New(user.Attributes{
+	groupRepo := mocks.NewMockgroupRepository(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	usr := user.New(user.Attributes{
 		ID:    user.ID{Value: 1},
 		Name:  "test",
 		Email: "",
@@ -24,66 +25,66 @@ func TestCreateGroup(t *testing.T) {
 	useCase := NewCreateGroup(userRepo, groupRepo)
 
 	t.Run("userRepo.GetByID returns error", func(t *testing.T) {
-		userRepo.EXPECT().GetByID(ctx, user.ID).Return(nil, errors.New("test error")).Once()
-		group, err := useCase(ctx, CreateGroupInput{
+		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(nil, errors.New("test error")).Once()
+		grp, err := useCase(ctx, CreateGroupInput{
 			Name:   "my new group",
-			UserID: user.ID,
+			UserID: usr.ID,
 		})
-		assert.Nil(t, group)
+		assert.Nil(t, grp)
 		assert.Errorf(t, err, "userRepo.GetByID: test error")
 	})
 
 	t.Run("user already in a group", func(t *testing.T) {
-		user.GroupID = &group.ID{Value: 1}
-		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
-		group, err := useCase(ctx, CreateGroupInput{
+		usr.GroupID = &group.ID{Value: 1}
+		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
+		grp, err := useCase(ctx, CreateGroupInput{
 			Name:   "my new group",
-			UserID: user.ID,
+			UserID: usr.ID,
 		})
-		assert.Nil(t, group)
+		assert.Nil(t, grp)
 		assert.Errorf(t, err, "user already in a group")
 	})
 
 	t.Run("groupRepo.Store returns error", func(t *testing.T) {
-		user.GroupID = nil
-		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
+		usr.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
-		group, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, CreateGroupInput{
 			Name:   "my new group",
-			UserID: user.ID,
+			UserID: usr.ID,
 		})
 		assert.Errorf(t, err, "groupRepo.Store: test error")
-		assert.Nil(t, group)
+		assert.Nil(t, grp)
 	})
 
 	t.Run("userRepo.Store returns error", func(t *testing.T) {
-		user.GroupID = nil
-		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
+		usr.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
 		userRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
-		group, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, CreateGroupInput{
 			Name:   "my new group",
-			UserID: user.ID,
+			UserID: usr.ID,
 		})
 		assert.Errorf(t, err, "userRepo.Store: test error")
-		assert.Nil(t, group)
+		assert.Nil(t, grp)
 	})
 
 	t.Run("success", func(t *testing.T) {
-		user.GroupID = nil
-		userRepo.EXPECT().GetByID(ctx, user.ID).Return(user, nil).Once()
+		usr.GroupID = nil
+		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
 		userRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
-		group, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, CreateGroupInput{
 			Name:   "my new group",
-			UserID: user.ID,
+			UserID: usr.ID,
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, group.GroupID{Value: 1}, group.ID)
-		assert.Equal(t, "my new group", group.Name)
+		assert.Equal(t, group.ID{Value: 1}, grp.ID)
+		assert.Equal(t, "my new group", grp.Name)
 	})
 
 }

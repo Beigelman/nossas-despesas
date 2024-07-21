@@ -2,18 +2,18 @@ package postgres_test
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 
-type PgCategoryRepoTestSuite struct {
+type CategoryRepositoryTestSuite struct {
 	suite.Suite
 	repository category.Repository
 
@@ -24,18 +24,18 @@ type PgCategoryRepoTestSuite struct {
 	err           error
 }
 
-func TestPgUserRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgCategoryRepoTestSuite))
+func TestCategoryRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(CategoryRepositoryTestSuite))
 }
 
-func (s *PgCategoryRepoTestSuite) SetupSuite() {
+func (s *CategoryRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
 	s.repository = postgres.NewCategoryRepository(s.db)
@@ -44,7 +44,7 @@ func (s *PgCategoryRepoTestSuite) SetupSuite() {
 	s.NoError(s.err)
 }
 
-func (s *PgCategoryRepoTestSuite) TearDownSuite() {
+func (s *CategoryRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -58,12 +58,12 @@ func (s *PgCategoryRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgCategoryRepoTestSuite) TearDownSubTest() {
+func (s *CategoryRepositoryTestSuite) TearDownSubTest() {
 	err := s.db.Clean()
 	s.NoError(err)
 }
 
-func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_Store() {
+func (s *CategoryRepositoryTestSuite) TestPgCategoryRepo_Store() {
 	id := s.repository.GetNextID()
 	catgry := category.New(category.Attributes{
 		ID:              id,
@@ -75,7 +75,7 @@ func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_Store() {
 	s.NoError(s.repository.Store(s.ctx, catgry))
 }
 
-func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByID() {
+func (s *CategoryRepositoryTestSuite) TestPgCategoryRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected := category.New(category.Attributes{
 		ID:              id,
@@ -95,7 +95,7 @@ func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByID() {
 	s.Equal(expected.GroupCategoryID, actual.GroupCategoryID)
 }
 
-func (s *PgCategoryRepoTestSuite) TestPgCategoryRepo_GetByName() {
+func (s *CategoryRepositoryTestSuite) TestPgCategoryRepo_GetByName() {
 	id := s.repository.GetNextID()
 	expected := category.New(category.Attributes{
 		ID:              id,

@@ -12,6 +12,7 @@ func Router(
 	authMiddleware middleware.AuthMiddleware,
 	inviteUserToGroupHandler InviteUserToGroup,
 	acceptGroupInviteHandler AcceptGroupInvite,
+	getGroupBalanceHandler GetGroupBalance,
 ) {
 	// Api group
 	api := server.Group("api")
@@ -21,7 +22,9 @@ func Router(
 	group := v1.Group("group", authMiddleware)
 	group.Get("/", getGroupHandler)
 	group.Post("/", createGroupHandler)
+	group.Get("/balance", getGroupBalanceHandler)
 	// Invite Router
-	group.Post("/invite", inviteUserToGroupHandler)
-	group.Post("/invite/:token/accept", acceptGroupInviteHandler)
+	invite := group.Group("invite", authMiddleware)
+	invite.Post("/", inviteUserToGroupHandler)
+	invite.Post("/:token/accept", acceptGroupInviteHandler)
 }

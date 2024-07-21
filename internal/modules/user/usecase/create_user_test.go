@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"errors"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"testing"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mockuser "github.com/Beigelman/nossas-despesas/internal/tests/mocks/user"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -14,7 +14,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	repo := mockuser.NewMockRepository(t)
+	repo := mocks.NewMockuserRepository(t)
 	existUser := user.New(user.Attributes{
 		ID:    user.ID{Value: 1},
 		Name:  "My test user",

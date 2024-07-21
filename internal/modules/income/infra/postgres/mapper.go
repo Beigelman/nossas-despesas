@@ -38,7 +38,7 @@ func toModel(entity *income.Income) IncomeModel {
 
 	return IncomeModel{
 		ID:        entity.ID.Value,
-		UserID:    entity.ID.Value,
+		UserID:    entity.UserID.Value,
 		Amount:    entity.Amount,
 		Type:      entity.Type.String(),
 		CreatedAt: entity.CreatedAt,

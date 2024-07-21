@@ -2,12 +2,12 @@ package postgres
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
@@ -15,7 +15,7 @@ import (
 
 var userID = user.ID{Value: 1}
 
-type PgIncomeRepoTestSuite struct {
+type IncomeRepositoryTestSuite struct {
 	suite.Suite
 	repository    income.Repository
 	ctx           context.Context
@@ -25,18 +25,18 @@ type PgIncomeRepoTestSuite struct {
 	err           error
 }
 
-func TestPgAuthRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgIncomeRepoTestSuite))
+func TestIncomeRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(IncomeRepositoryTestSuite))
 }
 
-func (s *PgIncomeRepoTestSuite) SetupSuite() {
+func (s *IncomeRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewIncomeRepository(s.db)
@@ -51,7 +51,7 @@ func (s *PgIncomeRepoTestSuite) SetupSuite() {
 	s.NoError(err)
 }
 
-func (s *PgIncomeRepoTestSuite) TearDownSuite() {
+func (s *IncomeRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -65,24 +65,24 @@ func (s *PgIncomeRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgIncomeRepoTestSuite) TearDownTest() {
+func (s *IncomeRepositoryTestSuite) TearDownTest() {
 	err := s.db.Clean("incomes")
 	s.NoError(err)
 }
 
-func (s *PgIncomeRepoTestSuite) TestPgUserRepo_Store() {
+func (s *IncomeRepositoryTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	income := income.New(income.Attributes{
+	inc := income.New(income.Attributes{
 		ID:     id,
 		Amount: 100,
 		UserID: userID,
 		Type:   income.Types.Salary,
 	})
 
-	s.NoError(s.repository.Store(s.ctx, income))
+	s.NoError(s.repository.Store(s.ctx, inc))
 }
 
-func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetByID() {
+func (s *IncomeRepositoryTestSuite) TestPgUserRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected := income.New(income.Attributes{
 		ID:     id,
@@ -100,7 +100,7 @@ func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetByID() {
 	s.Equal(expected.Type, actual.Type)
 }
 
-func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
+func (s *IncomeRepositoryTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
 	thisMonth := time.Now()
 	lasMonth := time.Now().AddDate(0, -1, 0)
 	salary := income.New(income.Attributes{
@@ -123,7 +123,7 @@ func (s *PgIncomeRepoTestSuite) TestPgUserRepo_GetUserMonthlyIncomes() {
 		ID:        s.repository.GetNextID(),
 		Amount:    200,
 		UserID:    userID,
-		Type:      income.Types.Benefit,
+		Type:      income.Types.Other,
 		CreatedAt: &lasMonth,
 	})
 

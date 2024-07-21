@@ -41,14 +41,14 @@ func NewDeleteExpense(deleteExpense usecase.DeleteExpense) DeleteExpense {
 			return except.BadRequestError("invalid expense id")
 		}
 
-		expense, err := deleteExpense(ctx.Context(), expense.ID{Value: expenseID})
+		expns, err := deleteExpense(ctx.Context(), expense.ID{Value: expenseID})
 		if err != nil {
 			return fmt.Errorf("DeleteExpense: %w", err)
 		}
 
 		return ctx.Status(http.StatusOK).JSON(
 			api.NewResponse(http.StatusOK, DeleteExpenseResponse{
-				ID: expense.ID.Value,
+				ID: expns.ID.Value,
 			}),
 		)
 	}

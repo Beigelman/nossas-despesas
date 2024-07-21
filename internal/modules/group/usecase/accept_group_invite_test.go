@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -15,8 +16,8 @@ func TestAcceptGroupInvite(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	userRepo := mockrepository.NewMockUserRepository(t)
-	groupInviteRepo := mockrepository.NewMockGroupInviteRepository(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	groupInviteRepo := mocks.NewMockgroupInviteRepository(t)
 
 	acceptGroupInvite := NewAcceptGroupInvite(userRepo, groupInviteRepo)
 	groupID := group.ID{Value: 1}
@@ -33,7 +34,7 @@ func TestAcceptGroupInvite(t *testing.T) {
 		ExpiresAt: time.Now().Add(time.Hour),
 	})
 	newGroup := group.New(group.Attributes{ID: groupID})
-	user := user.New(user.Attributes{ID: userID, GroupID: &newGroup.ID})
+	usr := user.New(user.Attributes{ID: userID, GroupID: &newGroup.ID})
 	userWithOutGroup := user.New(user.Attributes{ID: userID, Email: input.Email})
 
 	t.Run("if user repo fails it returns error", func(t *testing.T) {
@@ -42,7 +43,7 @@ func TestAcceptGroupInvite(t *testing.T) {
 	})
 
 	t.Run("user already have a newGroup returns error", func(t *testing.T) {
-		userRepo.EXPECT().GetByEmail(ctx, input.Email).Return(user, nil).Once()
+		userRepo.EXPECT().GetByEmail(ctx, input.Email).Return(usr, nil).Once()
 		assert.Error(t, acceptGroupInvite(ctx, input), "user already in a newGroup")
 	})
 

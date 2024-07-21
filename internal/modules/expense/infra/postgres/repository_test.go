@@ -2,23 +2,23 @@ package postgres_test
 
 import (
 	"context"
-	"github.com/Beigelman/nossas-despesas/internal/modules/category"
-	postgres2 "github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
-	"testing"
-	"time"
-
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/userrepo"
+	"github.com/Beigelman/nossas-despesas/internal/modules/category"
+	categoryrepo "github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
+	"testing"
+	"time"
 )
 
-type PgExpenseRepoTestSuite struct {
+type ExpenseRepositoryTestSuite struct {
 	suite.Suite
 	ctx           context.Context
 	err           error
@@ -30,8 +30,8 @@ type PgExpenseRepoTestSuite struct {
 	categoryGroupRepo category.GroupRepository
 	groupRepo         group.Repository
 
-	payer         *entity.User
-	receiver      *entity.User
+	payer         *user.User
+	receiver      *user.User
 	category      *category.Category
 	categoryGroup *category.Group
 	group         *group.Group
@@ -40,25 +40,25 @@ type PgExpenseRepoTestSuite struct {
 	cfg config.Config
 }
 
-func TestPgExpenseRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgExpenseRepoTestSuite))
+func TestExpenseRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(ExpenseRepositoryTestSuite))
 }
 
-func (s *PgExpenseRepoTestSuite) SetupSuite() {
+func (s *ExpenseRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
-	s.expenseRepo = NewPGRepository(s.db)
-	s.userRepo = userrepo.NewPGRepository(s.db)
-	s.categoryRepo = postgres2.NewPGRepository(s.db)
-	s.categoryGroupRepo = postgres2.NewPGRepository(s.db)
-	s.groupRepo = postgres.NewGroupRepository(s.db)
+	s.expenseRepo = postgres.NewExpenseRepository(s.db)
+	s.userRepo = userrepo.NewUserRepository(s.db)
+	s.categoryRepo = categoryrepo.NewCategoryRepository(s.db)
+	s.categoryGroupRepo = categoryrepo.NewCategoryGroupRepository(s.db)
+	s.groupRepo = grouprepo.NewGroupRepository(s.db)
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
@@ -100,7 +100,7 @@ func (s *PgExpenseRepoTestSuite) SetupSuite() {
 	s.NoError(s.groupRepo.Store(s.ctx, s.group))
 }
 
-func (s *PgExpenseRepoTestSuite) TearDownSuite() {
+func (s *ExpenseRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -114,13 +114,13 @@ func (s *PgExpenseRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgExpenseRepoTestSuite) TearDownSubTest() {
+func (s *ExpenseRepositoryTestSuite) TearDownSubTest() {
 	s.NoError(s.db.Clean())
 }
 
-func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_Store() {
+func (s *ExpenseRepositoryTestSuite) TestPgExpenseRepo_Store() {
 	id := s.expenseRepo.GetNextID()
-	expense, err := expense.New(expense.Attributes{
+	expected, err := expense.New(expense.Attributes{
 		ID:          id,
 		Name:        "my first expense",
 		Amount:      100,
@@ -137,10 +137,10 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_Store() {
 	})
 	s.NoError(err)
 
-	s.NoError(s.expenseRepo.Store(s.ctx, expense))
+	s.NoError(s.expenseRepo.Store(s.ctx, expected))
 }
 
-func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByID() {
+func (s *ExpenseRepositoryTestSuite) TestPgExpenseRepo_GetByID() {
 	id := s.expenseRepo.GetNextID()
 	expected, err := expense.New(expense.Attributes{
 		ID:          id,
@@ -169,7 +169,7 @@ func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByID() {
 	s.Equal(0, actual.Version)
 }
 
-func (s *PgExpenseRepoTestSuite) TestPgExpenseRepo_GetByGroupDate() {
+func (s *ExpenseRepositoryTestSuite) TestPgExpenseRepo_GetByGroupDate() {
 	var entities []expense.Expense
 	for i := 0; i < 3; i++ {
 		entity, err := expense.New(expense.Attributes{

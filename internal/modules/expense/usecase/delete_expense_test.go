@@ -8,7 +8,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -17,7 +17,7 @@ import (
 func TestDeleteExpense(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	expenseRepo := mockrepository.NewMockExpenseRepository(t)
+	expenseRepo := mocks.NewMockexpenseRepository(t)
 
 	expns, err := expense.New(expense.Attributes{
 		ID:          expense.ID{Value: 1},

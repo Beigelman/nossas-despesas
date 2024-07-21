@@ -3,13 +3,13 @@ package importincomes
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"strconv"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
@@ -27,7 +27,7 @@ var (
 	environment string
 )
 
-func run(cmd *cobra.Command, args []string) {
+func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
 	cfg := config.New(env.Environment(environment))

@@ -2,17 +2,17 @@ package postgres
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 
-type PgAuthRepoTestSuite struct {
+type AuthRepositoryTestSuite struct {
 	suite.Suite
 	repository    auth.Repository
 	ctx           context.Context
@@ -22,18 +22,18 @@ type PgAuthRepoTestSuite struct {
 	err           error
 }
 
-func TestPgAuthRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgAuthRepoTestSuite))
+func TestAuthRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(AuthRepositoryTestSuite))
 }
 
-func (s *PgAuthRepoTestSuite) SetupSuite() {
+func (s *AuthRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewAuthRepository(s.db)
@@ -48,7 +48,7 @@ func (s *PgAuthRepoTestSuite) SetupSuite() {
 	s.NoError(err)
 }
 
-func (s *PgAuthRepoTestSuite) TearDownSuite() {
+func (s *AuthRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -62,24 +62,24 @@ func (s *PgAuthRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgAuthRepoTestSuite) TearDownTest() {
+func (s *AuthRepositoryTestSuite) TearDownTest() {
 	err := s.db.Clean("authentications")
 	s.NoError(err)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_Store() {
+func (s *AuthRepositoryTestSuite) TestPgUserRepo_Store() {
 	id := s.repository.GetNextID()
-	auth, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
+	authentication, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
 		ID:       id,
 		Email:    "john@email.com",
 		Password: "test123",
 	})
 	s.NoError(err)
 
-	s.NoError(s.repository.Store(s.ctx, auth))
+	s.NoError(s.repository.Store(s.ctx, authentication))
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByID() {
+func (s *AuthRepositoryTestSuite) TestPgUserRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
 		ID:       id,
@@ -96,7 +96,7 @@ func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByID() {
 	s.Equal(expected.Email, actual.Email)
 }
 
-func (s *PgAuthRepoTestSuite) TestPgUserRepo_GetByEmail() {
+func (s *AuthRepositoryTestSuite) TestPgUserRepo_GetByEmail() {
 	id := s.repository.GetNextID()
 	expected, err := auth.NewCredentialAuth(auth.CredentialsAttributes{
 		ID:       id,

@@ -2,13 +2,13 @@ package postgres_test
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/infra/postgres"
 	"testing"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
@@ -35,7 +35,7 @@ func (s *UserRepositoryTestSuite) SetupSuite() {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
 	s.repository = postgres.NewUserRepository(s.db)

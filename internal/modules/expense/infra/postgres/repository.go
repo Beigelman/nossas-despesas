@@ -19,8 +19,8 @@ type ExpenseRepository struct {
 
 func (repo *ExpenseRepository) BulkStore(ctx context.Context, expenses []expense.Expense) error {
 	var models []ExpenseModel
-	for _, expense := range expenses {
-		models = append(models, ToModel(&expense))
+	for _, expns := range expenses {
+		models = append(models, ToModel(&expns))
 	}
 
 	if _, err := repo.db.NamedExecContext(ctx, `

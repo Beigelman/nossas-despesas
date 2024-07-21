@@ -21,7 +21,7 @@ func Router(
 	// Api version V1
 	v1 := api.Group("v1")
 	// Expense routes
-	expense := v1.Group("expense", authMiddleware)
+	expense := v1.Group("expenses", authMiddleware)
 	expense.Post("/", createExpenseHandler)
 	expense.Get("/", getExpensesHandler)
 	expense.Get("/:expense_id/details", getExpenseDetailsHandler)
@@ -29,6 +29,6 @@ func Router(
 	expense.Delete("/:expense_id", deleteExpenseHandler)
 	// Expenses insights routes
 	insights := expense.Group("insights", authMiddleware)
-	insights.Get("/expenses", getExpensesPerPeriodHandler)
-	insights.Get("/expenses/category", getExpensesPerCategoryHandler)
+	insights.Get("/", getExpensesPerPeriodHandler)
+	insights.Get("/category", getExpensesPerCategoryHandler)
 }

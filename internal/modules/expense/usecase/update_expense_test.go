@@ -9,7 +9,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -18,10 +18,10 @@ import (
 func TestUpdateExpense(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mockrepository.NewMockUserRepository(t)
-	categoryRepo := mockrepository.NewMockCategoryRepository(t)
-	expenseRepo := mockrepository.NewMockExpenseRepository(t)
-	incomeRepo := mockrepository.NewMockIncomeRepository(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	categoryRepo := mocks.NewMockcategoryRepository(t)
+	expenseRepo := mocks.NewMockexpenseRepository(t)
+	incomeRepo := mocks.NewMockincomeRepository(t)
 
 	grp := group.New(group.Attributes{
 		ID:   group.ID{Value: 1},

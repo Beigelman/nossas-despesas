@@ -2,17 +2,17 @@ package postgres
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 
-type PgGroupRepoTestSuite struct {
+type GroupRepositoryTestSuite struct {
 	suite.Suite
 	repository    group.Repository
 	ctx           context.Context
@@ -22,18 +22,18 @@ type PgGroupRepoTestSuite struct {
 	err           error
 }
 
-func TestPgGroupRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgGroupRepoTestSuite))
+func TestGroupRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(GroupRepositoryTestSuite))
 }
 
-func (s *PgGroupRepoTestSuite) SetupSuite() {
+func (s *GroupRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
 	s.repository = NewGroupRepository(s.db)
@@ -42,7 +42,7 @@ func (s *PgGroupRepoTestSuite) SetupSuite() {
 	s.NoError(s.err)
 }
 
-func (s *PgGroupRepoTestSuite) TearDownSuite() {
+func (s *GroupRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -56,23 +56,23 @@ func (s *PgGroupRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgGroupRepoTestSuite) TearDownSubTest() {
+func (s *GroupRepositoryTestSuite) TearDownSubTest() {
 	err := s.db.Clean()
 	s.NoError(err)
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_Store() {
+func (s *GroupRepositoryTestSuite) TestPgGroupRepo_Store() {
 	id := s.repository.GetNextID()
-	group := group.New(group.Attributes{
+	grp := group.New(group.Attributes{
 		ID:   id,
 		Name: "My Group",
 	})
 
-	err := s.repository.Store(s.ctx, group)
+	err := s.repository.Store(s.ctx, grp)
 	s.NoError(err)
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
+func (s *GroupRepositoryTestSuite) TestPgGroupRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected := group.New(group.Attributes{
 		ID:   id,
@@ -88,7 +88,7 @@ func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByID() {
 	s.Equal(expected.Name, actual.Name)
 }
 
-func (s *PgGroupRepoTestSuite) TestPgGroupRepo_GetByName() {
+func (s *GroupRepositoryTestSuite) TestPgGroupRepo_GetByName() {
 	id := s.repository.GetNextID()
 	expected := group.New(group.Attributes{
 		ID:   id,

@@ -6,8 +6,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
-	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,8 +14,8 @@ import (
 func TestRefreshToken(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mockrepository.NewMockUserRepository(t)
-	tokenProvider := mockservice.NewMockTokenProvider(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	tokenProvider := mocks.NewMockserviceTokenProvider(t)
 
 	validToken := auth.Token{
 		Raw: "validToken",

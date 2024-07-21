@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
-	mockservice "github.com/Beigelman/nossas-despesas/internal/tests/mocks/service"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -15,12 +16,12 @@ import (
 func TestInviteUserToGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mockrepository.NewMockUserRepository(t)
-	groupRepo := mockrepository.NewMockGroupRepository(t)
-	groupInviteRepo := mockrepository.NewMockGroupInviteRepository(t)
-	emailProvider := mockservice.NewMockEmailProvider(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	groupRepo := mocks.NewMockgroupRepository(t)
+	groupInviteRepo := mocks.NewMockgroupInviteRepository(t)
+	emailProvider := mocks.NewMockserviceEmailProvider(t)
 
-	group := group.New(group.Attributes{
+	grp := group.New(group.Attributes{
 		ID:   group.ID{Value: 1},
 		Name: "name",
 	})
@@ -29,25 +30,25 @@ func TestInviteUserToGroup(t *testing.T) {
 		ID:      user.ID{Value: 1},
 		Name:    "john",
 		Email:   "john@email.com",
-		GroupID: &group.ID,
+		GroupID: &grp.ID,
 	})
-	var invites []group.GroupInvite
+	var invites []group.Invite
 	for i := 0; i < 4; i++ {
-		invites = append(invites, *group.NewGroupInvite(group.GroupInviteParams{
-			ID:        group.GroupInviteID{Value: i},
-			GroupID:   group.ID,
+		invites = append(invites, *group.NewInvite(group.InviteAttributes{
+			ID:        group.InviteID{Value: i},
+			GroupID:   grp.ID,
 			Token:     "testToken",
 			Email:     "john@email.com",
 			ExpiresAt: time.Now(),
 		}))
 	}
-	inviteUserToGroup := NewInviteUserToGroup(userRepo, groupRepo, groupInviteRepo, emailProvider)
+	inviteUserToGroup := usecase.NewInviteUserToGroup(userRepo, groupRepo, groupInviteRepo, emailProvider)
 
 	t.Run("should return error if groupRepo fails", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(nil, errors.New("test error")).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(nil, errors.New("test error")).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   "john@email.com",
 		})
 		assert.Nil(t, invite)
@@ -55,10 +56,10 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if group not found", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(nil, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(nil, nil).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   "john@email.com",
 		})
 		assert.Nil(t, invite)
@@ -66,11 +67,11 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if userRepo fails", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(nil, errors.New("test error")).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, invite)
@@ -78,11 +79,11 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if invitee has group already", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(invitee, nil).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, invite)
@@ -90,12 +91,12 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if GetGroupInvitesByEmail fails", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, group.ID, invitee.Email).Return(nil, errors.New("test error")).Once()
+		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, grp.ID, invitee.Email).Return(nil, errors.New("test error")).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, invite)
@@ -103,12 +104,12 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if GetGroupInvitesByEmail returns more than 3 invites in the last 48 hours", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, group.ID, invitee.Email).Return(invites, nil).Once()
+		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, grp.ID, invitee.Email).Return(invites, nil).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, invite)
@@ -116,14 +117,14 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("should return error if groupInviteRepo fails", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, group.ID, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetNextID().Return(group.GroupInviteID{Value: 1}).Once()
+		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, grp.ID, invitee.Email).Return(nil, nil).Once()
+		groupInviteRepo.EXPECT().GetNextID().Return(group.InviteID{Value: 1}).Once()
 		groupInviteRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, invite)
@@ -131,18 +132,18 @@ func TestInviteUserToGroup(t *testing.T) {
 	})
 
 	t.Run("happy path", func(t *testing.T) {
-		groupRepo.EXPECT().GetByID(ctx, group.ID).Return(group, nil).Once()
+		groupRepo.EXPECT().GetByID(ctx, grp.ID).Return(grp, nil).Once()
 		userRepo.EXPECT().GetByEmail(ctx, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, group.ID, invitee.Email).Return(nil, nil).Once()
-		groupInviteRepo.EXPECT().GetNextID().Return(group.GroupInviteID{Value: 1}).Once()
+		groupInviteRepo.EXPECT().GetGroupInvitesByEmail(ctx, grp.ID, invitee.Email).Return(nil, nil).Once()
+		groupInviteRepo.EXPECT().GetNextID().Return(group.InviteID{Value: 1}).Once()
 		groupInviteRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
 
-		invite, err := inviteUserToGroup(ctx, InviteUserToGroupInput{
-			GroupID: group.ID,
+		invite, err := inviteUserToGroup(ctx, usecase.InviteUserToGroupInput{
+			GroupID: grp.ID,
 			Email:   invitee.Email,
 		})
 		assert.Nil(t, err)
 		assert.Equal(t, invitee.Email, invite.Email)
-		assert.Equal(t, group.ID, invite.GroupID)
+		assert.Equal(t, grp.ID, invite.GroupID)
 	})
 }

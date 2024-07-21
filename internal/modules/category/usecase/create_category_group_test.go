@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/usecase"
-	mockrepository "github.com/Beigelman/nossas-despesas/internal/tests/mocks/repository"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -14,7 +14,7 @@ import (
 func TestCreateCategoryGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	repo := mockrepository.NewMockCategoryGroupRepository(t)
+	repo := mocks.NewMockcategoryGroupRepository(t)
 	existingCategory := category.NewGroup(category.GroupAttributes{
 		ID:   category.GroupID{Value: 1},
 		Name: "My test category",

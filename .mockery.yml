@@ -1,11 +1,14 @@
 with-expecter: true
 all: true
-dir: internal/tests/mocks/{{.PackageName}}
-outpkg: mock{{.PackageName}}
-filename: "mock_{{.InterfaceName}}.go"
+dir: internal/tests/mocks
+outpkg: mocks
+mockname: "Mock{{.PackageName}}{{.InterfaceName}}"
+filename: "mock_{{.PackageName}}_{{.InterfaceName}}.go"
 packages:
-  github.com/Beigelman/nossas-despesas/internal/domain/repository:
-  github.com/Beigelman/nossas-despesas/internal/domain/service:
+  github.com/Beigelman/nossas-despesas/internal/modules/auth:
+  github.com/Beigelman/nossas-despesas/internal/modules/category:
+  github.com/Beigelman/nossas-despesas/internal/modules/expense:
+  github.com/Beigelman/nossas-despesas/internal/modules/group:
+  github.com/Beigelman/nossas-despesas/internal/modules/income:
   github.com/Beigelman/nossas-despesas/internal/modules/user:
-  github.com/Beigelman/nossas-despesas/internal/modules/user/usecase:
-  github.com/Beigelman/nossas-despesas/internal/usecase:
+  github.com/Beigelman/nossas-despesas/internal/shared/service:

@@ -25,7 +25,7 @@ var cmd = &cobra.Command{
 	Run: run,
 }
 
-func run(cmd *cobra.Command, args []string) {
+func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
 	cfg := config.New(env.Environment(environment))

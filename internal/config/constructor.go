@@ -51,7 +51,7 @@ func New(env env.Environment) Config {
 	}
 }
 
-func NewTestConfig(dbPort, dbHost, dbType string) Config {
+func NewTestConfig(dbPort, dbHost string) Config {
 	migrationPath := os.Getenv("DB_MIGRATION_PATH")
 	return Config{
 		loader:      viper.New(),

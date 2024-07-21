@@ -1,20 +1,21 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
 )
 
-type PgGroupInviteRepoTestSuite struct {
+type GroupInviteRepositoryTestSuite struct {
 	suite.Suite
 	repository    group.InviteRepository
 	ctx           context.Context
@@ -24,27 +25,27 @@ type PgGroupInviteRepoTestSuite struct {
 	err           error
 }
 
-func TestPgGroupInviteRepoTestSuite(t *testing.T) {
-	suite.Run(t, new(PgGroupInviteRepoTestSuite))
+func TestGroupInviteRepositoryTestSuite(t *testing.T) {
+	suite.Run(t, new(GroupInviteRepositoryTestSuite))
 }
 
-func (s *PgGroupInviteRepoTestSuite) SetupSuite() {
+func (s *GroupInviteRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
 	s.testContainer, s.err = tests.StartPostgres(s.ctx)
 	if s.err != nil {
 		panic(s.err)
 	}
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host, "postgres")
+	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
 	s.db = db.New(&s.cfg)
-	s.repository = NewGroupRepository(s.db)
+	s.repository = postgres.NewGroupInviteRepository(s.db)
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
 }
 
-func (s *PgGroupInviteRepoTestSuite) TearDownSuite() {
+func (s *GroupInviteRepositoryTestSuite) TearDownSuite() {
 	s.err = s.db.MigrateDown()
 	s.NoError(s.err)
 
@@ -58,12 +59,12 @@ func (s *PgGroupInviteRepoTestSuite) TearDownSuite() {
 	}
 }
 
-func (s *PgGroupInviteRepoTestSuite) TearDownTest() {
+func (s *GroupInviteRepositoryTestSuite) TearDownTest() {
 	err := s.db.Clean("group_invites")
 	s.NoError(err)
 }
 
-func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_Store() {
+func (s *GroupInviteRepositoryTestSuite) TestPgGroupInviteRepo_Store() {
 	id := s.repository.GetNextID()
 	groupInvite := group.NewInvite(group.InviteAttributes{
 		ID:        id,
@@ -76,7 +77,7 @@ func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_Store() {
 	s.NoError(s.repository.Store(s.ctx, groupInvite))
 }
 
-func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByID() {
+func (s *GroupInviteRepositoryTestSuite) TestPgGroupInviteRepo_GetByID() {
 	id := s.repository.GetNextID()
 	expected := group.NewInvite(group.InviteAttributes{
 		ID:        id,
@@ -95,7 +96,7 @@ func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByID() {
 	s.Equal(expected.Token, actual.Token)
 }
 
-func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByToken() {
+func (s *GroupInviteRepositoryTestSuite) TestPgGroupInviteRepo_GetByToken() {
 	id := s.repository.GetNextID()
 	token := uuid.NewString()
 	expected := group.NewInvite(group.InviteAttributes{
@@ -115,7 +116,7 @@ func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByToken() {
 	s.Equal(expected.Token, actual.Token)
 }
 
-func (s *PgGroupInviteRepoTestSuite) TestPgGroupInviteRepo_GetByEmail() {
+func (s *GroupInviteRepositoryTestSuite) TestPgGroupInviteRepo_GetByEmail() {
 	email := "john@email.com"
 	s.NoError(s.repository.Store(s.ctx, group.NewInvite(group.InviteAttributes{
 		ID:        s.repository.GetNextID(),
