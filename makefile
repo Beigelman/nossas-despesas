@@ -29,15 +29,11 @@ mock:
 	mockery
 
 unit:
-		go test -v $$(go list ./... | grep -e handler -e usecase -e pkg | grep -v mocks)
+		go test -v $$(go list ./internal/... | grep -e handler -e usecase -e pkg)
 
 integration:
 		export DB_MIGRATION_PATH="file://$(shell pwd)/database/migrations"; \
-		go test -v $$(go list ./... | grep -e postgres)
-
-e2e:
-		export DB_MIGRATION_PATH="file://$(shell pwd)/database/migrations"; \
-		go test -v $$(go list ./... | grep -e e2e)
+		go test -v $$(go list ./internal/... | grep -e postgres)
 
 test: unit integration
 

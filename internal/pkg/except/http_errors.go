@@ -14,10 +14,6 @@ func UnprocessableEntityError(message ...interface{}) *HTTPError {
 	return NewHTTPError(http.StatusUnprocessableEntity, message...)
 }
 
-func InternalServerError(message ...interface{}) *HTTPError {
-	return NewHTTPError(http.StatusInternalServerError, message...)
-}
-
 func UnauthorizedError(message ...interface{}) *HTTPError {
 	return NewHTTPError(http.StatusUnauthorized, message...)
 }
