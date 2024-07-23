@@ -3,12 +3,13 @@ package importincomes
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"strconv"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/domain/entity"
-	"github.com/Beigelman/nossas-despesas/internal/infra/postgres/incomerepo"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
@@ -26,7 +27,7 @@ var (
 	environment string
 )
 
-func run(cmd *cobra.Command, args []string) {
+func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
 	cfg := config.New(env.Environment(environment))
@@ -36,7 +37,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	database := db.New(&cfg)
-	incomesRepo := incomerepo.NewPGRepository(database)
+	incomesRepo := postgres.NewIncomeRepository(database)
 
 	file, err := utils.ReadCSVFile("./scripts/data/incomes.csv")
 	if err != nil {
@@ -65,19 +66,19 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		luIncomeCents := int(100 * luAmount)
 
-		danIncome := entity.NewIncome(entity.IncomeParams{
+		danIncome := income.New(income.Attributes{
 			ID:        incomesRepo.GetNextID(),
-			UserID:    entity.UserID{Value: danId},
+			UserID:    user.ID{Value: danId},
 			Amount:    danIncomeCents,
-			Type:      entity.IncomeTypes.Salary,
+			Type:      income.Types.Salary,
 			CreatedAt: &offsetDate,
 		})
 
-		luIncome := entity.NewIncome(entity.IncomeParams{
+		luIncome := income.New(income.Attributes{
 			ID:        incomesRepo.GetNextID(),
-			UserID:    entity.UserID{Value: luId},
+			UserID:    user.ID{Value: luId},
 			Amount:    luIncomeCents,
-			Type:      entity.IncomeTypes.Salary,
+			Type:      income.Types.Salary,
 			CreatedAt: &offsetDate,
 		})
 

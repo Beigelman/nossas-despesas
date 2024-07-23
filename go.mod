@@ -1,8 +1,6 @@
 module github.com/Beigelman/nossas-despesas
 
-go 1.21
-
-toolchain go1.21.1
+go 1.22
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.3.5

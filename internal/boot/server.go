@@ -4,26 +4,26 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/controller"
-	"github.com/Beigelman/nossas-despesas/internal/controller/middleware"
+	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
+	"github.com/bytedance/sonic"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
-	"github.com/bytedance/sonic"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var server *fiber.App
+
+	di.Provide(c, middleware.NewAuthMiddleware)
 
 	di.Provide(c, func(cfg *config.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
@@ -39,11 +39,9 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		server.Use(requestid.New())
 		server.Use(middleware.LogRequest(cfg.Env, info.ServiceName))
 
-		return server
-	})
+		server.Get("health-check", func(c *fiber.Ctx) error { return c.SendString("OK") })
 
-	lc.OnBooted(eon.HookOrders.PREPEND, func() error {
-		return di.Call(c, controller.Router)
+		return server
 	})
 
 	lc.OnReady(eon.HookOrders.APPEND, func() error {

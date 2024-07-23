@@ -20,7 +20,7 @@ COPY --from=builder /app/main .
 # Copie o arquivo de certificado SSL para o contêiner
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 # Copie o arquivo de configuração para o contêiner
-COPY ./internal/config/config.yml /internal/config/config.yml
+COPY internal/config/config.yml /internal/config/config.yml
 # Copia templates para o contêiner
 COPY ./templates /templates
 # Comando para executar o binário

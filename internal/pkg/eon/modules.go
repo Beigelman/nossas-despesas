@@ -23,7 +23,7 @@ type (
 		// OnDisposing It's during this lifecycle event that the cleanup functions returned by the modules will be run.
 		// To make the cleanup process consistent, the cleanup functions are run in the inverse order their modules were passed to the bootstrap function. So if your app uses `bootstrap(database, server)`, during the disposing process the cleanup function of the server module will be called first and then the database one.
 		// As an example, this is where the server is stopped and the database connections are closed.
-		// It's intended to be used to revert everything initialized during Booting lifecycle event.
+		// It`s intended to be used to revert everything initialized during Booting lifecycle event.
 		OnDisposing(order HookOrder, fn ...HookFn)
 		// OnDisposed By the time Disposed event is dispatched, we expect that everything that keeps the process open is already finished, leaving it in a safe state to be terminated.
 		// You could use this event to clean temporary files, for instance.
