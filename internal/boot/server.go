@@ -27,12 +27,11 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 
 	di.Provide(c, func(cfg *config.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
-			AppName:           info.ServiceName,
-			ReadTimeout:       5 * time.Second,
-			JSONEncoder:       sonic.Marshal,
-			JSONDecoder:       sonic.Unmarshal,
-			ErrorHandler:      api.ErrorHandler,
-			EnablePrintRoutes: true,
+			AppName:      info.ServiceName,
+			ReadTimeout:  5 * time.Second,
+			JSONEncoder:  sonic.Marshal,
+			JSONDecoder:  sonic.Unmarshal,
+			ErrorHandler: api.ErrorHandler,
 		})
 
 		server.Use(cors.New())
