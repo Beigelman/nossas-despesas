@@ -2,8 +2,8 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"log"
 
 	"github.com/golang-migrate/migrate/v4"
 
@@ -31,10 +31,10 @@ type SQLDatabase struct {
 	kind          string
 }
 
-func New(c *config.Config) Database {
-	db, err := sqlx.Open("pgx", c.DBConnectionString())
+func New(c *config.Config) (Database, error) {
+	db, err := sqlx.Connect("pgx", c.DBConnectionString())
 	if err != nil {
-		log.Fatal("Failed to connect to database", err)
+		return nil, fmt.Errorf("sqlx.Connect: %w", err)
 	}
 
 	if c.Env == env.Production {
@@ -49,7 +49,7 @@ func New(c *config.Config) Database {
 		env:           c.Env,
 		name:          c.Db.Name,
 		migrationPath: c.Db.MigrationPath,
-	}
+	}, nil
 }
 
 func (sql *SQLDatabase) Client() *sqlx.DB {

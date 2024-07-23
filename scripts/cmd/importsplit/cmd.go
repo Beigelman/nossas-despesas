@@ -3,6 +3,7 @@ package importsplit
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -17,8 +18,10 @@ var cmd = &cobra.Command{
 	Run: run,
 }
 
-var danId, luId, groupId int
-var environment string
+var (
+	danId, luId, groupId int
+	environment          string
+)
 
 func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
@@ -29,7 +32,10 @@ func run(_ *cobra.Command, _ []string) {
 		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
 
-	database := db.New(&cfg)
+	database, err := db.New(&cfg)
+	if err != nil {
+		panic(err)
+	}
 	expensesRepo := postgres.NewExpenseRepository(database)
 
 	file, err := utils.ReadCSVFile("./scripts/data/luiel.csv")

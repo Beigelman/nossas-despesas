@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"context"
-	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"testing"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
@@ -35,7 +36,8 @@ func (s *AuthRepositoryTestSuite) SetupSuite() {
 
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
-	s.db = db.New(&s.cfg)
+	s.db, s.err = db.New(&s.cfg)
+	s.NoError(s.err)
 	s.repository = NewAuthRepository(s.db)
 
 	s.err = s.db.MigrateUp()
