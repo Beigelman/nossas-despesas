@@ -2,11 +2,12 @@ package postgres_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
-	"testing"
-	"time"
 
 	"github.com/google/uuid"
 
@@ -38,7 +39,9 @@ func (s *GroupInviteRepositoryTestSuite) SetupSuite() {
 
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
-	s.db = db.New(&s.cfg)
+	s.db, s.err = db.New(&s.cfg)
+	s.NoError(s.err)
+
 	s.repository = postgres.NewGroupInviteRepository(s.db)
 
 	s.err = s.db.MigrateUp()

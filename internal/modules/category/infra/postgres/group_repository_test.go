@@ -2,11 +2,12 @@ package postgres_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
-	"testing"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
@@ -36,7 +37,8 @@ func (s *CategoryGroupTestSuite) SetupSuite() {
 
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
-	s.db = db.New(&s.cfg)
+	s.db, s.err = db.New(&s.cfg)
+	s.NoError(s.err)
 	s.repository = postgres.NewCategoryGroupRepository(s.db)
 
 	s.err = s.db.MigrateUp()

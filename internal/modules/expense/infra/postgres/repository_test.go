@@ -2,6 +2,9 @@ package postgres_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	categoryrepo "github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
@@ -14,8 +17,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
-	"testing"
-	"time"
 )
 
 type ExpenseRepositoryTestSuite struct {
@@ -53,7 +54,8 @@ func (s *ExpenseRepositoryTestSuite) SetupSuite() {
 
 	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
 
-	s.db = db.New(&s.cfg)
+	s.db, s.err = db.New(&s.cfg)
+	s.NoError(s.err)
 	s.expenseRepo = postgres.NewExpenseRepository(s.db)
 	s.userRepo = userrepo.NewUserRepository(s.db)
 	s.categoryRepo = categoryrepo.NewCategoryRepository(s.db)

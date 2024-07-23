@@ -3,6 +3,7 @@ package createusers
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/infra/postgres"
@@ -34,7 +35,10 @@ func run(_ *cobra.Command, _ []string) {
 		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
 
-	database := db.New(&cfg)
+	database, err := db.New(&cfg)
+	if err != nil {
+		panic(err)
+	}
 	groupRepo := grouprepo.NewGroupRepository(database)
 	usersRepo := userrepo.NewUserRepository(database)
 	authRepo := authrepo.NewAuthRepository(database)

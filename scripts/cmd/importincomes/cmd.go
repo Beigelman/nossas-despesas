@@ -3,12 +3,13 @@ package importincomes
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"strconv"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
@@ -36,7 +37,10 @@ func run(_ *cobra.Command, _ []string) {
 		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
 
-	database := db.New(&cfg)
+	database, err := db.New(&cfg)
+	if err != nil {
+		panic(err)
+	}
 	incomesRepo := postgres.NewIncomeRepository(database)
 
 	file, err := utils.ReadCSVFile("./scripts/data/incomes.csv")
