@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type (
@@ -32,10 +33,11 @@ func NewGetIncomesPerPeriod(db db.Database) GetIncomesPerPeriod {
 		var expensesPerMonth []IncomesPerPeriod
 
 		trunc, format := "day", "YYYY-MM-DD"
-		if params.Aggregate == "month" {
+		switch params.Aggregate {
+		case "month":
 			trunc = "month"
 			format = "YYYY-MM"
-		} else if params.Aggregate == "day" {
+		case "day":
 			trunc = "day"
 			format = "YYYY-MM-DD"
 		}
@@ -60,7 +62,11 @@ func NewGetIncomesPerPeriod(db db.Database) GetIncomesPerPeriod {
 			group by 1
 			order by 1;
 		`, trunc, format)
-		if err := dbClient.SelectContext(ctx, &expensesPerMonth, query, params.GroupID, params.StartDate, params.EndDate); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		if err := dbClient.SelectContext(
+			ctx, &expensesPerMonth,
+			query, params.GroupID,
+			params.StartDate, params.EndDate,
+		); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}
 

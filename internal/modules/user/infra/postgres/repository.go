@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
@@ -36,7 +37,7 @@ func (repo *UserRepository) GetByID(ctx context.Context, id user.ID) (*user.User
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, flags, created_at, updated_at, deleted_at, version
 		FROM users WHERE id = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
@@ -55,7 +56,7 @@ func (repo *UserRepository) GetByEmail(ctx context.Context, email string) (*user
 	var model UserModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, email, profile_picture, group_id, created_at, updated_at, deleted_at, version
+		SELECT id, name, email, profile_picture, group_id, flags, created_at, updated_at, deleted_at, version
 		FROM users WHERE email = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
@@ -73,6 +74,7 @@ func (repo *UserRepository) GetByEmail(ctx context.Context, email string) (*user
 // Store implements user.UserRepository.
 func (repo *UserRepository) Store(ctx context.Context, entity *user.User) error {
 	model := toModel(entity)
+	log.Println("model", model.Flags)
 	if err := repo.create(ctx, model); err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			if err := repo.update(ctx, model); err != nil {
@@ -88,8 +90,8 @@ func (repo *UserRepository) Store(ctx context.Context, entity *user.User) error 
 
 func (repo *UserRepository) create(ctx context.Context, model UserModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO users (id, name, email, group_id, profile_picture, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :email, :group_id, :profile_picture, :created_at, :updated_at, :deleted_at, :version)
+		INSERT INTO users (id, name, email, group_id, profile_picture, flags, created_at, updated_at, deleted_at, version)
+    VALUES (:id, :name, :email, :group_id, :profile_picture, :flags, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}
@@ -99,7 +101,7 @@ func (repo *UserRepository) create(ctx context.Context, model UserModel) error {
 
 func (repo *UserRepository) update(ctx context.Context, model UserModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
-		UPDATE users SET name = :name, group_id = :group_id, profile_picture = :profile_picture, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
+    UPDATE users SET name = :name, group_id = :group_id, profile_picture = :profile_picture, flags = :flags, updated_at = now(), deleted_at = :deleted_at, version = version + 1
 		WHERE id = :id and version = :version
 	`, model)
 	if err != nil {

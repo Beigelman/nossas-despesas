@@ -1,17 +1,32 @@
 package pubsub
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/ThreeDotsLabs/watermill"
 	pubsubSql "github.com/ThreeDotsLabs/watermill-sql/v3/pkg/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
 )
 
-func NewSqlPublisher(db *sqlx.DB) (*pubsubSql.Publisher, error) {
+type Publisher interface {
+	Publish(ctx context.Context, topic string, event any) error
+	Close() error
+}
+
+// SQL Publisher
+
+type SqlPublisher struct {
+	publisher *pubsubSql.Publisher
+}
+
+func NewSqlPublisher(db db.Database) (Publisher, error) {
 	logger := watermill.NewSlogLogger(nil)
 	publisher, err := pubsubSql.NewPublisher(
-		db,
+		db.Client(),
 		pubsubSql.PublisherConfig{
 			SchemaAdapter:        pubsubSql.DefaultPostgreSQLSchema{},
 			AutoInitializeSchema: true,
@@ -22,5 +37,22 @@ func NewSqlPublisher(db *sqlx.DB) (*pubsubSql.Publisher, error) {
 		return nil, fmt.Errorf("pubsubSql.NewPublisher: %w", err)
 	}
 
-	return publisher, nil
+	return &SqlPublisher{publisher: publisher}, nil
+}
+
+func (p SqlPublisher) Publish(ctx context.Context, topic string, event any) error {
+	messageData, err := json.Marshal(event)
+	if err != nil {
+		return fmt.Errorf("error marshaling event data: %w", err)
+	}
+
+	if err := p.publisher.Publish(topic, message.NewMessage(uuid.NewString(), messageData)); err != nil {
+		return fmt.Errorf("error publishing event: %w", err)
+	}
+
+	return nil
+}
+
+func (p SqlPublisher) Close() error {
+	return p.publisher.Close()
 }

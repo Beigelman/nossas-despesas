@@ -1,8 +1,9 @@
 package user
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
@@ -15,6 +16,7 @@ type User struct {
 	Email          string
 	ProfilePicture *string
 	GroupID        *group.ID
+	Flags          []Flag
 }
 
 type Attributes struct {
@@ -37,7 +39,35 @@ func New(p Attributes) *User {
 		Email:          p.Email,
 		ProfilePicture: p.ProfilePicture,
 		GroupID:        p.GroupID,
+		Flags:          []Flag{},
 	}
+}
+
+func (u *User) HasFlag(flag Flag) bool {
+	for _, f := range u.Flags {
+		if f == flag {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (u *User) AddFlag(flag Flag) {
+	u.Flags = append(u.Flags, flag)
+}
+
+func (u *User) RemoveFlag(flag Flag) {
+	filtredFlags := u.Flags[:0]
+	for _, f := range u.Flags {
+		if f == flag {
+			continue
+		}
+
+		filtredFlags = append(filtredFlags, f)
+	}
+
+	u.Flags = filtredFlags
 }
 
 func (u *User) SetEmail(email string) {

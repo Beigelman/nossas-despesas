@@ -1,23 +1,18 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
-	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"golang.org/x/exp/slog"
 )
 
 type (
@@ -28,7 +23,7 @@ type (
 	}
 )
 
-func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publisher) DeleteIncome {
+func NewDeleteIncome(deleteIncome usecase.DeleteIncome) DeleteIncome {
 	return func(ctx *fiber.Ctx) error {
 		userID, ok := ctx.Locals("user_id").(int)
 		if !ok {
@@ -52,24 +47,6 @@ func NewDeleteIncome(deleteIncome usecase.DeleteIncome, publisher message.Publis
 		})
 		if err != nil {
 			return fmt.Errorf("updateIncome: %w", err)
-		}
-
-		event, err := json.Marshal(pubsub.IncomeEvent{
-			Event: pubsub.Event{
-				SentAt:  time.Now(),
-				Type:    "income_created",
-				UserID:  user.ID{Value: userID},
-				GroupID: group.ID{Value: groupID},
-			},
-			Income: *inc,
-		})
-		if err == nil {
-			if err := publisher.Publish(
-				pubsub.IncomesTopic,
-				message.NewMessage(uuid.NewString(), event),
-			); err != nil {
-				slog.ErrorContext(ctx.Context(), "failed to publish income created event", "error", err)
-			}
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(
