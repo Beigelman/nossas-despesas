@@ -1,4 +1,4 @@
-h1:34n9x2dWajAxcbKodqVMiOjSi0M8HZ6A7Xh0GORCiJo=
+h1:zSdFiQ5OyJoUInzW+ptum963RgTlv28G3c8tDAGoV3Q=
 20240219185200_init-setup.down.sql h1:74yLSDg83Mn+7zoRgRvGq8liF6tLI4TGVm4jr4nxsCo=
 20240219185200_init-setup.up.sql h1:1iHJXoeWx9yTQ2GXPQCRSOC+Gi9I1ZwNOzUBATmaRJ8=
 20240219185205_categories-seed.down.sql h1:Dkp7kzGrt6VMfx+kBiBiA+doEilxX71X0ILx1cFeIyE=
@@ -9,3 +9,5 @@ h1:34n9x2dWajAxcbKodqVMiOjSi0M8HZ6A7Xh0GORCiJo=
 20240505142329_add-split-type-column.up.sql h1:hXunAnQq/2Jf+qJDj3+2QwAyUJOfr2NOzQoYhcggJF4=
 20240526005902_add-document-search-column.down.sql h1:BGCM4W5GrOhGPkHQVz2BUKqjTz+mhs3k+czVw3RE9gE=
 20240526005902_add-document-search-column.up.sql h1:Y/89+PW7gjJoipKCRDZARFDx/v8g/2IFNeve5MdT61Y=
+20240816192953_add-flag-column-to-users.down.sql h1:49TRckkdJmtFCo8PlLRaUTdqEhFgpfTWQ4kMhnToTWo=
+20240816192953_add-flag-column-to-users.up.sql h1:SaNKFwtCgoz7bKMjxe6ctSTJLYClM0zvxeJx++eGTSk=

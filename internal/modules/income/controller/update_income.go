@@ -1,24 +1,20 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
-	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"golang.org/x/exp/slog"
 )
 
 type (
@@ -35,7 +31,7 @@ type (
 	}
 )
 
-func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publisher) UpdateIncome {
+func NewUpdateIncome(updateIncome usecase.UpdateIncome) UpdateIncome {
 	valid := validator.New()
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
@@ -78,24 +74,6 @@ func NewUpdateIncome(updateIncome usecase.UpdateIncome, publisher message.Publis
 		})
 		if err != nil {
 			return fmt.Errorf("updateIncome: %w", err)
-		}
-
-		event, err := json.Marshal(pubsub.IncomeEvent{
-			Event: pubsub.Event{
-				SentAt:  time.Now(),
-				Type:    "income_updated",
-				UserID:  user.ID{Value: userID},
-				GroupID: group.ID{Value: groupID},
-			},
-			Income: *inc,
-		})
-		if err == nil {
-			if err := publisher.Publish(
-				pubsub.IncomesTopic,
-				message.NewMessage(uuid.NewString(), event),
-			); err != nil {
-				slog.ErrorContext(ctx.Context(), "failed to publish income updated event")
-			}
 		}
 
 		return ctx.Status(http.StatusCreated).JSON(

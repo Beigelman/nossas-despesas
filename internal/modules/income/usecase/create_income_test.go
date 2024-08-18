@@ -3,12 +3,13 @@ package usecase
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestCreateIncome(t *testing.T) {
@@ -16,14 +17,13 @@ func TestCreateIncome(t *testing.T) {
 	ctx := context.Background()
 	incomeRepo := mocks.NewMockincomeRepository(t)
 	userRepo := mocks.NewMockuserRepository(t)
-
 	usr := user.New(user.Attributes{
 		ID:    user.ID{Value: 1},
 		Name:  "My test user",
 		Email: "email",
 	})
 
-	useCase := NewCreateIncome(userRepo, incomeRepo)
+	useCase := NewCreateIncome(userRepo, incomeRepo, nil)
 	params := CreateIncomeParams{
 		Type:      income.Types.Salary,
 		Amount:    100,
@@ -65,5 +65,4 @@ func TestCreateIncome(t *testing.T) {
 		assert.Equal(t, income.Types.Salary, inc.Type)
 		assert.Equal(t, 100, inc.Amount)
 	})
-
 }

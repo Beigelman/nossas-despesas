@@ -241,6 +241,10 @@ table "users" {
     type = bigint
     null = true
   }
+  column "flags" {
+    type = sql("text[]")
+    default = sql("array[]::text[]")
+  }
   column "created_at" {
     type = timestamptz
     null = false

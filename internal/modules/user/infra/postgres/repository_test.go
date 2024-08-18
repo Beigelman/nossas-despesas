@@ -2,6 +2,7 @@ package postgres_test
 
 import (
 	"context"
+	"log"
 	"testing"
 	"time"
 
@@ -69,6 +70,12 @@ func (s *UserRepositoryTestSuite) TestPgUserRepo_Store() {
 		Email: "john@email.com",
 	})
 
+	log.Println("USER", usr.Flags)
+
+	s.NoError(s.repository.Store(s.ctx, usr))
+
+	usr.AddFlag("premium")
+
 	s.NoError(s.repository.Store(s.ctx, usr))
 }
 
@@ -79,6 +86,10 @@ func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByID() {
 		Name:  "John Doe",
 		Email: "john1@email.com",
 	})
+	expected.AddFlag(user.PREMIUM)
+	expected.AddFlag(user.EDIT_PARTNER_INCOME)
+	expected.AddFlag(user.Flag("test"))
+	expected.RemoveFlag(user.Flag("test"))
 
 	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
@@ -89,6 +100,7 @@ func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByID() {
 	s.Equal(expected.ID, actual.ID)
 	s.Equal(expected.Name, actual.Name)
 	s.Equal(expected.Email, actual.Email)
+	s.Len(actual.Flags, 2)
 }
 
 func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByEmail() {
@@ -98,6 +110,7 @@ func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByEmail() {
 		Name:  "John Doe",
 		Email: "john2@email.com",
 	})
+	expected.AddFlag(user.PREMIUM)
 
 	err := s.repository.Store(s.ctx, expected)
 	s.NoError(err)
@@ -108,4 +121,6 @@ func (s *UserRepositoryTestSuite) TestPgUserRepo_GetByEmail() {
 	s.Equal(expected.ID, actual.ID)
 	s.Equal(expected.Name, actual.Name)
 	s.Equal(expected.Email, actual.Email)
+	s.Len(actual.Flags, 1)
+	s.Equal(user.PREMIUM, actual.Flags[0])
 }

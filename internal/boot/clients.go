@@ -2,8 +2,9 @@ package boot
 
 import (
 	"context"
+	"log/slog"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
@@ -11,8 +12,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/shared/infra/jwt"
 	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"log/slog"
 )
 
 var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
@@ -25,15 +24,11 @@ var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Con
 		}
 		return email.NewResendEmailProvider(cfg.Mail.ApiKey)
 	})
-	di.Provide(c, func(db db.Database) (message.Publisher, error) {
-		return pubsub.NewSqlPublisher(db.Client())
-	})
-	di.Provide(c, func(db db.Database) (message.Subscriber, error) {
-		return pubsub.NewSqlSubscriber(db.Client())
-	})
+	di.Provide(c, pubsub.NewSqlPublisher)
+	di.Provide(c, pubsub.NewSqlSubscriber)
 
 	lc.OnDisposing(eon.HookOrders.APPEND, func() error {
-		if publisher := di.Resolve[message.Publisher](c); publisher != nil {
+		if publisher := di.Resolve[pubsub.Publisher](c); publisher != nil {
 			slog.InfoContext(ctx, "Closing publisher connection")
 			return publisher.Close()
 		}
@@ -41,7 +36,7 @@ var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Con
 	})
 
 	lc.OnDisposing(eon.HookOrders.APPEND, func() error {
-		if subscriber := di.Resolve[message.Subscriber](c); subscriber != nil {
+		if subscriber := di.Resolve[pubsub.Subscriber](c); subscriber != nil {
 			slog.InfoContext(ctx, "Closing subscriber connection")
 			return subscriber.Close()
 		}

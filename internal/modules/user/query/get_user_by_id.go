@@ -5,18 +5,21 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/lib/pq"
 )
 
 type User struct {
-	ID             int     `db:"id" json:"id"`
-	Name           string  `db:"name" json:"name"`
-	Email          string  `db:"email" json:"email"`
-	GroupID        *int    `db:"group_id" json:"group_id,omitempty"`
-	ProfilePicture *string `db:"profile_picture" json:"profile_picture,omitempty"`
-	CreatedAt      string  `db:"created_at" json:"created_at"`
-	UpdatedAt      string  `db:"updated_at" json:"updated_at"`
+	ID             int            `db:"id" json:"id"`
+	Name           string         `db:"name" json:"name"`
+	Email          string         `db:"email" json:"email"`
+	GroupID        *int           `db:"group_id" json:"group_id,omitempty"`
+	ProfilePicture *string        `db:"profile_picture" json:"profile_picture,omitempty"`
+	flags          pq.StringArray `db:"flags"`
+	CreatedAt      string         `db:"created_at" json:"created_at"`
+	UpdatedAt      string         `db:"updated_at" json:"updated_at"`
 }
 
 type GetUserByID func(ctx context.Context, userID int) (*User, error)
@@ -26,7 +29,7 @@ func NewGetUserByID(db db.Database) GetUserByID {
 	return func(ctx context.Context, userID int) (*User, error) {
 		var user User
 		if err := dbClient.GetContext(ctx, &user, `
-			select id, name, email, profile_picture, group_id, created_at, updated_at
+			select id, name, email, profile_picture, group_id, flags, created_at, updated_at
 			from users
 			where id = $1	
 		`, userID); err != nil {

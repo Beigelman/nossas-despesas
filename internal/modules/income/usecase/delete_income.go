@@ -3,9 +3,13 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
@@ -21,6 +25,8 @@ type (
 
 func NewDeleteIncome(
 	incomeRepo income.Repository,
+	userRepo user.Repository,
+	publisher pubsub.Publisher,
 ) DeleteIncome {
 	return func(ctx context.Context, p DeleteIncomeParams) (*income.Income, error) {
 		inc, err := incomeRepo.GetByID(ctx, p.ID)
@@ -28,8 +34,16 @@ func NewDeleteIncome(
 			return nil, fmt.Errorf("incomeRepo.GetByID: %w", err)
 		}
 
-		// TODO: Bypass para permitir a Lu editar minhas receitas. Pensar em uma solução mais estruturante no futuro
-		if p.GroupID.Value != 1 && inc.UserID != p.UserID {
+		usr, err := userRepo.GetByID(ctx, p.UserID)
+		if err != nil {
+			return nil, fmt.Errorf("userRepo.GetByID: %w", err)
+		}
+
+		if usr == nil {
+			return nil, except.NotFoundError("user not found")
+		}
+
+		if !usr.HasFlag(user.EDIT_PARTNER_INCOME) && inc.UserID != p.UserID {
 			return nil, except.ForbiddenError("user mismatch")
 		}
 
@@ -37,6 +51,19 @@ func NewDeleteIncome(
 
 		if err := incomeRepo.Store(ctx, inc); err != nil {
 			return nil, fmt.Errorf("incomeRepo.Store: %w", err)
+		}
+
+		event := pubsub.IncomeEvent{
+			Event: pubsub.Event{
+				SentAt:  time.Now(),
+				Type:    "income_created",
+				UserID:  p.UserID,
+				GroupID: p.GroupID,
+			},
+			Income: *inc,
+		}
+		if err := publisher.Publish(ctx, pubsub.IncomesTopic, event); err != nil {
+			slog.ErrorContext(ctx, "failed to publish income created event", "error", err)
 		}
 
 		return inc, nil

@@ -2,6 +2,7 @@ package boot
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
@@ -30,11 +31,12 @@ var ExpenseModule = eon.NewModule("Expense", func(ctx context.Context, c *di.Con
 	di.Provide(c, controller.NewGetExpensesPerCategory)
 	di.Provide(c, controller.NewRecalculateExpensesSplitRatio)
 	// Register routes
-	lc.OnBooted(eon.HookOrders.APPEND, func() error { return di.Call(c, controller.Router) })
+	lc.OnBooted(eon.HookOrders.APPEND, func() error {
+		return di.Call(c, controller.Router)
+	})
 	// Listen to subscriber
 	lc.OnRunning(eon.HookOrders.APPEND, func() error {
-		return di.Call(c, func(recalculateRatio *controller.RecalculateExpensesSplitRatio) error {
-			return recalculateRatio.Run(ctx)
-		})
+		recalculate := di.Resolve[controller.RecalculateExpensesSplitRatio](c)
+		return recalculate(ctx)
 	})
 })
