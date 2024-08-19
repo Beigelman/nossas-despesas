@@ -1,11 +1,13 @@
+// TODO: move this to auth package
 package jwt
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/golang-jwt/jwt/v5"
-	"time"
 )
 
 type Provider struct {
