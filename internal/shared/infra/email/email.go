@@ -1,3 +1,4 @@
+// TODO: mover para pkg
 package email
 
 type Email struct {

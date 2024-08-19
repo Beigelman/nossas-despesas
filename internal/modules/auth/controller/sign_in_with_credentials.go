@@ -2,11 +2,13 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"net/http"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/gofiber/fiber/v2"
@@ -19,13 +21,14 @@ type (
 	}
 
 	UserResponse struct {
-		ID             int       `json:"id"`
-		Name           string    `json:"name"`
-		Email          string    `json:"email"`
-		ProfilePicture *string   `json:"profile_picture,omitempty"`
-		GroupID        *int      `json:"group_id,omitempty"`
-		CreatedAt      time.Time `json:"created_at"`
-		UpdatedAt      time.Time `json:"updated_at"`
+		ID             int         `json:"id"`
+		Name           string      `json:"name"`
+		Email          string      `json:"email"`
+		ProfilePicture *string     `json:"profile_picture,omitempty"`
+		GroupID        *int        `json:"group_id,omitempty"`
+		Flags          []user.Flag `json:"flags"`
+		CreatedAt      time.Time   `json:"created_at"`
+		UpdatedAt      time.Time   `json:"updated_at"`
 	}
 
 	UserLogIn struct {
@@ -57,6 +60,11 @@ func NewSignInWithCredentials(signUpWithCredentials usecase.SignInWithCredential
 			return fmt.Errorf("signUpWithCredentials: %w", err)
 		}
 
+		var groupID *int
+		if result.User.GroupID != nil {
+			groupID = &result.User.GroupID.Value
+		}
+
 		return ctx.Status(http.StatusCreated).JSON(
 			api.NewResponse(http.StatusCreated, UserLogIn{
 				User: UserResponse{
@@ -64,14 +72,10 @@ func NewSignInWithCredentials(signUpWithCredentials usecase.SignInWithCredential
 					Name:           result.User.Name,
 					Email:          result.User.Email,
 					ProfilePicture: result.User.ProfilePicture,
-					GroupID: func() *int {
-						if result.User.GroupID == nil {
-							return nil
-						}
-						return &result.User.GroupID.Value
-					}(),
-					CreatedAt: result.User.CreatedAt,
-					UpdatedAt: result.User.UpdatedAt,
+					GroupID:        groupID,
+					Flags:          result.User.Flags,
+					CreatedAt:      result.User.CreatedAt,
+					UpdatedAt:      result.User.UpdatedAt,
 				},
 				Token:        result.Token,
 				RefreshToken: result.RefreshToken,

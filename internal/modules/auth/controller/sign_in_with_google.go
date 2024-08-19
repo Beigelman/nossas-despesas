@@ -2,12 +2,13 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (
@@ -37,6 +38,10 @@ func NewSignInWithGoogle(signInWithGoogle usecase.SignInWithGoogle) SignInWithGo
 			return fmt.Errorf("signInWithGoogle: %w", err)
 		}
 
+		var groupID *int
+		if result.User.GroupID != nil {
+			groupID = &result.User.GroupID.Value
+		}
 		return ctx.Status(http.StatusCreated).JSON(
 			api.NewResponse(http.StatusCreated, UserLogIn{
 				User: UserResponse{
@@ -44,19 +49,14 @@ func NewSignInWithGoogle(signInWithGoogle usecase.SignInWithGoogle) SignInWithGo
 					Name:           result.User.Name,
 					Email:          result.User.Email,
 					ProfilePicture: result.User.ProfilePicture,
-					GroupID: func() *int {
-						if result.User.GroupID == nil {
-							return nil
-						}
-						return &result.User.GroupID.Value
-					}(),
-					CreatedAt: result.User.CreatedAt,
-					UpdatedAt: result.User.UpdatedAt,
+					GroupID:        groupID,
+					Flags:          result.User.Flags,
+					CreatedAt:      result.User.CreatedAt,
+					UpdatedAt:      result.User.UpdatedAt,
 				},
 				Token:        result.Token,
 				RefreshToken: result.RefreshToken,
 			}),
 		)
-
 	}
 }
