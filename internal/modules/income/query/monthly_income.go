@@ -3,8 +3,9 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type (
@@ -26,7 +27,7 @@ func NewGetMonthlyIncome(db db.Database) GetMonthlyIncome {
 		if err := dbClient.SelectContext(ctx, &balances, `
 			SELECT id, user_id, type, amount_cents, created_at 
 			FROM incomes
-			WHERE user_id IN (SELECT user_id FROM groups WHERE id = $1)
+			WHERE user_id IN (SELECT id FROM users WHERE group_id = $1)
 			AND extract(month from created_at) = $2
 			AND extract(year from created_at) = $3
 			AND deleted_at is null
