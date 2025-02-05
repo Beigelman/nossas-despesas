@@ -56,7 +56,7 @@ func NewDeleteIncome(
 		event := pubsub.IncomeEvent{
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
-				Type:    "income_created",
+				Type:    "income_deleted",
 				UserID:  p.UserID,
 				GroupID: p.GroupID,
 			},
