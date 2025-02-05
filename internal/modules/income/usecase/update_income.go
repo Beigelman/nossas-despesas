@@ -63,7 +63,7 @@ func NewUpdateIncome(
 		event := pubsub.IncomeEvent{
 			Event: pubsub.Event{
 				SentAt:  time.Now(),
-				Type:    "income_created",
+				Type:    "income_updated",
 				UserID:  p.UserID,
 				GroupID: p.GroupID,
 			},
