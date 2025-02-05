@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
@@ -74,7 +73,6 @@ func (repo *UserRepository) GetByEmail(ctx context.Context, email string) (*user
 // Store implements user.UserRepository.
 func (repo *UserRepository) Store(ctx context.Context, entity *user.User) error {
 	model := toModel(entity)
-	log.Println("model", model.Flags)
 	if err := repo.create(ctx, model); err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			if err := repo.update(ctx, model); err != nil {
