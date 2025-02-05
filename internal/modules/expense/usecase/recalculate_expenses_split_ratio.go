@@ -3,12 +3,13 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"log/slog"
-	"time"
 )
 
 type (
@@ -39,6 +40,8 @@ func NewRecalculateExpensesSplitRatio(
 			}
 		}
 
+		slog.InfoContext(ctx, "proportionalExpenses", slog.Int("count", len(proportionalExpenses)), slog.Any("expense", proportionalExpenses))
+
 		if len(proportionalExpenses) == 0 {
 			slog.InfoContext(ctx, "no expenses to update")
 			return nil
@@ -66,6 +69,8 @@ func NewRecalculateExpensesSplitRatio(
 				return fmt.Errorf("proportionalExpenses[%d]: %w", i, err)
 			}
 		}
+
+		slog.InfoContext(ctx, "updated proportionalExpenses", slog.Int("count", len(proportionalExpenses)), slog.Any("expense", proportionalExpenses))
 
 		if err := expenseRepo.BulkStore(ctx, proportionalExpenses); err != nil {
 			return fmt.Errorf("expense.BulkStore: %w", err)
