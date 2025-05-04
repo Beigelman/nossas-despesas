@@ -2,9 +2,10 @@ package auth
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type Type string

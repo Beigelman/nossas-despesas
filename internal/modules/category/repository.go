@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 

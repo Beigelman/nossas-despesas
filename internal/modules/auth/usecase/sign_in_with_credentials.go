@@ -3,12 +3,14 @@ package usecase
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 
+	"log/slog"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"log/slog"
 )
 
 type SignInWithCredentialsParams struct {

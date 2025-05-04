@@ -2,6 +2,7 @@ package income
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/controller"

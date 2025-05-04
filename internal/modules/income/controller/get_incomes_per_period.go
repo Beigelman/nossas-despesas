@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 	"net/http"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"

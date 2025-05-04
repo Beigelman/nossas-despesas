@@ -3,6 +3,7 @@ package email
 import (
 	"context"
 	"fmt"
+
 	"github.com/resend/resend-go/v2"
 )
 

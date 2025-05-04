@@ -2,16 +2,17 @@ package importsplit
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/category"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/category"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 )
 
 func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {

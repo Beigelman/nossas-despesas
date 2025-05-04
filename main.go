@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"log/slog"
+	"os"
+
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	auth "github.com/Beigelman/nossas-despesas/internal/modules/auth/module"
 	category "github.com/Beigelman/nossas-despesas/internal/modules/category/module"
@@ -11,9 +15,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/shared"
-	"log"
-	"log/slog"
-	"os"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"

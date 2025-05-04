@@ -5,6 +5,8 @@ db:
 dev: db
 	ENV=development go run main.go
 
+
+
 # Migrations
 migrate-diff:
 	atlas migrate diff $(name) -c file://database/atlas.hcl --env local
@@ -24,7 +26,11 @@ migrate-down:
 migrate-force:
 	migrate -path "./database/migrations" -database "postgres://root:root@localhost:5432/app?sslmode=disable" force $(version)
 
-# Tests
+# Tests and format
+format:
+	goimports -w -l ./internal/...
+	golangci-lint run --fix ./internal/...
+
 mock:
 	mockery
 

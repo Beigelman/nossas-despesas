@@ -6,11 +6,12 @@ package eon
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 )
 
 type Application struct {

@@ -2,10 +2,11 @@ package eon
 
 import (
 	"context"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 )
 
 type Logger interface {

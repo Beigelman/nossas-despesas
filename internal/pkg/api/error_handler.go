@@ -3,10 +3,11 @@ package api
 import (
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/gofiber/fiber/v2"
 	"log/slog"
 	"net/http"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/gofiber/fiber/v2"
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {

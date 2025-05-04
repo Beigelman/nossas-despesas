@@ -3,12 +3,13 @@ package config
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
-	"log/slog"
-	"os"
 )
 
 const configPath = "./internal/config/config.yml"

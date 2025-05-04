@@ -2,12 +2,13 @@ package postgres_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	postgres2 "github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
-	"testing"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"

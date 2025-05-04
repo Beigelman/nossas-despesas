@@ -2,11 +2,12 @@ package eon
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
-	"time"
 )
 
 type MockLogger struct {

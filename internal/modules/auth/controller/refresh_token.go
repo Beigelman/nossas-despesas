@@ -2,12 +2,13 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/validator"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (

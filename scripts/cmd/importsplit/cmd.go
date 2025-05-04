@@ -3,6 +3,7 @@ package importsplit
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"

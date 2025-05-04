@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )

@@ -4,9 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	query2 "github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"net/http"
 	"time"
+
+	query2 "github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
