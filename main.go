@@ -1,11 +1,20 @@
 package main
 
 import (
+	"github.com/Beigelman/nossas-despesas/internal/config"
+	auth "github.com/Beigelman/nossas-despesas/internal/modules/auth/module"
+	category "github.com/Beigelman/nossas-despesas/internal/modules/category/module"
+	expense "github.com/Beigelman/nossas-despesas/internal/modules/expense/module"
+	group "github.com/Beigelman/nossas-despesas/internal/modules/group/module"
+	income "github.com/Beigelman/nossas-despesas/internal/modules/income/module"
+	user "github.com/Beigelman/nossas-despesas/internal/modules/user/module"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/shared"
 	"log"
 	"log/slog"
 	"os"
 
-	"github.com/Beigelman/nossas-despesas/internal/boot"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
@@ -28,17 +37,17 @@ func main() {
 
 	if err := app.BootStrap(
 		// Common Modules
-		boot.ConfigModule,
-		boot.DatabaseModule,
-		boot.ServerModule,
-		boot.ClientsModule,
+		config.Module,
+		db.Module,
+		api.Module,
+		shared.Module,
 		// Domain Modules
-		boot.AuthModule,
-		boot.CategoryModule,
-		boot.ExpenseModule,
-		boot.GroupModule,
-		boot.IncomeModule,
-		boot.UserModule,
+		auth.Module,
+		category.Module,
+		expense.Module,
+		group.Module,
+		income.Module,
+		user.Module,
 	).Start(); err != nil {
 		log.Fatal("failed to start application: ", err)
 	}

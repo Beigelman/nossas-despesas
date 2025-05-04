@@ -15,6 +15,8 @@ func Router(
 	getExpensesPerCategoryHandler GetExpensesPerCategory,
 	getExpensesPerPeriodHandler GetExpensesPerPeriod,
 	getExpenseDetailsHandler GetExpenseDetails,
+	generateExpensesFromScheduledHandler GenerateExpensesFromScheduled,
+	createScheduledExpenseHandler CreateScheduledExpense,
 ) {
 	// Api group
 	api := server.Group("api")
@@ -31,4 +33,8 @@ func Router(
 	insights := expense.Group("insights", authMiddleware)
 	insights.Get("/", getExpensesPerPeriodHandler)
 	insights.Get("/category", getExpensesPerCategoryHandler)
+	// Scheduled expenses routes
+	scheduled := expense.Group("scheduled")
+	scheduled.Post("/", createScheduledExpenseHandler, authMiddleware)
+	scheduled.Post("/generate", generateExpensesFromScheduledHandler)
 }
