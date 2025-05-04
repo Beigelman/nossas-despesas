@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income"
-	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"strings"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/income"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"

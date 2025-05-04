@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"net/http"
 	"strconv"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"

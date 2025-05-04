@@ -2,10 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type (

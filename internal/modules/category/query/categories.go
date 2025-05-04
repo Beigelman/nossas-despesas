@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 

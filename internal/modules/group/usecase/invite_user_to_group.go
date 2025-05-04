@@ -3,14 +3,15 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	vo "github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
-	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 	"html/template"
 	"log/slog"
 	"strings"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	vo "github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
+	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/google/uuid"

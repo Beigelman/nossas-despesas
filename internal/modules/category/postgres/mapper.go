@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/controller"

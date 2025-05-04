@@ -2,8 +2,9 @@ package eon
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewHookStore(t *testing.T) {

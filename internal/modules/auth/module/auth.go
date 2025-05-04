@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"

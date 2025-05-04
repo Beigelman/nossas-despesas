@@ -3,8 +3,9 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"testing"
+
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/stretchr/testify/assert"

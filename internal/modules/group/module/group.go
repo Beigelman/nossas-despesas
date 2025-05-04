@@ -2,6 +2,7 @@ package group
 
 import (
 	"context"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/query"

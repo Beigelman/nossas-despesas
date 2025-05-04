@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"reflect"
+
+	"github.com/spf13/viper"
 )
 
 func bindStructEnv(v *viper.Viper, obj any) error {

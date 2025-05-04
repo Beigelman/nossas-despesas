@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"strings"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"

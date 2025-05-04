@@ -1,8 +1,9 @@
 package category
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type GroupID struct{ Value int }

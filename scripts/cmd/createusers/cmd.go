@@ -3,6 +3,7 @@ package createusers
 import (
 	"context"
 	"fmt"
+
 	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
 	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"

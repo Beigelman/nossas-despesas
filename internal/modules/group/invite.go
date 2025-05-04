@@ -2,8 +2,9 @@ package group
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type InviteStatus string
