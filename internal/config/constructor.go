@@ -4,9 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/spf13/viper"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
+	"github.com/spf13/viper"
 )
 
 type Db struct {

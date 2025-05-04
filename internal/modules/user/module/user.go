@@ -3,9 +3,8 @@ package user
 import (
 	"context"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/controller"
+	"github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"

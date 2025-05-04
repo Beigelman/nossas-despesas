@@ -43,10 +43,6 @@ type lifeCycleManager struct {
 	shutdownTime  time.Duration
 }
 
-func (lfcm *lifeCycleManager) getState() appState {
-	return lfcm.state
-}
-
 func (lfcm *lifeCycleManager) status(newStatus appState) HookFn {
 	return func() error {
 		lfcm.logger.Info(fmt.Sprintf("[EON] Application %s", newStatus))

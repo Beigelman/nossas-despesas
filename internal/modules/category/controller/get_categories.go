@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/query"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/gofiber/fiber/v2"
 )

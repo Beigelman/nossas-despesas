@@ -3,9 +3,8 @@ package expense
 import (
 	"context"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"

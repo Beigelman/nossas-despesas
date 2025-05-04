@@ -28,8 +28,8 @@ migrate-force:
 
 # Tests and format
 format:
-	goimports -w -l ./internal/...
-	golangci-lint run --fix ./internal/...
+	goimports -w -l ./internal
+	golangci-lint run --fix
 
 mock:
 	mockery

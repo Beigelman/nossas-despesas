@@ -6,7 +6,6 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/ThreeDotsLabs/watermill"
-
 	pubsubSql "github.com/ThreeDotsLabs/watermill-sql/v3/pkg/sql"
 	"github.com/ThreeDotsLabs/watermill/message"
 )

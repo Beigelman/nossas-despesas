@@ -14,11 +14,10 @@ import (
 	user "github.com/Beigelman/nossas-despesas/internal/modules/user/module"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/Beigelman/nossas-despesas/internal/shared"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
+	"github.com/Beigelman/nossas-despesas/internal/shared"
 )
 
 func main() {

@@ -5,9 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -63,5 +62,4 @@ func TestCreateUser(t *testing.T) {
 		assert.Equal(t, "New user", usr.Name)
 		assert.Equal(t, "my@email.com", usr.Email)
 	})
-
 }

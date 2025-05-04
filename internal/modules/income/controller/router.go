@@ -25,5 +25,4 @@ func Router(
 	income.Patch("/:income_id", updateIncomeHandler)
 	income.Delete("/:income_id", deleteIncomeHandler)
 	income.Get("/insights", getIncomesPerPeriodHandler)
-
 }

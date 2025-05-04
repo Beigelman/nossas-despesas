@@ -4,10 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
-
-	"github.com/golang-migrate/migrate/v4"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
+	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"

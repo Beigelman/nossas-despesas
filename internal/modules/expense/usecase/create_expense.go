@@ -10,7 +10,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
