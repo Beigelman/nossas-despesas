@@ -1,4 +1,4 @@
-package boot
+package db
 
 import (
 	"context"
@@ -6,14 +6,13 @@ import (
 	"log/slog"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )
 
-var DatabaseModule = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
-	di.Provide(c, func(cfg *config.Config) (db.Database, error) {
-		dbClient, err := db.New(cfg)
+var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+	di.Provide(c, func(cfg *config.Config) (Database, error) {
+		dbClient, err := New(cfg)
 		if err != nil {
 			return nil, fmt.Errorf("db.New: %w", err)
 		}
@@ -23,7 +22,7 @@ var DatabaseModule = eon.NewModule("Database", func(ctx context.Context, c *di.C
 
 	lc.OnDisposing(eon.HookOrders.PREPEND, func() error {
 		slog.Info("Closing db connection")
-		dbClient := di.Resolve[db.Database](c)
+		dbClient := di.Resolve[Database](c)
 		if err := dbClient.Close(); err != nil {
 			return fmt.Errorf("dbClient.Close: %w", err)
 		}

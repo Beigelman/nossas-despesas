@@ -3,12 +3,12 @@ package importincomes
 import (
 	"context"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 	"strconv"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"

@@ -1,9 +1,8 @@
-package boot
+package config
 
 import (
 	"context"
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
@@ -14,14 +13,14 @@ import (
 
 const configPath = "./internal/config/config.yml"
 
-var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
-	di.Provide(c, func() (*config.Config, error) {
+var Module = eon.NewModule("Config", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+	di.Provide(c, func() (*Config, error) {
 		environment, err := env.Parse(os.Getenv("ENV"))
 		if err != nil {
 			return nil, fmt.Errorf("env.Parse: %w", err)
 		}
 
-		cfg := config.New(environment)
+		cfg := New(environment)
 		cfg.SetConfigPath(configPath)
 		if err := cfg.LoadConfig(); err != nil {
 			return nil, fmt.Errorf("cfg.LoadConfig: %w", err)
@@ -33,7 +32,7 @@ var ConfigModule = eon.NewModule("Config", func(ctx context.Context, c *di.Conta
 	})
 
 	lc.OnBooted(eon.HookOrders.PREPEND, func() error {
-		cfg := di.Resolve[*config.Config](c)
+		cfg := di.Resolve[*Config](c)
 		if cfg.Env == env.Development {
 			slog.SetDefault(logger.NewDevelopment(cfg.LogLevel))
 		} else {

@@ -2,10 +2,11 @@ package expense
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
@@ -15,7 +16,7 @@ type ID struct{ Value int }
 type Expense struct {
 	ddd.Entity[ID]
 	Name         string
-	Amount       int // Value in cents
+	Amount       int
 	RefundAmount *int
 	Description  string
 	GroupID      group.ID

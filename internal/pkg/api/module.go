@@ -1,4 +1,4 @@
-package boot
+package api
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
@@ -20,7 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
-var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var Module = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	var server *fiber.App
 
 	di.Provide(c, middleware.NewAuthMiddleware)
@@ -29,7 +28,7 @@ var ServerModule = eon.NewModule("Server", func(ctx context.Context, c *di.Conta
 		server = fiber.New(fiber.Config{
 			AppName:      info.ServiceName,
 			ReadTimeout:  5 * time.Second,
-			ErrorHandler: api.ErrorHandler,
+			ErrorHandler: ErrorHandler,
 		})
 
 		server.Use(cors.New())

@@ -3,6 +3,7 @@ package pubsub
 import (
 	"time"
 
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
@@ -19,4 +20,9 @@ type Event struct {
 type IncomeEvent struct {
 	Event
 	Income income.Income
+}
+
+type ExpenseEvent struct {
+	Event
+	Expense expense.Expense
 }

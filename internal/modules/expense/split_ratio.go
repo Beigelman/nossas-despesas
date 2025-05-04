@@ -19,8 +19,8 @@ func (s SplitType) String() string {
 }
 
 type SplitRatio struct {
-	Payer    int
-	Receiver int
+	Payer    int `json:"payer"`
+	Receiver int `json:"receiver"`
 }
 
 func (s SplitRatio) Type() SplitType {

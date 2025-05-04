@@ -4,6 +4,9 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/lmittmann/tint"
 )
 
 func New(handler slog.Handler) *slog.Logger {
@@ -11,31 +14,18 @@ func New(handler slog.Handler) *slog.Logger {
 }
 
 func NewProduction(logLevel ...string) *slog.Logger {
-	attrMapper := func(_ []string, a slog.Attr) slog.Attr {
-		if a.Key == "level" {
-			return slog.Attr{Key: "severity", Value: a.Value}
-		}
-
-		if a.Key == "msg" {
-			return slog.Attr{Key: "message", Value: a.Value}
-		}
-
-		if a.Key == "time" {
-			return slog.Attr{Key: "timestamp", Value: a.Value}
-		}
-
-		return a
-	}
-
 	return New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level:       getLogLevel(logLevel...),
 		ReplaceAttr: attrMapper,
+		AddSource:   true,
 	}))
 }
 
 func NewDevelopment(logLevel ...string) *slog.Logger {
-	return New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: getLogLevel(logLevel...),
+	return New(tint.NewHandler(os.Stdout, &tint.Options{
+		Level:       getLogLevel(logLevel...),
+		ReplaceAttr: attrMapper,
+		TimeFormat:  time.DateTime,
 	}))
 }
 
@@ -44,6 +34,22 @@ func getLogLevel(logLevel ...string) slog.Level {
 		return LogLevelMap(logLevel[0])
 	}
 	return slog.LevelInfo
+}
+
+func attrMapper(_ []string, a slog.Attr) slog.Attr {
+	if a.Key == "level" {
+		return slog.Attr{Key: "severity", Value: a.Value}
+	}
+
+	if a.Key == "msg" {
+		return slog.Attr{Key: "message", Value: a.Value}
+	}
+
+	if a.Key == "time" {
+		return slog.Attr{Key: "timestamp", Value: a.Value}
+	}
+
+	return a
 }
 
 func LogLevelMap(level string) slog.Level {

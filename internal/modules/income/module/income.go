@@ -1,17 +1,17 @@
-package boot
+package income
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/controller"
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )
 
-var IncomeModule = eon.NewModule("Income", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var Module = eon.NewModule("Income", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	// income
 	di.Provide(c, postgres.NewIncomeRepository)
 	di.Provide(c, usecase.NewCreateIncome)
