@@ -17,7 +17,7 @@ type User struct {
 	Email          string         `db:"email" json:"email"`
 	GroupID        *int           `db:"group_id" json:"group_id,omitempty"`
 	ProfilePicture *string        `db:"profile_picture" json:"profile_picture,omitempty"`
-	flags          pq.StringArray `db:"flags"`
+	Flags          pq.StringArray `db:"flags"`
 	CreatedAt      string         `db:"created_at" json:"created_at"`
 	UpdatedAt      string         `db:"updated_at" json:"updated_at"`
 }

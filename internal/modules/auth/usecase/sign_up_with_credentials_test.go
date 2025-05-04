@@ -139,5 +139,4 @@ func TestSignUpWithCredentials(t *testing.T) {
 		assert.Equal(t, resp.RefreshToken, "refresh_token")
 		assert.Equal(t, resp.User.Name, usr.Name)
 	})
-
 }

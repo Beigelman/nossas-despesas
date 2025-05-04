@@ -64,5 +64,4 @@ func TestCreateCategory(t *testing.T) {
 		assert.Equal(t, category.ID{Value: 1}, cat.ID)
 		assert.Equal(t, "My test category", cat.Name)
 	})
-
 }

@@ -87,5 +87,4 @@ func TestCreateGroup(t *testing.T) {
 		assert.Equal(t, group.ID{Value: 1}, grp.ID)
 		assert.Equal(t, "my new group", grp.Name)
 	})
-
 }

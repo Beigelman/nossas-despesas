@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"

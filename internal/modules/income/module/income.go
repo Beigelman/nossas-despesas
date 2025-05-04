@@ -3,9 +3,8 @@ package income
 import (
 	"context"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/controller"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"

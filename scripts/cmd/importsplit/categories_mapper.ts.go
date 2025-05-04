@@ -22,7 +22,7 @@ func SplitCategoryToCategory(category string) int {
 		return 29
 	case "Combustível":
 		return 30
-	case "Presentes":
+	case "Presents":
 		return 43
 	case "Transporte - Outros":
 		return 39
@@ -58,7 +58,7 @@ func SplitCategoryToCategory(category string) int {
 		return 10
 	case "Comidas e bebidas - Outros":
 		return 21
-	case "Esportes":
+	case "Esports":
 		return 40
 	case "Serviços":
 		return 12

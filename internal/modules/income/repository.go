@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 

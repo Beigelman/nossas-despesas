@@ -5,11 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
-
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
@@ -48,7 +47,6 @@ func (s *ScheduledExpenseRepositoryTestSuite) SetupSuite() {
 
 	s.err = s.db.MigrateUp()
 	s.NoError(s.err)
-
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TearDownSuite() {
@@ -70,7 +68,6 @@ func (s *ScheduledExpenseRepositoryTestSuite) TearDownSubTest() {
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_Store() {
-
 	scheduledExpense, err := expense.NewScheduledExpense(expense.ScheduledExpenseAttributes{
 		ID:              s.scheduledExpenseRepo.GetNextID(),
 		Name:            "Test Scheduled Expense",
@@ -89,7 +86,6 @@ func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_Store()
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_GetByID() {
-
 	scheduledExpense, err := expense.NewScheduledExpense(expense.ScheduledExpenseAttributes{
 		ID:              s.scheduledExpenseRepo.GetNextID(),
 		Name:            "Test Scheduled Expense",
@@ -122,7 +118,6 @@ func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_GetByID
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_GetActiveScheduledExpenses() {
-
 	scheduledExpense, err := expense.NewScheduledExpense(expense.ScheduledExpenseAttributes{
 		ID:              s.scheduledExpenseRepo.GetNextID(),
 		Name:            "Test Scheduled Expense",

@@ -11,7 +11,6 @@ func Router(
 	signInWithGoogleHandler SignInWithGoogle,
 	refreshAuthTokenHandler RefreshAuthToken,
 ) {
-
 	// Api group
 	api := server.Group("api")
 	// Api version V1
