@@ -75,32 +75,32 @@ table "expenses" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id, column.version]
   }
 
   foreign_key "group_id_fk" {
-    columns = [column.group_id ]
+    columns     = [column.group_id]
     ref_columns = [table.groups.column.id]
   }
 
   foreign_key "payer_id_fk" {
-    columns = [column.payer_id]
+    columns     = [column.payer_id]
     ref_columns = [table.users.column.id]
   }
 
   foreign_key "receiver_id_fk" {
-    columns = [column.receiver_id]
+    columns     = [column.receiver_id]
     ref_columns = [table.users.column.id]
   }
-  
+
   foreign_key "category_id_fk" {
-    columns = [column.category_id]
+    columns     = [column.category_id]
     ref_columns = [table.categories.column.id]
   }
 
   index "document_search_idx" {
-    type = GIN
+    type    = GIN
     columns = [column.document_search]
   }
 }
@@ -131,9 +131,9 @@ table "groups" {
   column "version" {
     type = int
     null = false
-  } 
+  }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 }
@@ -171,14 +171,14 @@ table "categories" {
   column "version" {
     type = int
     null = false
-  } 
+  }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 
   foreign_key "category_group_id_fk" {
-    columns = [column.category_group_id]
+    columns     = [column.category_group_id]
     ref_columns = [table.category_groups.column.id]
   }
 }
@@ -214,7 +214,7 @@ table "category_groups" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 }
@@ -242,7 +242,7 @@ table "users" {
     null = true
   }
   column "flags" {
-    type = sql("text[]")
+    type    = sql("text[]")
     default = sql("array[]::text[]")
   }
   column "created_at" {
@@ -262,13 +262,13 @@ table "users" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 
   index "email_unique_idx" {
     columns = [column.email]
-    unique = true
+    unique  = true
   }
 }
 
@@ -311,18 +311,18 @@ table "authentications" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 
   foreign_key "auth_email_fk" {
-    columns = [column.email]
+    columns     = [column.email]
     ref_columns = [table.users.column.email]
   }
 
   index "email_type_unique_idx" {
     columns = [column.email, column.type]
-    unique = true
+    unique  = true
   }
 }
 
@@ -366,12 +366,12 @@ table "incomes" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 
   foreign_key "income_user_id_fk" {
-    columns = [column.user_id]
+    columns     = [column.user_id]
     ref_columns = [table.users.column.id]
   }
 }
@@ -425,7 +425,7 @@ table "group_invites" {
     null = false
   }
 
-  primary_key  {
+  primary_key {
     columns = [column.id]
   }
 
@@ -435,11 +435,80 @@ table "group_invites" {
 
   index "group_invite_token_idx" {
     columns = [column.token]
-    unique = true
+    unique  = true
   }
 }
 
 enum "group_invites_status" {
   schema = schema.public
   values = ["pending", "sent", "accepted"]
+}
+
+table "scheduled_expenses" {
+  schema = schema.public
+
+  column "id" {
+    type = bigserial
+    null = false
+  }
+  column "name" {
+    type = text
+    null = false
+  }
+  column "amount_cents" {
+    type = bigint
+    null = false
+  }
+  column "description" {
+    type = text
+    null = false
+  }
+  column "group_id" {
+    type = bigint
+    null = false
+  }
+  column "category_id" {
+    type = bigint
+    null = false
+  }
+  column "split_type" {
+    type = enum.split_type
+    null = false
+  }
+  column "payer_id" {
+    type = bigint
+    null = false
+  }
+  column "receiver_id" {
+    type = bigint
+    null = false
+  }
+  column "frequency_in_days" {
+    type = int
+    null = false
+  }
+  column "last_generated_at" {
+    type = date
+    null = true
+  }
+  column "is_active" {
+    type = boolean
+    null = false
+  }
+  column "created_at" {
+    type = timestamptz
+    null = false
+  }
+  column "updated_at" {
+    type = timestamptz
+    null = false
+  }
+  column "version" {
+    type = int
+    null = false
+  }
+
+  primary_key {
+    columns = [column.id]
+  }
 }
