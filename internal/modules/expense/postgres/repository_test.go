@@ -2,18 +2,18 @@ package postgres_test
 
 import (
 	"context"
+	postgres2 "github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
+	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
+	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 	"testing"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
-	categoryrepo "github.com/Beigelman/nossas-despesas/internal/modules/category/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/tests"
 	"github.com/stretchr/testify/suite"
@@ -58,8 +58,8 @@ func (s *ExpenseRepositoryTestSuite) SetupSuite() {
 	s.NoError(s.err)
 	s.expenseRepo = postgres.NewExpenseRepository(s.db)
 	s.userRepo = userrepo.NewUserRepository(s.db)
-	s.categoryRepo = categoryrepo.NewCategoryRepository(s.db)
-	s.categoryGroupRepo = categoryrepo.NewCategoryGroupRepository(s.db)
+	s.categoryRepo = postgres2.NewCategoryRepository(s.db)
+	s.categoryGroupRepo = postgres2.NewCategoryGroupRepository(s.db)
 	s.groupRepo = grouprepo.NewGroupRepository(s.db)
 
 	s.err = s.db.MigrateUp()

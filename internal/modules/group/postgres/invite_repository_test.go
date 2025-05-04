@@ -2,13 +2,12 @@ package postgres_test
 
 import (
 	"context"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"testing"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
-
 	"github.com/google/uuid"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"

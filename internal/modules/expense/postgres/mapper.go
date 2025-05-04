@@ -2,12 +2,14 @@ package postgres
 
 import (
 	"database/sql"
+	"time"
+
+	"cloud.google.com/go/civil"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
-	"time"
 )
 
 func ToEntity(model ExpenseModel) *expense.Expense {
@@ -76,5 +78,58 @@ func ToModel(entity *expense.Expense) ExpenseModel {
 		UpdatedAt:  entity.UpdatedAt,
 		DeletedAt:  deletedAt,
 		Version:    entity.Version,
+	}
+}
+
+func ToScheduledExpenseModel(entity expense.ScheduledExpense) ScheduledExpenseModel {
+	var lastGeneratedAt sql.Null[CivilDate]
+	if entity.LastGeneratedAt != nil {
+		lastGeneratedAt = sql.Null[CivilDate]{V: CivilDate(*entity.LastGeneratedAt), Valid: true}
+	}
+
+	return ScheduledExpenseModel{
+		ID:              entity.ID.Value,
+		Name:            entity.Name,
+		AmountCents:     entity.Amount,
+		Description:     entity.Description,
+		GroupID:         entity.GroupID.Value,
+		CategoryID:      entity.CategoryID.Value,
+		SplitType:       entity.SplitType.String(),
+		PayerID:         entity.PayerID.Value,
+		ReceiverID:      entity.ReceiverID.Value,
+		FrequencyInDays: entity.FrequencyInDays,
+		LastGeneratedAt: lastGeneratedAt,
+		IsActive:        entity.IsActive,
+		CreatedAt:       entity.CreatedAt,
+		UpdatedAt:       entity.UpdatedAt,
+		Version:         entity.Version,
+	}
+}
+
+func ToScheduledExpenseEntity(model ScheduledExpenseModel) expense.ScheduledExpense {
+	var lastGeneratedAt *civil.Date
+	if model.LastGeneratedAt.Valid {
+		date := model.LastGeneratedAt.V.ToCivilDate()
+		lastGeneratedAt = &date
+	}
+
+	return expense.ScheduledExpense{
+		Entity: ddd.Entity[expense.ScheduledExpenseID]{
+			ID:        expense.ScheduledExpenseID{Value: model.ID},
+			CreatedAt: model.CreatedAt,
+			UpdatedAt: model.UpdatedAt,
+			Version:   model.Version,
+		},
+		Name:            model.Name,
+		Amount:          model.AmountCents,
+		Description:     model.Description,
+		GroupID:         group.ID{Value: model.GroupID},
+		CategoryID:      category.ID{Value: model.CategoryID},
+		SplitType:       expense.SplitType(model.SplitType),
+		PayerID:         user.ID{Value: model.PayerID},
+		ReceiverID:      user.ID{Value: model.ReceiverID},
+		FrequencyInDays: model.FrequencyInDays,
+		LastGeneratedAt: lastGeneratedAt,
+		IsActive:        model.IsActive,
 	}
 }

@@ -1,4 +1,4 @@
-package boot
+package shared
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 )
 
-var ClientsModule = eon.NewModule("Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var Module = eon.NewModule("Shared Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, func(cfg *config.Config) service.TokenProvider {
 		return jwt.NewJWTProvider(cfg.JWTSecret)
 	})

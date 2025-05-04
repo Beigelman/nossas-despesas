@@ -1,15 +1,15 @@
-package boot
+package auth
 
 import (
 	"context"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/controller"
-	"github.com/Beigelman/nossas-despesas/internal/modules/auth/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )
 
-var AuthModule = eon.NewModule("Auth", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var Module = eon.NewModule("Auth", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, postgres.NewAuthRepository)
 	di.Provide(c, usecase.NewSignUpWithCredentials)
 	di.Provide(c, usecase.NewSignInWithCredentials)

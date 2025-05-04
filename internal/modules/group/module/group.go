@@ -1,16 +1,16 @@
-package boot
+package group
 
 import (
 	"context"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/controller"
-	"github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )
 
-var GroupModule = eon.NewModule("Group", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
+var Module = eon.NewModule("Group", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	// group
 	di.Provide(c, postgres.NewGroupRepository)
 	di.Provide(c, postgres.NewGroupInviteRepository)

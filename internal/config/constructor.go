@@ -53,6 +53,7 @@ func New(env env.Environment) Config {
 
 func NewTestConfig(dbPort, dbHost string) Config {
 	migrationPath := os.Getenv("DB_MIGRATION_PATH")
+	// migrationPath := "file:///home/beigelman/dev/nossas-despesas-be/database/migrations"
 	return Config{
 		loader:      viper.New(),
 		ServiceName: "test-luda-api",

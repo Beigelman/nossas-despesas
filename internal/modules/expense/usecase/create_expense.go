@@ -3,12 +3,13 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
@@ -80,26 +81,30 @@ func NewCreateExpense(
 		switch p.SplitType {
 		case expense.SplitTypes.Proportional:
 			payerIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, payer.ID, p.CreatedAt)
-			if err != nil || payerIncomes == nil {
-				return nil, except.UnprocessableEntityError("payer income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+			if err != nil {
+				return nil, fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err)
 			}
 
 			receiverIncomes, err := incomeRepo.GetUserMonthlyIncomes(ctx, receiver.ID, p.CreatedAt)
-			if err != nil || receiverIncomes == nil {
-				return nil, except.UnprocessableEntityError("receiver income not found").SetInternal(fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err))
+			if err != nil {
+				return nil, fmt.Errorf("incomeRepo.GetUserMonthlyIncomes: %w", err)
 			}
 
-			totalPayerIncome := 0
-			for _, incm := range payerIncomes {
-				totalPayerIncome += incm.Amount
-			}
+			if receiverIncomes == nil || payerIncomes == nil {
+				splitRatio = expense.NewEqualSplitRatio()
+			} else {
+				totalPayerIncome := 0
+				for _, incm := range payerIncomes {
+					totalPayerIncome += incm.Amount
+				}
 
-			totalReceiverIncome := 0
-			for _, incm := range receiverIncomes {
-				totalReceiverIncome += incm.Amount
-			}
+				totalReceiverIncome := 0
+				for _, incm := range receiverIncomes {
+					totalReceiverIncome += incm.Amount
+				}
 
-			splitRatio = expense.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+				splitRatio = expense.NewProportionalSplitRatio(totalPayerIncome, totalReceiverIncome)
+			}
 		case expense.SplitTypes.Transfer:
 			splitRatio = expense.NewTransferRatio()
 		default:

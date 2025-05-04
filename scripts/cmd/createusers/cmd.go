@@ -3,14 +3,14 @@ package createusers
 import (
 	"context"
 	"fmt"
+	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
+	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
+	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 
 	"github.com/Beigelman/nossas-despesas/internal/config"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
-	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
-	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/infra/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/spf13/cobra"
