@@ -35,3 +35,12 @@ func Parse(env string) (Environment, error) {
 	}
 	return "", ErrUndefinedEnvironment{env}
 }
+
+func MustParse(env string) Environment {
+	parsed, err := Parse(env)
+	if err != nil {
+		panic(err)
+	}
+
+	return parsed
+}
