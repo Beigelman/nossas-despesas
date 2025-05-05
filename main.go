@@ -21,10 +21,7 @@ import (
 )
 
 func main() {
-	environment, err := env.Parse(os.Getenv("ENV"))
-	if err != nil {
-		log.Fatal("failed to parse environment: ", err)
-	}
+	environment := env.MustParse(os.Getenv("ENV"))
 
 	var lgr *slog.Logger
 	if environment == env.Development {
