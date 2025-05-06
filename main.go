@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"log"
 	"log/slog"
 	"os"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
 	auth "github.com/Beigelman/nossas-despesas/internal/modules/auth/module"
 	category "github.com/Beigelman/nossas-despesas/internal/modules/category/module"
 	expense "github.com/Beigelman/nossas-despesas/internal/modules/expense/module"
