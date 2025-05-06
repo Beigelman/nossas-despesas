@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"

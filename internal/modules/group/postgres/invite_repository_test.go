@@ -5,7 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"

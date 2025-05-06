@@ -12,7 +12,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
 )
 
-const configPath = "./internal/config/config.yml"
+const configPath = "./internal/pkg/config/config.yml"
 
 var Module = eon.NewModule("Config", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, func() (*Config, error) {
