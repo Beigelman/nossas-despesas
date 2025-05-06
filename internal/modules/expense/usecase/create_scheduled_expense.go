@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/civil"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
@@ -20,6 +21,7 @@ type CreateScheduledExpenseInput struct {
 	PayerID         user.ID           `json:"payer_id" validate:"required"`
 	ReceiverID      user.ID           `json:"receiver_id" validate:"required"`
 	FrequencyInDays int               `json:"frequency_in_days" validate:"required"`
+	LastGeneratedAt *civil.Date       `json:"last_generated_at" validate:"required"`
 }
 
 type CreateScheduledExpense func(ctx context.Context, input CreateScheduledExpenseInput) error
@@ -40,6 +42,7 @@ func NewCreateScheduledExpense(
 			PayerID:         input.PayerID,
 			ReceiverID:      input.ReceiverID,
 			FrequencyInDays: input.FrequencyInDays,
+			LastGeneratedAt: input.LastGeneratedAt,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create scheduled expense: %w", err)
