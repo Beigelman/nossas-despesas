@@ -38,6 +38,7 @@ type ScheduledExpenseAttributes struct {
 	SplitType       SplitType
 	PayerID         user.ID
 	ReceiverID      user.ID
+	LastGeneratedAt *civil.Date
 	FrequencyInDays int
 }
 
@@ -58,7 +59,7 @@ func NewScheduledExpense(attr ScheduledExpenseAttributes) (*ScheduledExpense, er
 		PayerID:         attr.PayerID,
 		ReceiverID:      attr.ReceiverID,
 		FrequencyInDays: attr.FrequencyInDays,
-		LastGeneratedAt: nil,
+		LastGeneratedAt: attr.LastGeneratedAt,
 		IsActive:        true,
 	}
 

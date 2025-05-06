@@ -3,7 +3,9 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	vo "github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
@@ -15,15 +17,16 @@ import (
 )
 
 type CreateScheduledExpenseRequest struct {
-	Name            string `json:"name" validate:"required"`
-	Amount          int    `json:"amount" validate:"required"`
-	Description     string `json:"description" validate:"required"`
-	GroupID         int    `json:"group_id" validate:"required"`
-	CategoryID      int    `json:"category_id" validate:"required"`
-	SplitType       string `json:"split_type" validate:"required"`
-	PayerID         int    `json:"payer_id" validate:"required"`
-	ReceiverID      int    `json:"receiver_id" validate:"required"`
-	FrequencyInDays int    `json:"frequency_in_days" validate:"required"`
+	Name            string     `json:"name" validate:"required"`
+	Amount          int        `json:"amount" validate:"required"`
+	Description     string     `json:"description" validate:"required"`
+	GroupID         int        `json:"group_id" validate:"required"`
+	CategoryID      int        `json:"category_id" validate:"required"`
+	SplitType       string     `json:"split_type" validate:"required"`
+	PayerID         int        `json:"payer_id" validate:"required"`
+	ReceiverID      int        `json:"receiver_id" validate:"required"`
+	FrequencyInDays int        `json:"frequency_in_days" validate:"required"`
+	LastGeneratedAt *time.Time `json:"last_generated_at"`
 }
 
 type CreateScheduledExpense func(ctx *fiber.Ctx) error
@@ -40,6 +43,12 @@ func NewCreateScheduledExpense(createScheduledExpense usecase.CreateScheduledExp
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
+		var lastGeneratedAt *civil.Date
+		if req.LastGeneratedAt != nil {
+			date := civil.DateOf(*req.LastGeneratedAt)
+			lastGeneratedAt = &date
+		}
+
 		err := createScheduledExpense(c.Context(), usecase.CreateScheduledExpenseInput{
 			Name:            req.Name,
 			Amount:          req.Amount,
@@ -50,6 +59,7 @@ func NewCreateScheduledExpense(createScheduledExpense usecase.CreateScheduledExp
 			PayerID:         user.ID{Value: req.PayerID},
 			ReceiverID:      user.ID{Value: req.ReceiverID},
 			FrequencyInDays: req.FrequencyInDays,
+			LastGeneratedAt: lastGeneratedAt,
 		})
 		if err != nil {
 			return fmt.Errorf("CreateScheduledExpense: %w", err)
