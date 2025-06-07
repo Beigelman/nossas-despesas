@@ -20,7 +20,6 @@ type CreateScheduledExpenseRequest struct {
 	Name            string     `json:"name" validate:"required"`
 	Amount          int        `json:"amount" validate:"required"`
 	Description     string     `json:"description" validate:"required"`
-	GroupID         int        `json:"group_id" validate:"required"`
 	CategoryID      int        `json:"category_id" validate:"required"`
 	SplitType       string     `json:"split_type" validate:"required"`
 	PayerID         int        `json:"payer_id" validate:"required"`
@@ -43,6 +42,11 @@ func NewCreateScheduledExpense(createScheduledExpense usecase.CreateScheduledExp
 			return except.BadRequestError("invalid request body").SetInternal(err)
 		}
 
+		groupID, ok := c.Locals("group_id").(int)
+		if !ok {
+			return except.UnprocessableEntityError("group_id not found in context")
+		}
+
 		var lastGeneratedAt *civil.Date
 		if req.LastGeneratedAt != nil {
 			date := civil.DateOf(*req.LastGeneratedAt)
@@ -53,7 +57,7 @@ func NewCreateScheduledExpense(createScheduledExpense usecase.CreateScheduledExp
 			Name:            req.Name,
 			Amount:          req.Amount,
 			Description:     req.Description,
-			GroupID:         group.ID{Value: req.GroupID},
+			GroupID:         group.ID{Value: groupID},
 			CategoryID:      category.ID{Value: req.CategoryID},
 			SplitType:       vo.SplitType(req.SplitType),
 			PayerID:         user.ID{Value: req.PayerID},
