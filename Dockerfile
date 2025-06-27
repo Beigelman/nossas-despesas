@@ -1,5 +1,5 @@
 # Etapa de compilação
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23.8-alpine AS builder
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
 # Copie o módulo go e baixe as dependências
