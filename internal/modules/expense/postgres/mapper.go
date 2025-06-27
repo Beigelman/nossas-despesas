@@ -82,9 +82,9 @@ func ToModel(entity *expense.Expense) ExpenseModel {
 }
 
 func ToScheduledExpenseModel(entity expense.ScheduledExpense) ScheduledExpenseModel {
-	var lastGeneratedAt sql.Null[CivilDate]
+	var lastGeneratedAt sql.Null[civil.Date]
 	if entity.LastGeneratedAt != nil {
-		lastGeneratedAt = sql.Null[CivilDate]{V: CivilDate(*entity.LastGeneratedAt), Valid: true}
+		lastGeneratedAt = sql.Null[civil.Date]{V: *entity.LastGeneratedAt, Valid: true}
 	}
 
 	return ScheduledExpenseModel{
@@ -109,8 +109,7 @@ func ToScheduledExpenseModel(entity expense.ScheduledExpense) ScheduledExpenseMo
 func ToScheduledExpenseEntity(model ScheduledExpenseModel) expense.ScheduledExpense {
 	var lastGeneratedAt *civil.Date
 	if model.LastGeneratedAt.Valid {
-		date := model.LastGeneratedAt.V.ToCivilDate()
-		lastGeneratedAt = &date
+		lastGeneratedAt = &model.LastGeneratedAt.V
 	}
 
 	return expense.ScheduledExpense{
