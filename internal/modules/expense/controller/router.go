@@ -34,7 +34,7 @@ func Router(
 	insights.Get("/", getExpensesPerPeriodHandler)
 	insights.Get("/category", getExpensesPerCategoryHandler)
 	// Scheduled expenses routes
-	scheduled := expense.Group("scheduled")
+	scheduled := v1.Group("expenses/scheduled")
 	scheduled.Post("/", createScheduledExpenseHandler, authMiddleware)
 	scheduled.Post("/generate", generateExpensesFromScheduledHandler)
 }
