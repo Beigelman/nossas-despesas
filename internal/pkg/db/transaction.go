@@ -39,7 +39,7 @@ func (sql *SQLDatabase) NewTransactionManager() TransactionManager {
 			txOptions = nil
 		}
 
-		tx, err := sql.db.BeginTxx(ctx, convertTxOptions(txOptions))
+		tx, err := sql.BeginTxx(ctx, convertTxOptions(txOptions))
 		if err != nil {
 			return fmt.Errorf("BeginTxx: %w", err)
 		}
