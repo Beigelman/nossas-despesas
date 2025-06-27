@@ -1,8 +1,6 @@
 module github.com/Beigelman/nossas-despesas
 
-go 1.23.0
-
-toolchain go1.23.8
+go 1.23.8
 
 require (
 	cloud.google.com/go v0.121.3

@@ -43,7 +43,7 @@ func (sql *SQLDatabase) getMigrateClient() (*migrate.Migrate, error) {
 		return sql.migrateClient, nil
 	}
 
-	driver, err := postgres.WithInstance(sql.db.DB, &postgres.Config{
+	driver, err := postgres.WithInstance(sql.DB.DB, &postgres.Config{
 		DatabaseName: sql.name,
 	})
 	if err != nil {

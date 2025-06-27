@@ -22,7 +22,7 @@ type Database interface {
 }
 
 type SQLDatabase struct {
-	db            *sqlx.DB
+	*sqlx.DB
 	env           env.Environment
 	name          string
 	migrateClient *migrate.Migrate
@@ -44,7 +44,7 @@ func New(c *config.Config) (Database, error) {
 	}
 
 	return &SQLDatabase{
-		db:            db,
+		DB:            db,
 		env:           c.Env,
 		name:          c.Db.Name,
 		migrationPath: c.Db.MigrationPath,
@@ -52,16 +52,12 @@ func New(c *config.Config) (Database, error) {
 }
 
 func (sql *SQLDatabase) Client() *sqlx.DB {
-	return sql.db
-}
-
-func (sql *SQLDatabase) Close() error {
-	return sql.db.Close()
+	return sql.DB
 }
 
 func (sql *SQLDatabase) Clean(tables ...string) error {
 	if len(tables) == 0 {
-		rows, err := sql.db.Queryx(`
+		rows, err := sql.Queryx(`
 			SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name != 'schema_migrations';
 		`)
 		if err != nil {
@@ -75,7 +71,7 @@ func (sql *SQLDatabase) Clean(tables ...string) error {
 				return fmt.Errorf("failed to scan %s: %w", tableName, err)
 			}
 
-			if _, err = sql.db.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", tableName)); err != nil {
+			if _, err = sql.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", tableName)); err != nil {
 				return fmt.Errorf("failed to truncate table %s: %w", tableName, err)
 			}
 		}
@@ -84,7 +80,7 @@ func (sql *SQLDatabase) Clean(tables ...string) error {
 	}
 
 	for _, table := range tables {
-		if _, err := sql.db.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", table)); err != nil {
+		if _, err := sql.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", table)); err != nil {
 			return fmt.Errorf("failed to truncate table %s: %w", table, err)
 		}
 	}
