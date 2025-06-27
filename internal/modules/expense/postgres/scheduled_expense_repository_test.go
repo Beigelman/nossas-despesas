@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
@@ -80,6 +81,7 @@ func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_Store()
 		PayerID:         user.ID{Value: 1},
 		ReceiverID:      user.ID{Value: 2},
 		FrequencyInDays: 7,
+		LastGeneratedAt: &[]civil.Date{civil.DateOf(time.Now())}[0],
 	})
 	s.NoError(err)
 
