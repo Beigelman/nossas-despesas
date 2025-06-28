@@ -26,7 +26,7 @@ type SqlPublisher struct {
 func NewSqlPublisher(db *db.Client) (Publisher, error) {
 	logger := watermill.NewSlogLogger(nil)
 	publisher, err := pubsubSql.NewPublisher(
-		db.Client(),
+		db.Conn(),
 		pubsubSql.PublisherConfig{
 			SchemaAdapter:        pubsubSql.DefaultPostgreSQLSchema{},
 			AutoInitializeSchema: true,

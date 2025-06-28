@@ -28,7 +28,7 @@ type (
 )
 
 func NewGetIncomesPerPeriod(db *db.Client) GetIncomesPerPeriod {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, params GetIncomesPerPeriodInput) ([]IncomesPerPeriod, error) {
 		var expensesPerMonth []IncomesPerPeriod
 

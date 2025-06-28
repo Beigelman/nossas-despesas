@@ -12,13 +12,15 @@ import (
 )
 
 type ScheduledExpenseRepository struct {
-	db *sqlx.DB
+	db *db.Client
 }
 
 func (repo *ScheduledExpenseRepository) GetNextID() expense.ScheduledExpenseID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('scheduled_expenses_id_seq');").Scan(&nextValue); err != nil {
+	conn := repo.db.Conn()
+
+	if err := conn.QueryRowx("SELECT nextval('scheduled_expenses_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.QueryRow: %w", err))
 	}
 
@@ -28,7 +30,9 @@ func (repo *ScheduledExpenseRepository) GetNextID() expense.ScheduledExpenseID {
 func (repo *ScheduledExpenseRepository) GetByID(ctx context.Context, id expense.ScheduledExpenseID) (*expense.ScheduledExpense, error) {
 	var model ScheduledExpenseModel
 
-	if err := repo.db.QueryRowxContext(ctx, `
+	conn := repo.db.Conn()
+
+	if err := conn.QueryRowxContext(ctx, `
 		SELECT 
 			id,
 			name,
@@ -60,9 +64,10 @@ func (repo *ScheduledExpenseRepository) GetByID(ctx context.Context, id expense.
 }
 
 func (repo *ScheduledExpenseRepository) GetActiveScheduledExpenses(ctx context.Context) ([]expense.ScheduledExpense, error) {
+	conn := repo.db.Conn()
 	var models []ScheduledExpenseModel
 
-	if err := repo.db.SelectContext(ctx, &models, `
+	if err := conn.SelectContext(ctx, &models, `
 		SELECT 
 			id,
 			name,
@@ -105,34 +110,35 @@ func (repo *ScheduledExpenseRepository) Store(ctx context.Context, entity *expen
 }
 
 func (repo *ScheduledExpenseRepository) BulkStore(ctx context.Context, entities []expense.ScheduledExpense) error {
-	var models []ScheduledExpenseModel
-	for _, entity := range entities {
-		models = append(models, ToScheduledExpenseModel(entity))
-	}
+	return repo.db.Transaction(ctx, func(ctx context.Context, tx *sqlx.Tx) error {
+		for _, entity := range entities {
+			model := ToScheduledExpenseModel(entity)
 
-	if _, err := repo.db.NamedExecContext(ctx, `
-		INSERT INTO scheduled_expenses (id, name, amount_cents, description,group_id, category_id, split_type, payer_id, receiver_id, frequency_in_days, last_generated_at, is_active, created_at, updated_at, version
-		) VALUES (:id, :name, :amount_cents, :description, :group_id, :category_id, :split_type, :payer_id, :receiver_id, :frequency_in_days, :last_generated_at, :is_active, :created_at, :updated_at, :version)
-		ON CONFLICT (id) DO UPDATE SET
-			name = :name,
-			amount_cents = :amount_cents,
-			description = :description,
-			category_id = :category_id,
-			split_type = :split_type,
-			payer_id = :payer_id,
-			receiver_id = :receiver_id,
-			frequency_in_days = :frequency_in_days,
-			last_generated_at = :last_generated_at,
-			is_active = :is_active,
-			updated_at = :updated_at,
-			version = :version
-	`, models); err != nil {
-		return fmt.Errorf("db.ExecContext: %w", err)
-	}
+			if _, err := tx.NamedExecContext(ctx, `
+				INSERT INTO scheduled_expenses (id, name, amount_cents, description, group_id, category_id, split_type, payer_id, receiver_id, frequency_in_days, last_generated_at, is_active, created_at, updated_at, version) 
+				VALUES (:id, :name, :amount_cents, :description, :group_id, :category_id, :split_type, :payer_id, :receiver_id, :frequency_in_days, :last_generated_at, :is_active, :created_at, :updated_at, :version)
+				ON CONFLICT (id) DO UPDATE SET
+					name = :name,
+					amount_cents = :amount_cents,
+					description = :description,
+					category_id = :category_id,
+					split_type = :split_type,
+					payer_id = :payer_id,
+					receiver_id = :receiver_id,
+					frequency_in_days = :frequency_in_days,
+					last_generated_at = :last_generated_at,
+					is_active = :is_active,
+					updated_at = :updated_at,
+					version = :version
+			`, model); err != nil {
+				return fmt.Errorf("db.ExecContext: %w", err)
+			}
+		}
 
-	return nil
+		return nil
+	})
 }
 
 func NewScheduledExpenseRepository(db *db.Client) expense.ScheduledExpenseRepository {
-	return &ScheduledExpenseRepository{db: db.Client()}
+	return &ScheduledExpenseRepository{db: db}
 }

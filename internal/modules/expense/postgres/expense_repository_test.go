@@ -5,8 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	postgres2 "github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
@@ -16,15 +14,13 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/Beigelman/nossas-despesas/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
 	"github.com/stretchr/testify/suite"
 )
 
 type ExpenseRepositoryTestSuite struct {
 	suite.Suite
-	ctx           context.Context
-	err           error
-	testContainer *tests.PostgresContainer
+	ctx context.Context
 
 	expenseRepo       expense.Repository
 	userRepo          user.Repository
@@ -38,8 +34,7 @@ type ExpenseRepositoryTestSuite struct {
 	categoryGroup *category.Group
 	group         *group.Group
 
-	db  *db.Client
-	cfg config.Config
+	db *db.Client
 }
 
 func TestExpenseRepositoryTestSuite(t *testing.T) {
@@ -48,23 +43,13 @@ func TestExpenseRepositoryTestSuite(t *testing.T) {
 
 func (s *ExpenseRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
-	s.testContainer, s.err = tests.StartPostgres(s.ctx)
-	if s.err != nil {
-		panic(s.err)
-	}
+	s.db = dbtest.Setup(s.ctx, s.T())
 
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
-
-	s.db, s.err = db.New(&s.cfg)
-	s.NoError(s.err)
 	s.expenseRepo = postgres.NewExpenseRepository(s.db)
 	s.userRepo = userrepo.NewUserRepository(s.db)
 	s.categoryRepo = postgres2.NewCategoryRepository(s.db)
 	s.categoryGroupRepo = postgres2.NewCategoryGroupRepository(s.db)
 	s.groupRepo = grouprepo.NewGroupRepository(s.db)
-
-	s.err = s.db.MigrateUp()
-	s.NoError(s.err)
 
 	s.payer = user.New(user.Attributes{
 		ID:    s.userRepo.GetNextID(),
@@ -101,20 +86,6 @@ func (s *ExpenseRepositoryTestSuite) SetupSuite() {
 	s.NoError(s.categoryGroupRepo.Store(s.ctx, s.categoryGroup))
 	s.NoError(s.categoryRepo.Store(s.ctx, s.category))
 	s.NoError(s.groupRepo.Store(s.ctx, s.group))
-}
-
-func (s *ExpenseRepositoryTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown()
-	s.NoError(s.err)
-
-	s.err = s.db.Close()
-	s.NoError(s.err)
-
-	duration := 10 * time.Second
-	s.err = s.testContainer.Stop(s.ctx, &duration)
-	if s.err != nil {
-		panic(s.err)
-	}
 }
 
 func (s *ExpenseRepositoryTestSuite) TearDownSubTest() {
