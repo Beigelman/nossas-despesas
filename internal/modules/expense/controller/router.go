@@ -11,30 +11,30 @@ func Router(
 	getExpensesHandler GetExpenses,
 	updateExpenseHandler UpdateExpense,
 	deleteExpenseHandler DeleteExpense,
-	authMiddleware middleware.AuthMiddleware,
 	getExpensesPerCategoryHandler GetExpensesPerCategory,
 	getExpensesPerPeriodHandler GetExpensesPerPeriod,
 	getExpenseDetailsHandler GetExpenseDetails,
 	generateExpensesFromScheduledHandler GenerateExpensesFromScheduled,
 	createScheduledExpenseHandler CreateScheduledExpense,
+	authMiddleware middleware.AuthMiddleware,
 ) {
 	// Api group
 	api := server.Group("api")
 	// Api version V1
 	v1 := api.Group("v1")
 	// Expense routes
-	expense := v1.Group("expenses", authMiddleware)
-	expense.Post("/", createExpenseHandler)
-	expense.Get("/", getExpensesHandler)
-	expense.Get("/:expense_id/details", getExpenseDetailsHandler)
-	expense.Patch("/:expense_id", updateExpenseHandler)
-	expense.Delete("/:expense_id", deleteExpenseHandler)
+	expense := v1.Group("expenses")
+	expense.Post("/", authMiddleware, createExpenseHandler)
+	expense.Get("/", authMiddleware, getExpensesHandler)
+	expense.Get("/:expense_id/details", authMiddleware, getExpenseDetailsHandler)
+	expense.Patch("/:expense_id", authMiddleware, updateExpenseHandler)
+	expense.Delete("/:expense_id", authMiddleware, deleteExpenseHandler)
+	expense.Post("/", authMiddleware, createScheduledExpenseHandler)
+	// Generate expenses from scheduled does not need auth
+	expense.Post("/generate", generateExpensesFromScheduledHandler)
+
 	// Expenses insights routes
 	insights := expense.Group("insights", authMiddleware)
 	insights.Get("/", getExpensesPerPeriodHandler)
 	insights.Get("/category", getExpensesPerCategoryHandler)
-	// Scheduled expenses routes
-	scheduled := v1.Group("expenses/scheduled")
-	scheduled.Post("/", createScheduledExpenseHandler, authMiddleware)
-	scheduled.Post("/generate", generateExpensesFromScheduledHandler)
 }
