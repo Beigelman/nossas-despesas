@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +19,7 @@ type GetExpensesPerPeriodReq struct {
 	EndDate   time.Time `query:"end_date"`
 }
 
-func NewGetExpensesPerPeriod(getExpensesPerCategory query.GetExpensesPerPeriod) GetExpensesPerPeriod {
+func NewGetExpensesPerPeriod(getExpensesPerCategory postgres.GetExpensesPerPeriod) GetExpensesPerPeriod {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
@@ -31,7 +31,7 @@ func NewGetExpensesPerPeriod(getExpensesPerCategory query.GetExpensesPerPeriod) 
 			return except.BadRequestError().SetInternal(err)
 		}
 
-		expensesPerPeriod, err := getExpensesPerCategory(ctx.Context(), query.GetExpensesPerPeriodInput{
+		expensesPerPeriod, err := getExpensesPerCategory(ctx.Context(), postgres.GetExpensesPerPeriodInput{
 			GroupID:   groupID,
 			Aggregate: params.Aggregate,
 			StartDate: params.StartDate,

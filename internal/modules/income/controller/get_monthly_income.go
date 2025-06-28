@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/income/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -15,14 +15,14 @@ type (
 	GetMonthlyIncome func(ctx *fiber.Ctx) error
 
 	GetMonthlyIncomeResponse struct {
-		GroupID int                `json:"group_id"`
-		Incomes []query.UserIncome `json:"incomes"`
-		Total   int                `json:"total"`
-		Month   time.Month         `json:"month"`
+		GroupID int                   `json:"group_id"`
+		Incomes []postgres.UserIncome `json:"incomes"`
+		Total   int                   `json:"total"`
+		Month   time.Month            `json:"month"`
 	}
 )
 
-func NewGetMonthlyIncome(getGroupMonthlyIncome query.GetMonthlyIncome) GetMonthlyIncome {
+func NewGetMonthlyIncome(getGroupMonthlyIncome postgres.GetMonthlyIncome) GetMonthlyIncome {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {

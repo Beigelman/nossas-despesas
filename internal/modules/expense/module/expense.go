@@ -5,7 +5,6 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
@@ -21,10 +20,10 @@ var Module = eon.NewModule("Expense", func(ctx context.Context, c *di.Container,
 	di.Provide(c, usecase.NewRecalculateExpensesSplitRatio)
 	di.Provide(c, usecase.NewCreateScheduledExpense)
 	di.Provide(c, usecase.NewGenerateExpensesFromScheduledUseCase)
-	di.Provide(c, query.NewGetExpenses)
-	di.Provide(c, query.NewGetExpenseDetails)
-	di.Provide(c, query.NewGetExpensesPerPeriod)
-	di.Provide(c, query.NewGetExpensesPerCategory)
+	di.Provide(c, postgres.NewGetExpenses)
+	di.Provide(c, postgres.NewGetExpenseDetails)
+	di.Provide(c, postgres.NewGetExpensesPerPeriod)
+	di.Provide(c, postgres.NewGetExpensesPerCategory)
 	di.Provide(c, controller.NewGetExpenses)
 	di.Provide(c, controller.NewCreateExpense)
 	di.Provide(c, controller.NewUpdateExpense)

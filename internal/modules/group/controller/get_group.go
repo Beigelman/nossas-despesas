@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"net/http"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/group/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +14,7 @@ type (
 	GetGroup func(ctx *fiber.Ctx) error
 )
 
-func NewGetGroup(getGroup query.GetGroup) GetGroup {
+func NewGetGroup(getGroup postgres.GetGroup) GetGroup {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {

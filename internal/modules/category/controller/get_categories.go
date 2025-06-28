@@ -2,16 +2,16 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
 	"net/http"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/category/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/gofiber/fiber/v2"
 )
 
 type GetCategories func(ctx *fiber.Ctx) error
 
-func NewGetCategories(getCategories query.GetCategories) GetCategories {
+func NewGetCategories(getCategories postgres.GetCategories) GetCategories {
 	return func(ctx *fiber.Ctx) error {
 		categories, err := getCategories(ctx.Context())
 		if err != nil {

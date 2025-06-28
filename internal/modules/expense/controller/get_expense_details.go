@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"net/http"
 	"strconv"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +15,7 @@ type (
 	GetExpenseDetails func(ctx *fiber.Ctx) error
 )
 
-func NewGetExpenseDetails(getExpenseDetails query.GetExpenseDetails) GetExpenseDetails {
+func NewGetExpenseDetails(getExpenseDetails postgres.GetExpenseDetails) GetExpenseDetails {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {
