@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"net/http"
 	"time"
 
-	query2 "github.com/Beigelman/nossas-despesas/internal/modules/expense/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -22,12 +22,12 @@ type (
 	}
 
 	GetExpensesResponse struct {
-		Expenses  []query2.ExpenseDetails `json:"expenses"`
-		NextToken string                  `json:"next_token"`
+		Expenses  []postgres.ExpenseDetails `json:"expenses"`
+		NextToken string                    `json:"next_token"`
 	}
 )
 
-func NewGetExpenses(getGroupExpenses query2.GetExpenses) GetExpenses {
+func NewGetExpenses(getGroupExpenses postgres.GetExpenses) GetExpenses {
 	const defaultLimit = 25
 
 	return func(ctx *fiber.Ctx) error {
@@ -43,7 +43,7 @@ func NewGetExpenses(getGroupExpenses query2.GetExpenses) GetExpenses {
 
 		search := ctx.Query("search")
 
-		expenses, err := getGroupExpenses(ctx.Context(), query2.GetExpensesInput{
+		expenses, err := getGroupExpenses(ctx.Context(), postgres.GetExpensesInput{
 			GroupID:         groupID,
 			LastExpenseDate: token.LastExpenseDate,
 			LastExpenseID:   token.LastExpenseID,

@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"net/http"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/group/query"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"
@@ -14,12 +14,12 @@ type (
 	GetGroupBalance func(ctx *fiber.Ctx) error
 
 	GetGroupBalanceResponse struct {
-		GroupID  int                 `json:"group_id"`
-		Balances []query.UserBalance `json:"balances,omitempty"`
+		GroupID  int                    `json:"group_id"`
+		Balances []postgres.UserBalance `json:"balances,omitempty"`
 	}
 )
 
-func NewGetGroupBalance(getGroupBalance query.GetGroupBalance) GetGroupBalance {
+func NewGetGroupBalance(getGroupBalance postgres.GetGroupBalance) GetGroupBalance {
 	return func(ctx *fiber.Ctx) error {
 		groupID, ok := ctx.Locals("group_id").(int)
 		if !ok {

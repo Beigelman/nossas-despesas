@@ -1,4 +1,4 @@
-package query
+package postgres
 
 import (
 	"context"
