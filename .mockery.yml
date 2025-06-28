@@ -1,6 +1,6 @@
 with-expecter: true
 all: true
-dir: internal/tests/mocks
+dir: internal/shared/mocks
 outpkg: mocks
 mockname: "Mock{{.PackageName}}{{.InterfaceName}}"
 filename: "mock_{{.PackageName}}_{{.InterfaceName}}.go"

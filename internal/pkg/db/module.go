@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
-
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )

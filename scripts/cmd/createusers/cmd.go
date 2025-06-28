@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
-
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/spf13/cobra"

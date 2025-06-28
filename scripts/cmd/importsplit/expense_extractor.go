@@ -31,7 +31,7 @@ func extractExpense(line []string, id expense.ID) (*expense.Expense, error) {
 	amountCents := int(100 * amount)
 	danShare, err := strconv.ParseFloat(line[6], 64)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing dan share %v", err)
+		return nil, fmt.Errorf("error parsing dan share %w", err)
 	}
 
 	ratio := danShare / amount

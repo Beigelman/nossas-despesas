@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -18,8 +19,16 @@ func New() *Validator {
 func (v *Validator) Validate(data any) error {
 	errs := v.validate.Struct(data)
 	if errs != nil {
-		var errMsgs = make([]string, len(errs.(validator.ValidationErrors)))
-		for i, err := range errs.(validator.ValidationErrors) {
+		var errMsgs = make([]string, len(func() validator.ValidationErrors {
+			var target validator.ValidationErrors
+			_ = errors.As(errs, &target)
+			return target
+		}()))
+		for i, err := range func() validator.ValidationErrors {
+			var target validator.ValidationErrors
+			_ = errors.As(errs, &target)
+			return target
+		}() {
 			errMsgs[i] = fmt.Sprintf(
 				"[%s]: '%v' | Needs to implement '%s'",
 				err.Field(),
