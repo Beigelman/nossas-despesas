@@ -1,6 +1,7 @@
 package category
 
 import (
+	"context"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
@@ -31,4 +32,9 @@ func NewGroup(p GroupAttributes) *Group {
 		Name: p.Name,
 		Icon: p.Icon,
 	}
+}
+
+type GroupRepository interface {
+	ddd.Repository[GroupID, Group]
+	GetByName(ctx context.Context, name string) (*Group, error)
 }

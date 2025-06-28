@@ -18,7 +18,7 @@ type CategoryGroupTestSuite struct {
 	suite.Suite
 	repository    category.GroupRepository
 	ctx           context.Context
-	db            db.Database
+	db            *db.Client
 	cfg           config.Config
 	testContainer *tests.PostgresContainer
 	err           error

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -96,4 +97,9 @@ type Token struct {
 	Raw     string
 	Claims  Claims
 	IsValid bool
+}
+
+type Repository interface {
+	ddd.Repository[ID, Auth]
+	GetByEmail(ctx context.Context, email string, authType Type) (*Auth, error)
 }

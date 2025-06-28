@@ -27,7 +27,7 @@ type (
 	GetExpensesPerPeriod func(ctx context.Context, params GetExpensesPerPeriodInput) ([]ExpensesPerPeriod, error)
 )
 
-func NewGetExpensesPerPeriod(db db.Database) GetExpensesPerPeriod {
+func NewGetExpensesPerPeriod(db *db.Client) GetExpensesPerPeriod {
 	dbClient := db.Client()
 	return func(ctx context.Context, params GetExpensesPerPeriodInput) ([]ExpensesPerPeriod, error) {
 		var expensesPerPeriod []ExpensesPerPeriod

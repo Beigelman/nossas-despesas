@@ -26,7 +26,7 @@ type ScheduledExpenseRepositoryTestSuite struct {
 
 	scheduledExpenseRepo expense.ScheduledExpenseRepository
 
-	db  db.Database
+	db  *db.Client
 	cfg config.Config
 }
 

@@ -1,6 +1,7 @@
 package group
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -86,4 +87,10 @@ func (g *Invite) Sent() error {
 
 	g.Status = InviteStatuses.Sent
 	return nil
+}
+
+type InviteRepository interface {
+	ddd.Repository[InviteID, Invite]
+	GetGroupInvitesByEmail(ctx context.Context, groupID ID, email string) ([]Invite, error)
+	GetByToken(ctx context.Context, token string) (*Invite, error)
 }

@@ -20,7 +20,7 @@ type IncomeRepositoryTestSuite struct {
 	suite.Suite
 	repository    income.Repository
 	ctx           context.Context
-	db            db.Database
+	db            *db.Client
 	cfg           config.Config
 	testContainer *tests.PostgresContainer
 	err           error

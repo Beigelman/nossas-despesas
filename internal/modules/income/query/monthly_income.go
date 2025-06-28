@@ -20,7 +20,7 @@ type (
 	GetMonthlyIncome func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error)
 )
 
-func NewGetMonthlyIncome(db db.Database) GetMonthlyIncome {
+func NewGetMonthlyIncome(db *db.Client) GetMonthlyIncome {
 	dbClient := db.Client()
 	return func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error) {
 		var balances []UserIncome

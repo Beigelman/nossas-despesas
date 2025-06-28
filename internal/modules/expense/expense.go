@@ -1,6 +1,7 @@
 package expense
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -145,4 +146,10 @@ func (e *Expense) validate() error {
 	}
 
 	return nil
+}
+
+type Repository interface {
+	ddd.Repository[ID, Expense]
+	GetByGroupDate(ctx context.Context, groupId group.ID, date time.Time) ([]Expense, error)
+	BulkStore(ctx context.Context, expenses []Expense) error
 }

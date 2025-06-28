@@ -19,7 +19,7 @@ type GroupInviteRepositoryTestSuite struct {
 	suite.Suite
 	repository    group.InviteRepository
 	ctx           context.Context
-	db            db.Database
+	db            *db.Client
 	cfg           config.Config
 	testContainer *tests.PostgresContainer
 	err           error

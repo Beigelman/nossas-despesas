@@ -32,7 +32,7 @@ type (
 	GetExpenseDetails func(ctx context.Context, expenseID int) ([]ExpenseDetails, error)
 )
 
-func NewGetExpenseDetails(db db.Database) GetExpenseDetails {
+func NewGetExpenseDetails(db *db.Client) GetExpenseDetails {
 	dbClient := db.Client()
 	return func(ctx context.Context, expenseID int) ([]ExpenseDetails, error) {
 		var expenseDetails []ExpenseDetails

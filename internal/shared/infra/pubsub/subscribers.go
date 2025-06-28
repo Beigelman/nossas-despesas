@@ -23,7 +23,7 @@ type SqlSubscriber struct {
 
 type Message = message.Message
 
-func NewSqlSubscriber(db db.Database) (Subscriber, error) {
+func NewSqlSubscriber(db *db.Client) (Subscriber, error) {
 	logger := watermill.NewSlogLogger(nil)
 
 	subscriber, err := pubsubSql.NewSubscriber(db.Client(), pubsubSql.SubscriberConfig{

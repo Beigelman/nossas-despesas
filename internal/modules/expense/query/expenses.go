@@ -81,7 +81,7 @@ var (
   `
 )
 
-func NewGetExpenses(db db.Database) GetExpenses {
+func NewGetExpenses(db *db.Client) GetExpenses {
 	dbClient := db.Client()
 	return func(ctx context.Context, input GetExpensesInput) ([]ExpenseDetails, error) {
 		var expenses []ExpenseDetails
