@@ -17,7 +17,7 @@ type GroupInviteRepository struct {
 }
 
 func NewGroupInviteRepository(db *db.Client) group.InviteRepository {
-	return &GroupInviteRepository{db: db.Client()}
+	return &GroupInviteRepository{db: db.Conn()}
 }
 
 func (repo *GroupInviteRepository) GetNextID() group.InviteID {

@@ -25,7 +25,7 @@ type User struct {
 type GetUserByID func(ctx context.Context, userID int) (*User, error)
 
 func NewGetUserByID(db *db.Client) GetUserByID {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, userID int) (*User, error) {
 		var user User
 		if err := dbClient.GetContext(ctx, &user, `

@@ -17,7 +17,7 @@ type GroupRepository struct {
 }
 
 func NewGroupRepository(db *db.Client) group.Repository {
-	return &GroupRepository{db: db.Client()}
+	return &GroupRepository{db: db.Conn()}
 }
 
 // GetNextID implements group.UserRepository.

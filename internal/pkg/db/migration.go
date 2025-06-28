@@ -43,14 +43,14 @@ func (sql *Client) getMigrateClient() (*migrate.Migrate, error) {
 		return sql.migrateClient, nil
 	}
 
-	driver, err := postgres.WithInstance(sql.DB.DB, &postgres.Config{
+	driver, err := postgres.WithInstance(sql.conn.DB, &postgres.Config{
 		DatabaseName: sql.name,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get DB instance: %w", err)
 	}
 
-	migrateClient, err := migrate.NewWithDatabaseInstance(sql.migrationPath, sql.kind, driver)
+	migrateClient, err := migrate.NewWithDatabaseInstance(sql.migrationPath, "postgres", driver)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create migrate client: %w", err)
 	}

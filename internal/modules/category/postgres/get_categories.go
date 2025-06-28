@@ -28,7 +28,7 @@ type (
 )
 
 func NewGetCategories(db *db.Client) GetCategories {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context) ([]CategoryGroup, error) {
 		var categories []Category
 		if err := dbClient.SelectContext(ctx, &categories, `

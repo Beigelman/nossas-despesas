@@ -19,7 +19,7 @@ type IncomeRepository struct {
 }
 
 func NewIncomeRepository(db *db.Client) income.Repository {
-	return &IncomeRepository{db: db.Client()}
+	return &IncomeRepository{db: db.Conn()}
 }
 
 func (repo *IncomeRepository) GetNextID() income.ID {

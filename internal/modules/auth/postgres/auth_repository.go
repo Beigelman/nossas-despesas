@@ -17,7 +17,7 @@ type AuthRepository struct {
 }
 
 func NewAuthRepository(db *db.Client) auth.Repository {
-	return &AuthRepository{db: db.Client()}
+	return &AuthRepository{db: db.Conn()}
 }
 
 func (repo *AuthRepository) GetNextID() auth.ID {

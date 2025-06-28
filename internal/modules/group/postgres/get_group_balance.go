@@ -17,7 +17,7 @@ type (
 )
 
 func NewGetGroupBalance(db *db.Client) GetGroupBalance {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, groupID int) ([]UserBalance, error) {
 		var balances []UserBalance
 		if err := dbClient.SelectContext(ctx, &balances, `

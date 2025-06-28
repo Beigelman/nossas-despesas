@@ -1,7 +1,6 @@
 package config
 
 import (
-	"os"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
@@ -46,26 +45,6 @@ func New(env env.Environment) Config {
 		LogLevel: "INFO",
 		Db: Db{
 			MaxOpenConns: 4,
-		},
-	}
-}
-
-func NewTestConfig(dbPort, dbHost string) Config {
-	migrationPath := os.Getenv("DB_MIGRATION_PATH")
-	// migrationPath := "file:///home/beigelman/dev/nossas-despesas-be/database/migrations"
-	return Config{
-		loader:      viper.New(),
-		ServiceName: "test-luda-api",
-		Env:         "test",
-		Port:        "8080",
-		Db: Db{
-			Host:          dbHost,
-			Port:          dbPort,
-			Name:          "test",
-			User:          "root",
-			Password:      "root",
-			MigrationPath: migrationPath,
-			MaxOpenConns:  4,
 		},
 	}
 }
