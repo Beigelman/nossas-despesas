@@ -29,9 +29,9 @@ func Router(
 	expense.Get("/:expense_id/details", authMiddleware, getExpenseDetailsHandler)
 	expense.Patch("/:expense_id", authMiddleware, updateExpenseHandler)
 	expense.Delete("/:expense_id", authMiddleware, deleteExpenseHandler)
-	expense.Post("/", authMiddleware, createScheduledExpenseHandler)
+	expense.Post("/scheduled", authMiddleware, createScheduledExpenseHandler)
 	// Generate expenses from scheduled does not need auth
-	expense.Post("/generate", generateExpensesFromScheduledHandler)
+	expense.Post("/scheduled/generate", generateExpensesFromScheduledHandler)
 
 	// Expenses insights routes
 	insights := expense.Group("insights", authMiddleware)
