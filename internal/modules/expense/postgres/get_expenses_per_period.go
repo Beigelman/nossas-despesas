@@ -33,10 +33,11 @@ func NewGetExpensesPerPeriod(db *db.Client) GetExpensesPerPeriod {
 		var expensesPerPeriod []ExpensesPerPeriod
 
 		trunc, format := "day", "YYYY-MM-DD"
-		if params.Aggregate == "month" {
+		switch params.Aggregate {
+		case "month":
 			trunc = "month"
 			format = "YYYY-MM"
-		} else if params.Aggregate == "day" {
+		case "day":
 			trunc = "day"
 			format = "YYYY-MM-DD"
 		}

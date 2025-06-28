@@ -1,6 +1,6 @@
 package importsplit
 
-func SplitCategoryToCategory(category string) int {
+func SplitCategoryToCategory(category string) int { //nolint:funlen
 	switch category {
 	case "Geral":
 		return 64

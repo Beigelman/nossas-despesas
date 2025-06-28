@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
-	"github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 	"net/http"
 
+	"github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/gofiber/fiber/v2"

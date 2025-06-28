@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"log"
 	"log/slog"
 	"os"
@@ -13,6 +12,7 @@ import (
 	income "github.com/Beigelman/nossas-despesas/internal/modules/income/module"
 	user "github.com/Beigelman/nossas-despesas/internal/modules/user/module"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"

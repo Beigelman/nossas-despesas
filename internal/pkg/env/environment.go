@@ -4,14 +4,6 @@ import (
 	"fmt"
 )
 
-type ErrUndefinedEnvironment struct {
-	env string
-}
-
-func (e ErrUndefinedEnvironment) Error() string {
-	return fmt.Sprintf("undefined environment '%s'", e.env)
-}
-
 type Environment string
 
 func (e Environment) String() string {
@@ -33,7 +25,7 @@ func Parse(env string) (Environment, error) {
 	case "dev", "development":
 		return Development, nil
 	}
-	return "", ErrUndefinedEnvironment{env}
+	return "", fmt.Errorf("undefined environment: %s", env)
 }
 
 func MustParse(env string) Environment {

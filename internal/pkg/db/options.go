@@ -27,7 +27,7 @@ const (
 //	}
 func WithMaxIdleConns(max int) Option {
 	return func(c *Client) error {
-		c.conn.SetMaxIdleConns(max)
+		c.maxIdleConns = max
 		return nil
 	}
 }
@@ -43,7 +43,7 @@ func WithMaxIdleConns(max int) Option {
 //	}
 func WithMaxOpenConns(max int) Option {
 	return func(c *Client) error {
-		c.conn.SetMaxOpenConns(max)
+		c.maxOpenConns = max
 		return nil
 	}
 }
@@ -59,7 +59,7 @@ func WithMaxOpenConns(max int) Option {
 //	}
 func WithConnMaxLifeTime(max time.Duration) Option {
 	return func(c *Client) error {
-		c.conn.SetConnMaxLifetime(max)
+		c.connMaxLifeTime = max
 		return nil
 	}
 }
@@ -75,7 +75,7 @@ func WithConnMaxLifeTime(max time.Duration) Option {
 //	}
 func WithConnMaxIdleTime(max time.Duration) Option {
 	return func(c *Client) error {
-		c.conn.SetConnMaxIdleTime(max)
+		c.connMaxIdleTime = max
 		return nil
 	}
 }

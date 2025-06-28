@@ -251,11 +251,12 @@ func (c *Container) fill(structure interface{}) error {
 				if t, exist := s.Type().Field(i).Tag.Lookup("container"); exist {
 					var name string
 
-					if t == "type" {
+					switch t {
+					case "type":
 						name = ""
-					} else if t == "name" {
+					case "name":
 						name = s.Type().Field(i).Name
-					} else {
+					default:
 						return fmt.Errorf("container: %v has an invalid struct tag", s.Type().Field(i).Name)
 					}
 
