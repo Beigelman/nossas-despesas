@@ -21,7 +21,7 @@ type (
 )
 
 func NewGetMonthlyIncome(db *db.Client) GetMonthlyIncome {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, groupID int, date time.Time) ([]UserIncome, error) {
 		var balances []UserIncome
 		if err := dbClient.SelectContext(ctx, &balances, `

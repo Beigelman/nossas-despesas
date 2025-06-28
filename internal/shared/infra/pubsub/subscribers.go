@@ -26,7 +26,7 @@ type Message = message.Message
 func NewSqlSubscriber(db *db.Client) (Subscriber, error) {
 	logger := watermill.NewSlogLogger(nil)
 
-	subscriber, err := pubsubSql.NewSubscriber(db.Client(), pubsubSql.SubscriberConfig{
+	subscriber, err := pubsubSql.NewSubscriber(db.Conn(), pubsubSql.SubscriberConfig{
 		SchemaAdapter:    pubsubSql.DefaultPostgreSQLSchema{},
 		OffsetsAdapter:   pubsubSql.DefaultPostgreSQLOffsetsAdapter{},
 		InitializeSchema: true,

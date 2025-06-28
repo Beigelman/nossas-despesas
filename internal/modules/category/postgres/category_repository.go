@@ -17,7 +17,7 @@ type CategoryRepository struct {
 }
 
 func NewCategoryRepository(db *db.Client) category.Repository {
-	return &CategoryRepository{db: db.Client()}
+	return &CategoryRepository{db: db.Conn()}
 }
 
 func (repo *CategoryRepository) GetNextID() category.ID {

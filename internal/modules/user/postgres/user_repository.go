@@ -17,7 +17,7 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *db.Client) user.Repository {
-	return &UserRepository{db: db.Client()}
+	return &UserRepository{db: db.Conn()}
 }
 
 // GetNextID implements user.UserRepository.

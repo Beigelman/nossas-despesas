@@ -3,6 +3,7 @@ package importsplit
 import (
 	"context"
 	"fmt"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
@@ -32,7 +33,7 @@ func run(_ *cobra.Command, _ []string) {
 		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
 	}
 
-	database, err := db.New(&cfg)
+	database, err := db.NewClient(cfg.DBConnectionString())
 	if err != nil {
 		panic(err)
 	}

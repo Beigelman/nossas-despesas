@@ -38,10 +38,10 @@ unit:
 		go test -v $$(go list ./internal/... | grep -e handler -e usecase -e pkg)
 
 integration:
-		export DB_MIGRATION_PATH="file://$(shell pwd)/database/migrations"; \
 		go test -v $$(go list ./internal/... | grep -e postgres)
 
-test: unit integration
+test:
+		go test -json ./... | tparse -all
 
 # Scripts
 create-users:

@@ -13,7 +13,14 @@ import (
 
 var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
 	di.Provide(c, func(cfg *config.Config) (*Client, error) {
-		dbClient, err := New(cfg)
+		dbClient, err := NewClient(
+			cfg.DBConnectionString(),
+			WithConnMaxIdleTime(cfg.Db.MaxIdleTime),
+			WithConnMaxLifeTime(cfg.Db.MaxLifeTime),
+			WithMaxIdleConns(cfg.Db.MaxIdleConns),
+			WithMaxOpenConns(cfg.Db.MaxOpenConns),
+			WithMigrationPath(cfg.Db.MigrationPath),
+		)
 		if err != nil {
 			return nil, fmt.Errorf("db.New: %w", err)
 		}

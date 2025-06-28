@@ -38,7 +38,7 @@ type (
 )
 
 func NewGetExpensesPerCategory(db *db.Client) GetExpensesPerCategory {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, params GetExpensesPerCategoryInput) ([]ExpensesPerCategory, error) {
 		var info []expensesPerCategoryInfo
 		if err := dbClient.SelectContext(ctx, &info, `

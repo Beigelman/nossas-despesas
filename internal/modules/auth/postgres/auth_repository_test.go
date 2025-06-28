@@ -3,24 +3,18 @@ package postgres
 import (
 	"context"
 	"testing"
-	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/Beigelman/nossas-despesas/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
 	"github.com/stretchr/testify/suite"
 )
 
 type AuthRepositoryTestSuite struct {
 	suite.Suite
-	repository    auth.Repository
-	ctx           context.Context
-	db            *db.Client
-	cfg           config.Config
-	testContainer *tests.PostgresContainer
-	err           error
+	repository auth.Repository
+	ctx        context.Context
+	db         *db.Client
 }
 
 func TestAuthRepositoryTestSuite(t *testing.T) {
@@ -29,39 +23,14 @@ func TestAuthRepositoryTestSuite(t *testing.T) {
 
 func (s *AuthRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
-	s.testContainer, s.err = tests.StartPostgres(s.ctx)
-	if s.err != nil {
-		panic(s.err)
-	}
-
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
-
-	s.db, s.err = db.New(&s.cfg)
-	s.NoError(s.err)
+	s.db = dbtest.Setup(s.ctx, s.T())
 	s.repository = NewAuthRepository(s.db)
 
-	s.err = s.db.MigrateUp()
-	s.NoError(s.err)
-
-	_, err := s.db.Client().Exec(`
+	_, err := s.db.Conn().Exec(`
    		INSERT INTO users (id, name, email, created_at, updated_at, deleted_at, version)
 		VALUES (1, 'john', 'john@email.com', now(), now(), now(), 0)`,
 	)
 	s.NoError(err)
-}
-
-func (s *AuthRepositoryTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown()
-	s.NoError(s.err)
-
-	s.err = s.db.Close()
-	s.NoError(s.err)
-
-	duration := 10 * time.Second
-	s.err = s.testContainer.Stop(s.ctx, &duration)
-	if s.err != nil {
-		panic(s.err)
-	}
 }
 
 func (s *AuthRepositoryTestSuite) TearDownTest() {

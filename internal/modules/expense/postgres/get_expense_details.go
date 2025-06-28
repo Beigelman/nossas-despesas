@@ -32,7 +32,7 @@ type (
 )
 
 func NewGetExpenseDetails(db *db.Client) GetExpenseDetails {
-	dbClient := db.Client()
+	dbClient := db.Conn()
 	return func(ctx context.Context, expenseID int) ([]ExpenseDetails, error) {
 		var expenseDetails []ExpenseDetails
 		if err := dbClient.SelectContext(ctx, &expenseDetails, `

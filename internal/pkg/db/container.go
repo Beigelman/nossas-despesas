@@ -47,7 +47,7 @@ func (c PostgresContainer) ConnString() string {
 //		log.Fatalf("failed to start postgres container: %v", err)
 //	}
 func StartPostgres(ctx context.Context) (*PostgresContainer, error) {
-	return StartPostgresWithConfig(ctx, ContainerConfig{})
+	return StartPostgresWithConfig(ctx, ContainerConfig{LoggerDisabled: true})
 }
 
 // StartPostgresWithConfig starts a new Postgres container with a custom configuration.

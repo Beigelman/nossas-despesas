@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
@@ -14,20 +13,18 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/Beigelman/nossas-despesas/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"github.com/stretchr/testify/suite"
 )
 
 type ScheduledExpenseRepositoryTestSuite struct {
 	suite.Suite
-	ctx           context.Context
-	err           error
-	testContainer *tests.PostgresContainer
+	ctx context.Context
 
 	scheduledExpenseRepo expense.ScheduledExpenseRepository
 
-	db  *db.Client
-	cfg config.Config
+	db *db.Client
 }
 
 func TestScheduledExpenseRepositoryTestSuite(t *testing.T) {
@@ -36,33 +33,8 @@ func TestScheduledExpenseRepositoryTestSuite(t *testing.T) {
 
 func (s *ScheduledExpenseRepositoryTestSuite) SetupSuite() {
 	s.ctx = context.Background()
-	s.testContainer, s.err = tests.StartPostgres(s.ctx)
-	if s.err != nil {
-		panic(s.err)
-	}
-
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
-
-	s.db, s.err = db.New(&s.cfg)
-	s.NoError(s.err)
+	s.db = dbtest.Setup(s.ctx, s.T())
 	s.scheduledExpenseRepo = postgres.NewScheduledExpenseRepository(s.db)
-
-	s.err = s.db.MigrateUp()
-	s.NoError(s.err)
-}
-
-func (s *ScheduledExpenseRepositoryTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown()
-	s.NoError(s.err)
-
-	s.err = s.db.Close()
-	s.NoError(s.err)
-
-	duration := 10 * time.Second
-	s.err = s.testContainer.Stop(s.ctx, &duration)
-	if s.err != nil {
-		panic(s.err)
-	}
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TearDownSubTest() {
@@ -86,6 +58,49 @@ func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_Store()
 	s.NoError(err)
 
 	s.NoError(s.scheduledExpenseRepo.Store(s.ctx, scheduledExpense))
+}
+
+func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_BulkStore() {
+	scheduledExpenses := []expense.ScheduledExpense{
+		{
+			Entity: ddd.Entity[expense.ScheduledExpenseID]{
+				ID:        s.scheduledExpenseRepo.GetNextID(),
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+				Version:   1,
+			},
+			Name:            "Test Scheduled Expense",
+			Amount:          1000,
+			Description:     "Test Description",
+			GroupID:         group.ID{Value: 1},
+			CategoryID:      category.ID{Value: 1},
+			SplitType:       expense.SplitTypes.Equal,
+			PayerID:         user.ID{Value: 1},
+			ReceiverID:      user.ID{Value: 2},
+			FrequencyInDays: 7,
+			LastGeneratedAt: &[]civil.Date{civil.DateOf(time.Now())}[0],
+		},
+		{
+			Entity: ddd.Entity[expense.ScheduledExpenseID]{
+				ID:        s.scheduledExpenseRepo.GetNextID(),
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+				Version:   1,
+			},
+			Name:            "Test Scheduled Expense 2",
+			Amount:          2000,
+			Description:     "Test Description 2",
+			GroupID:         group.ID{Value: 1},
+			CategoryID:      category.ID{Value: 1},
+			SplitType:       expense.SplitTypes.Equal,
+			PayerID:         user.ID{Value: 1},
+			ReceiverID:      user.ID{Value: 2},
+			FrequencyInDays: 7,
+			LastGeneratedAt: &[]civil.Date{civil.DateOf(time.Now())}[0],
+		},
+	}
+
+	s.NoError(s.scheduledExpenseRepo.BulkStore(s.ctx, scheduledExpenses))
 }
 
 func (s *ScheduledExpenseRepositoryTestSuite) TestPgScheduledExpenseRepo_GetByID() {

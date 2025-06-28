@@ -3,25 +3,19 @@ package postgres_test
 import (
 	"context"
 	"testing"
-	"time"
-
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/Beigelman/nossas-despesas/internal/tests"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
 	"github.com/stretchr/testify/suite"
 )
 
 type CategoryGroupTestSuite struct {
 	suite.Suite
-	repository    category.GroupRepository
-	ctx           context.Context
-	db            *db.Client
-	cfg           config.Config
-	testContainer *tests.PostgresContainer
-	err           error
+	repository category.GroupRepository
+	ctx        context.Context
+	db         *db.Client
 }
 
 func TestCategoryGroupTestSuite(t *testing.T) {
@@ -30,33 +24,8 @@ func TestCategoryGroupTestSuite(t *testing.T) {
 
 func (s *CategoryGroupTestSuite) SetupSuite() {
 	s.ctx = context.Background()
-	s.testContainer, s.err = tests.StartPostgres(s.ctx)
-	if s.err != nil {
-		panic(s.err)
-	}
-
-	s.cfg = config.NewTestConfig(s.testContainer.Port, s.testContainer.Host)
-
-	s.db, s.err = db.New(&s.cfg)
-	s.NoError(s.err)
+	s.db = dbtest.Setup(s.ctx, s.T())
 	s.repository = postgres.NewCategoryGroupRepository(s.db)
-
-	s.err = s.db.MigrateUp()
-	s.NoError(s.err)
-}
-
-func (s *CategoryGroupTestSuite) TearDownSuite() {
-	s.err = s.db.MigrateDown()
-	s.NoError(s.err)
-
-	s.err = s.db.Close()
-	s.NoError(s.err)
-
-	duration := 10 * time.Second
-	s.err = s.testContainer.Stop(s.ctx, &duration)
-	if s.err != nil {
-		panic(s.err)
-	}
 }
 
 func (s *CategoryGroupTestSuite) TearDownSubTest() {
