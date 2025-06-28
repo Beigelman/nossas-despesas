@@ -1,6 +1,7 @@
 package category
 
 import (
+	"context"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
@@ -34,4 +35,9 @@ func New(p Attributes) *Category {
 		Icon:            p.Icon,
 		GroupCategoryID: p.CategoryGroupID,
 	}
+}
+
+type Repository interface {
+	ddd.Repository[ID, Category]
+	GetByName(ctx context.Context, name string) (*Category, error)
 }

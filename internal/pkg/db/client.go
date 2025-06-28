@@ -12,16 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type Database interface {
-	Client() *sqlx.DB
-	Close() error
-	Clean(tables ...string) error
-	MigrateUp() error
-	MigrateDown() error
-	NewTransactionManager() TransactionManager
-}
-
-type SQLDatabase struct {
+type Client struct {
 	*sqlx.DB
 	env           env.Environment
 	name          string
@@ -30,7 +21,7 @@ type SQLDatabase struct {
 	kind          string
 }
 
-func New(c *config.Config) (Database, error) {
+func New(c *config.Config) (*Client, error) {
 	db, err := sqlx.Connect("pgx", c.DBConnectionString())
 	if err != nil {
 		return nil, fmt.Errorf("sqlx.Connect: %w", err)
@@ -43,7 +34,7 @@ func New(c *config.Config) (Database, error) {
 		db.SetConnMaxIdleTime(c.Db.MaxIdleTime)
 	}
 
-	return &SQLDatabase{
+	return &Client{
 		DB:            db,
 		env:           c.Env,
 		name:          c.Db.Name,
@@ -51,11 +42,11 @@ func New(c *config.Config) (Database, error) {
 	}, nil
 }
 
-func (sql *SQLDatabase) Client() *sqlx.DB {
+func (sql *Client) Client() *sqlx.DB {
 	return sql.DB
 }
 
-func (sql *SQLDatabase) Clean(tables ...string) error {
+func (sql *Client) Clean(tables ...string) error {
 	if len(tables) == 0 {
 		rows, err := sql.Queryx(`
 			SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name != 'schema_migrations';

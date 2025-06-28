@@ -8,7 +8,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 )
 
-func (sql *SQLDatabase) MigrateUp() error {
+func (sql *Client) MigrateUp() error {
 	migrateClient, err := sql.getMigrateClient()
 	if err != nil {
 		return fmt.Errorf("failed to get migrate client: %w", err)
@@ -21,7 +21,7 @@ func (sql *SQLDatabase) MigrateUp() error {
 	return nil
 }
 
-func (sql *SQLDatabase) MigrateDown() error {
+func (sql *Client) MigrateDown() error {
 	if sql.env == env.Production {
 		return nil
 	}
@@ -38,7 +38,7 @@ func (sql *SQLDatabase) MigrateDown() error {
 	return nil
 }
 
-func (sql *SQLDatabase) getMigrateClient() (*migrate.Migrate, error) {
+func (sql *Client) getMigrateClient() (*migrate.Migrate, error) {
 	if sql.migrateClient != nil {
 		return sql.migrateClient, nil
 	}

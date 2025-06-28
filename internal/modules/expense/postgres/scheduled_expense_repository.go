@@ -133,6 +133,6 @@ func (repo *ScheduledExpenseRepository) BulkStore(ctx context.Context, entities 
 	return nil
 }
 
-func NewScheduledExpenseRepository(db db.Database) expense.ScheduledExpenseRepository {
+func NewScheduledExpenseRepository(db *db.Client) expense.ScheduledExpenseRepository {
 	return &ScheduledExpenseRepository{db: db.Client()}
 }

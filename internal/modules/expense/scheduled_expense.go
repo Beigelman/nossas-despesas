@@ -1,6 +1,7 @@
 package expense
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -133,4 +134,10 @@ func (se *ScheduledExpense) Deactivate() {
 	se.IsActive = false
 	se.UpdatedAt = time.Now()
 	se.Version++
+}
+
+type ScheduledExpenseRepository interface {
+	ddd.Repository[ScheduledExpenseID, ScheduledExpense]
+	GetActiveScheduledExpenses(ctx context.Context) ([]ScheduledExpense, error)
+	BulkStore(ctx context.Context, scheduledExpenses []ScheduledExpense) error
 }

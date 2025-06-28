@@ -12,7 +12,7 @@ import (
 )
 
 var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
-	di.Provide(c, func(cfg *config.Config) (Database, error) {
+	di.Provide(c, func(cfg *config.Config) (*Client, error) {
 		dbClient, err := New(cfg)
 		if err != nil {
 			return nil, fmt.Errorf("db.New: %w", err)
@@ -23,7 +23,7 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 
 	lc.OnDisposing(eon.HookOrders.PREPEND, func() error {
 		slog.Info("Closing db connection")
-		dbClient := di.Resolve[Database](c)
+		dbClient := di.Resolve[*Client](c)
 		if err := dbClient.Close(); err != nil {
 			return fmt.Errorf("dbClient.Close: %w", err)
 		}

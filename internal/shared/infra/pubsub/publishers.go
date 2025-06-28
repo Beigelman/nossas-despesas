@@ -23,7 +23,7 @@ type SqlPublisher struct {
 	publisher *pubsubSql.Publisher
 }
 
-func NewSqlPublisher(db db.Database) (Publisher, error) {
+func NewSqlPublisher(db *db.Client) (Publisher, error) {
 	logger := watermill.NewSlogLogger(nil)
 	publisher, err := pubsubSql.NewPublisher(
 		db.Client(),

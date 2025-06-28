@@ -38,7 +38,7 @@ type ExpenseRepositoryTestSuite struct {
 	categoryGroup *category.Group
 	group         *group.Group
 
-	db  db.Database
+	db  *db.Client
 	cfg config.Config
 }
 

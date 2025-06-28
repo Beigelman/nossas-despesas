@@ -18,7 +18,7 @@ type IncomeRepository struct {
 	db *sqlx.DB
 }
 
-func NewIncomeRepository(db db.Database) income.Repository {
+func NewIncomeRepository(db *db.Client) income.Repository {
 	return &IncomeRepository{db: db.Client()}
 }
 

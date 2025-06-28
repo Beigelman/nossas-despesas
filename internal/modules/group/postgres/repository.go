@@ -16,7 +16,7 @@ type GroupRepository struct {
 	db *sqlx.DB
 }
 
-func NewGroupRepository(db db.Database) group.Repository {
+func NewGroupRepository(db *db.Client) group.Repository {
 	return &GroupRepository{db: db.Client()}
 }
 

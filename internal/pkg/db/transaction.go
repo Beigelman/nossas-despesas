@@ -30,7 +30,7 @@ type TransactionFunction func(ctx context.Context, tx *sqlx.Tx) error
 
 type TransactionManager func(ctx context.Context, txFn TransactionFunction, ops ...TxOptions) error
 
-func (sql *SQLDatabase) NewTransactionManager() TransactionManager {
+func (sql *Client) NewTransactionManager() TransactionManager {
 	return func(ctx context.Context, txFn TransactionFunction, opts ...TxOptions) error {
 		var txOptions *TxOptions
 		if len(opts) > 0 {

@@ -16,7 +16,7 @@ type AuthRepository struct {
 	db *sqlx.DB
 }
 
-func NewAuthRepository(db db.Database) auth.Repository {
+func NewAuthRepository(db *db.Client) auth.Repository {
 	return &AuthRepository{db: db.Client()}
 }
 

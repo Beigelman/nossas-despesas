@@ -27,7 +27,7 @@ type (
 	GetCategories func(ctx context.Context) ([]CategoryGroup, error)
 )
 
-func NewGetCategories(db db.Database) GetCategories {
+func NewGetCategories(db *db.Client) GetCategories {
 	dbClient := db.Client()
 	return func(ctx context.Context) ([]CategoryGroup, error) {
 		var categories []Category

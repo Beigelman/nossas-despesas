@@ -33,7 +33,7 @@ type (
 	GetGroup func(ctx context.Context, groupID int) (*Group, error)
 )
 
-func NewGetGroup(db db.Database) GetGroup {
+func NewGetGroup(db *db.Client) GetGroup {
 	dbClient := db.Client()
 	return func(ctx context.Context, groupID int) (*Group, error) {
 		var group Group

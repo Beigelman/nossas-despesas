@@ -16,7 +16,7 @@ type CategoryRepository struct {
 	db *sqlx.DB
 }
 
-func NewCategoryRepository(db db.Database) category.Repository {
+func NewCategoryRepository(db *db.Client) category.Repository {
 	return &CategoryRepository{db: db.Client()}
 }
 

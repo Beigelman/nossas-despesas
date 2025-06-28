@@ -1,6 +1,7 @@
 package group
 
 import (
+	"context"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
@@ -32,4 +33,9 @@ func New(p Attributes) *Group {
 
 func (g *Group) SetName(name string) {
 	g.Name = name
+}
+
+type Repository interface {
+	ddd.Repository[ID, Group]
+	GetByName(ctx context.Context, name string) (*Group, error)
 }

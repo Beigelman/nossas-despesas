@@ -137,6 +137,6 @@ func (repo *ExpenseRepository) Store(ctx context.Context, entity *expense.Expens
 	return nil
 }
 
-func NewExpenseRepository(db db.Database) expense.Repository {
+func NewExpenseRepository(db *db.Client) expense.Repository {
 	return &ExpenseRepository{db: db.Client()}
 }

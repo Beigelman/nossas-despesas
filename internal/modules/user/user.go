@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
@@ -75,4 +76,9 @@ func (u *User) SetEmail(email string) {
 
 func (u *User) AssignGroup(g group.ID) {
 	u.GroupID = &g
+}
+
+type Repository interface {
+	ddd.Repository[ID, User]
+	GetByEmail(ctx context.Context, email string) (*User, error)
 }

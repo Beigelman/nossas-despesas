@@ -24,7 +24,7 @@ type User struct {
 
 type GetUserByID func(ctx context.Context, userID int) (*User, error)
 
-func NewGetUserByID(db db.Database) GetUserByID {
+func NewGetUserByID(db *db.Client) GetUserByID {
 	dbClient := db.Client()
 	return func(ctx context.Context, userID int) (*User, error) {
 		var user User

@@ -16,7 +16,7 @@ type GroupInviteRepository struct {
 	db *sqlx.DB
 }
 
-func NewGroupInviteRepository(db db.Database) group.InviteRepository {
+func NewGroupInviteRepository(db *db.Client) group.InviteRepository {
 	return &GroupInviteRepository{db: db.Client()}
 }
 
