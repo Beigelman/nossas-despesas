@@ -62,6 +62,10 @@ func (sql *Client) Conn() *sqlx.DB {
 }
 
 func (sql *Client) Close() error {
+	if sql.conn == nil {
+		return nil
+	}
+
 	return sql.conn.Close()
 }
 
