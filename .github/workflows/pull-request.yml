@@ -67,23 +67,6 @@ jobs:
           echo "" >> coverage_report.md
           echo "### 📊 **Cobertura Total: ${COVERAGE}%** (${STATUS})" >> coverage_report.md
           echo "" >> coverage_report.md
-          
-          # Cobertura por pacote
-          echo "### 📦 Cobertura por Pacote:" >> coverage_report.md
-          echo '```' >> coverage_report.md
-          go test -cover ./internal/... | grep 'coverage:' | sed -E 's/ok[[:space:]]+//;s/\?[[:space:]]+//' | sed -E 's/(.*)[[:space:]]+coverage: ([0-9.]+)% of statements/\1 \2/' | while read pkg cov; do
-            cov_num=$(echo $cov | sed 's/%//')
-            if (( $(echo "$cov_num >= 80" | bc -l) )); then
-              emoji="🟢"
-            elif (( $(echo "$cov_num >= 60" | bc -l) )); then
-              emoji="🟡"
-            else
-              emoji="🔴"
-            fi
-            echo "$emoji $pkg: $cov%" >> coverage_report.md
-          done
-          echo '```' >> coverage_report.md
-          echo "" >> coverage_report.md
           echo "---" >> coverage_report.md
           echo "*Relatório gerado automaticamente pelo GitHub Actions*" >> coverage_report.md
           
