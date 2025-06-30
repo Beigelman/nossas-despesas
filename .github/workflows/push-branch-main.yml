@@ -14,7 +14,7 @@ env:
 
 jobs:
   test:
-    name: Tests
+    name: Test and Lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -25,15 +25,19 @@ jobs:
         with:
           go-version: "1.23.8"
 
-      - name: Set up tparse
-        run: go install github.com/mfridman/tparse@latest
-
-      - name: Run tests
+      - name: Test
         run: |
-          set -o pipefail && go test -json ./... | tparse -all
+          go test -v -failfast ./...
+      
+      - name: Lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout=5m
+          working-directory: .
 
   deploy:
-    name: Deploy to Cloud Run
+    name: Build and Deploy
     needs: test
     # Add 'id-token' with the intended permissions for workload identity federation
     permissions:
