@@ -70,9 +70,9 @@ jobs:
           
           # Cobertura por pacote
           echo "### 📦 Cobertura por Pacote:" >> coverage_report.md
-          echo '' >> coverage_report.md
+          echo "```" >> coverage_report.md
           go test -cover ./... | grep 'coverage:' | sed -E 's/ok[[:space:]]+//;s/\?[[:space:]]+//' | sed -E 's/(.*)[[:space:]]+coverage: ([0-9.]+)% of statements/\1: \2%/' >> coverage_report.md
-          
+          echo "```" >> coverage_report.md
           echo "" >> coverage_report.md
           echo "---" >> coverage_report.md
           echo "*Relatório gerado automaticamente pelo GitHub Actions*" >> coverage_report.md
