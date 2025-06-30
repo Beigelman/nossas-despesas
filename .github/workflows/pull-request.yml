@@ -32,35 +32,49 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
-      - name: Run tests with coverage
-        id: run-tests
-        run: |
-          go test -json -coverprofile=coverage.out -covermode=atomic ./...
-          go tool cover -func=coverage.out
-
-      - name: Code Coverage Report
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: coverage.out
-          badge: true
-          fail_below_min: false
-          format: markdown
-          hide_branch_rate: false
-          hide_complexity: true
-          indicators: true
-          output: both
-          thresholds: '60 80'
-    
-      - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
-        with:
-          recreate: true
-          path: code-coverage-results.md
-
       - name: Run linter
         uses: golangci/golangci-lint-action@v8
         with:
           version: latest
           args: --timeout=5m
           working-directory: .
+
+      - name: Run tests with coverage
+        id: run-tests
+        run: |
+          go test -json -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -func=coverage.out
+
+      - name: Parse coverage and comment on PR
+        run: |
+          # Extrair a cobertura total
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          
+          # Gerar relatório detalhado
+          echo "## �� Relatório de Cobertura de Código" >> coverage_report.md
+          echo "" >> coverage_report.md
+          echo "### Cobertura Total: **${COVERAGE}%**" >> coverage_report.md
+          echo "" >> coverage_report.md
+          echo "### Detalhes por Pacote:" >> coverage_report.md
+          echo '```' >> coverage_report.md
+          go tool cover -func=coverage.out >> coverage_report.md
+          echo '```' >> coverage_report.md
+          
+          # Salvar cobertura para uso posterior
+          echo "coverage=${COVERAGE}" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('coverage_report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+
