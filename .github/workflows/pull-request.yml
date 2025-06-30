@@ -42,7 +42,7 @@ jobs:
       - name: Run tests with coverage
         id: run-tests
         run: |
-          go test -v -coverprofile=coverage.out -covermode=atomic ./...
+          go test -v -coverprofile=coverage.out -covermode=atomic .internal/...
           go tool cover -func=coverage.out
 
       - name: Parse coverage and comment on PR
@@ -71,16 +71,16 @@ jobs:
           # Cobertura por pacote
           echo "### 📦 Cobertura por Pacote:" >> coverage_report.md
           echo '```' >> coverage_report.md
-          go test -cover ./... | grep 'coverage:' | sed -E 's/ok[[:space:]]+//;s/\?[[:space:]]+//' | sed -E 's/(.*)[[:space:]]+coverage: ([0-9.]+)% of statements/\1 \2/' | while read pkg cov; do
-            pct=$(echo $cov | cut -d'.' -f1)
-            if (( $(echo "$cov >= 80" | bc -l) )); then
+          go test -cover ./internal/... | grep 'coverage:' | awk '{print $1, $6}' | sed 's/:$//' | while read pkg cov; do
+            cov_num=$(echo $cov | sed 's/%//')
+            if (( $(echo "$cov_num >= 80" | bc -l) )); then
               emoji="🟢"
-            elif (( $(echo "$cov >= 60" | bc -l) )); then
+            elif (( $(echo "$cov_num >= 60" | bc -l) )); then
               emoji="🟡"
             else
               emoji="🔴"
             fi
-            echo "$emoji $pkg: $cov%" >> coverage_report.md
+            echo "$emoji $pkg: $cov" >> coverage_report.md
           done
           echo '```' >> coverage_report.md
           echo "" >> coverage_report.md
