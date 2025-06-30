@@ -41,7 +41,7 @@ integration:
 		go test -v $$(go list ./internal/... | grep -e postgres)
 
 test:
-		go test -json ./... | tparse -all
+		go test -json ./... | tparse -format=markdown
 
 # Scripts
 create-users:
