@@ -42,7 +42,7 @@ jobs:
       - name: Run tests with coverage
         id: run-tests
         run: |
-          go test -v -coverprofile=coverage.out -covermode=atomic .internal/...
+          go test -v -coverprofile=coverage.out -covermode=atomic ./internal/...
           go tool cover -func=coverage.out
 
       - name: Parse coverage and comment on PR
