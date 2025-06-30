@@ -36,11 +36,13 @@ jobs:
           args: --timeout=5m
           working-directory: .
 
+      - name: Install tparse
+        run: go install github.com/mfridman/tparse@latest
+
       - name: Run tests with coverage
         id: run-tests
         run: |
-          go test -v -coverprofile=coverage.out -covermode=atomic ./internal/...
-          go tool cover -func=coverage.out
+          go test -v -json -coverprofile=coverage.out ./internal/... > pkg.out
 
       - name: Parse coverage
         run: |
@@ -64,11 +66,15 @@ jobs:
           echo "" >> coverage_report.md
           echo "### 📊 **Cobertura Total: ${COVERAGE}%** (${STATUS})" >> coverage_report.md
           echo "" >> coverage_report.md
+          echo "<details>" >> coverage_report.md
+          echo "<summary>Ver detalhes dos testes</summary>" >> coverage_report.md
+          echo "" >> coverage_report.md
+          tparse -format=markdown -file=pkg.out >> coverage_report.md
+          echo "" >> coverage_report.md
+          echo "</details>" >> coverage_report.md
+          echo "" >> coverage_report.md
           echo "---" >> coverage_report.md
           echo "*Relatório gerado automaticamente pelo GitHub Actions*" >> coverage_report.md
-          
-          # Salvar cobertura para uso posterior
-          echo "coverage=${COVERAGE}" >> $GITHUB_OUTPUT
 
       - name: Comment on PR
         uses: actions/github-script@v7
