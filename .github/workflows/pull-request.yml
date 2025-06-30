@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  pull-requests: write
+  contents: read
+
 env:
   ENV: prd
   PROJECT_ID: nossas-despesas
