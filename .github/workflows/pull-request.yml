@@ -72,6 +72,7 @@ jobs:
           tparse -format=markdown -file=pkg.out >> coverage_report.md
           echo "" >> coverage_report.md
           echo "</details>" >> coverage_report.md
+          echo "" >> coverage_report.md
           echo "---" >> coverage_report.md
           echo "*Relatório gerado automaticamente pelo GitHub Actions*" >> coverage_report.md
 
