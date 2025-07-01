@@ -20,8 +20,10 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 			WithMaxOpenConns(cfg.Db.MaxOpenConns),
 			WithMigrationPath(cfg.Db.MigrationPath),
 		)
+		slog.Info("DB config", slog.Any("cfg", cfg.Db))
 		slog.Info("DB client created", slog.Any("dbClient", dbClient))
 		if err != nil {
+			slog.Error("Error creating db client", slog.Any("error", err))
 			return nil, fmt.Errorf("db.New: %w", err)
 		}
 
