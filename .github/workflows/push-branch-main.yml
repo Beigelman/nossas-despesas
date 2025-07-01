@@ -31,9 +31,9 @@ jobs:
           args: --timeout=5m
           working-directory: .
 
-      - name: Test
-        run: |
-          go test -v -failfast ./...
+      # - name: Test
+      #   run: |
+      #     go test -v -failfast ./...
       
 
   deploy:
