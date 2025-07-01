@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"
@@ -63,7 +62,7 @@ func generateUniqueDBName() string {
 	defer mutex.Unlock()
 
 	dbCounter++
-	return fmt.Sprintf("test_db_%d_%d", time.Now().Unix(), dbCounter)
+	return fmt.Sprintf("test_db_%d", dbCounter)
 }
 
 // createDatabase creates a new database with the given name.

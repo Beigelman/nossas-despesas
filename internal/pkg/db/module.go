@@ -20,6 +20,7 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 			WithMaxOpenConns(cfg.Db.MaxOpenConns),
 			WithMigrationPath(cfg.Db.MigrationPath),
 		)
+		slog.Info("DB client created", slog.Any("dbClient", dbClient))
 		if err != nil {
 			return nil, fmt.Errorf("db.New: %w", err)
 		}
@@ -30,6 +31,7 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 	lc.OnDisposing(eon.HookOrders.PREPEND, func() error {
 		slog.Info("Closing db connection")
 		dbClient := di.Resolve[*Client](c)
+		slog.Info("Closing db connection", slog.Any("dbClient", dbClient))
 		if err := dbClient.Close(); err != nil {
 			return fmt.Errorf("dbClient.Close: %w", err)
 		}
