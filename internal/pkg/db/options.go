@@ -5,9 +5,32 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
-type Option func(c *Client) error
+type Option func(c *dbConfig) error
+
+type dbConfig struct {
+	env             env.Environment
+	name            string
+	migrationPath   string
+	connMaxIdleTime time.Duration
+	connMaxLifeTime time.Duration
+	maxIdleConns    int
+	maxOpenConns    int
+}
+
+func defaultConfig() dbConfig {
+	return dbConfig{
+		env:             env.Development,
+		name:            "test",
+		connMaxIdleTime: DefaultConnMaxIdleTime,
+		connMaxLifeTime: DefaultConnMaxLifeTime,
+		maxIdleConns:    DefaultMaxIdleConns,
+		maxOpenConns:    DefaultMaxOpenConn,
+	}
+}
 
 const (
 	DefaultMaxIdleConns    = 1
@@ -26,7 +49,7 @@ const (
 //		log.Fatalf("failed to create client: %v", err)
 //	}
 func WithMaxIdleConns(max int) Option {
-	return func(c *Client) error {
+	return func(c *dbConfig) error {
 		c.maxIdleConns = max
 		return nil
 	}
@@ -42,7 +65,7 @@ func WithMaxIdleConns(max int) Option {
 //		log.Fatalf("failed to create client: %v", err)
 //	}
 func WithMaxOpenConns(max int) Option {
-	return func(c *Client) error {
+	return func(c *dbConfig) error {
 		c.maxOpenConns = max
 		return nil
 	}
@@ -58,7 +81,7 @@ func WithMaxOpenConns(max int) Option {
 //		log.Fatalf("failed to create client: %v", err)
 //	}
 func WithConnMaxLifeTime(max time.Duration) Option {
-	return func(c *Client) error {
+	return func(c *dbConfig) error {
 		c.connMaxLifeTime = max
 		return nil
 	}
@@ -74,7 +97,7 @@ func WithConnMaxLifeTime(max time.Duration) Option {
 //		log.Fatalf("failed to create client: %v", err)
 //	}
 func WithConnMaxIdleTime(max time.Duration) Option {
-	return func(c *Client) error {
+	return func(c *dbConfig) error {
 		c.connMaxIdleTime = max
 		return nil
 	}
@@ -91,7 +114,7 @@ func WithConnMaxIdleTime(max time.Duration) Option {
 //		log.Fatalf("failed to create client: %v", err)
 //	}
 func WithMigrationPath(path string) Option {
-	return func(c *Client) error {
+	return func(c *dbConfig) error {
 		wrkDir, err := os.Getwd()
 		if err != nil {
 			return fmt.Errorf("os.Getwd: %w", err)

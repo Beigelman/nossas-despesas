@@ -3,9 +3,7 @@ package db
 import (
 	"fmt"
 	"regexp"
-	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -13,46 +11,37 @@ import (
 )
 
 type Client struct {
-	conn            *sqlx.DB
-	env             env.Environment
-	name            string
-	migrateClient   *migrate.Migrate
-	migrationPath   string
-	maxIdleConns    int
-	maxOpenConns    int
-	connMaxIdleTime time.Duration
-	connMaxLifeTime time.Duration
-}
-
-func defaultClient() *Client {
-	return &Client{
-		maxIdleConns:    DefaultMaxIdleConns,
-		maxOpenConns:    DefaultMaxOpenConn,
-		connMaxIdleTime: DefaultConnMaxIdleTime,
-		connMaxLifeTime: DefaultConnMaxLifeTime,
-	}
+	conn          *sqlx.DB
+	migrateClient *migrate.Migrate
+	cfg           dbConfig
 }
 
 func NewClient(connString string, options ...Option) (*Client, error) {
-	client := defaultClient()
-	for _, opt := range options {
-		if err := opt(client); err != nil {
-			return nil, fmt.Errorf("apply option: %w", err)
-		}
-	}
-
 	conn, err := sqlx.Connect("pgx", connString)
 	if err != nil {
 		return nil, fmt.Errorf("sqlx.Connect: %w", err)
 	}
 
-	conn.SetMaxIdleConns(client.maxIdleConns)
-	conn.SetMaxOpenConns(client.maxOpenConns)
-	conn.SetConnMaxIdleTime(client.connMaxIdleTime)
-	conn.SetConnMaxLifetime(client.connMaxLifeTime)
+	cfg := defaultConfig()
+	for _, opt := range options {
+		if err := opt(&cfg); err != nil {
+			return nil, fmt.Errorf("apply option: %w", err)
+		}
+	}
 
-	client.conn = conn
-	client.name = getDBName(connString)
+	dbName := getDBName(connString)
+	cfg.name = dbName
+
+	conn.SetMaxIdleConns(cfg.maxIdleConns)
+	conn.SetMaxOpenConns(cfg.maxOpenConns)
+	conn.SetConnMaxIdleTime(cfg.connMaxIdleTime)
+	conn.SetConnMaxLifetime(cfg.connMaxLifeTime)
+
+	client := &Client{
+		conn:          conn,
+		migrateClient: nil,
+		cfg:           cfg,
+	}
 
 	return client, nil
 }

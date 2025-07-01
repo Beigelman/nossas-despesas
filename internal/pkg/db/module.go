@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
@@ -18,12 +17,8 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 			WithConnMaxLifeTime(cfg.Db.MaxLifeTime),
 			WithMaxIdleConns(cfg.Db.MaxIdleConns),
 			WithMaxOpenConns(cfg.Db.MaxOpenConns),
-			WithMigrationPath(cfg.Db.MigrationPath),
 		)
-		slog.Info("DB config", slog.Any("cfg", cfg.Db))
-		slog.Info("DB client created", slog.Any("dbClient", dbClient))
 		if err != nil {
-			slog.Error("Error creating db client", slog.Any("error", err))
 			return nil, fmt.Errorf("db.New: %w", err)
 		}
 
@@ -31,9 +26,7 @@ var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container
 	})
 
 	lc.OnDisposing(eon.HookOrders.PREPEND, func() error {
-		slog.Info("Closing db connection")
 		dbClient := di.Resolve[*Client](c)
-		slog.Info("Closing db connection", slog.Any("dbClient", dbClient))
 		if err := dbClient.Close(); err != nil {
 			return fmt.Errorf("dbClient.Close: %w", err)
 		}
