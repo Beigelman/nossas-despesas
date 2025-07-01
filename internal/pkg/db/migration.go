@@ -22,7 +22,7 @@ func (sql *Client) MigrateUp() error {
 }
 
 func (sql *Client) MigrateDown() error {
-	if sql.env == env.Production {
+	if sql.cfg.env == env.Production {
 		return nil
 	}
 
@@ -44,13 +44,13 @@ func (sql *Client) getMigrateClient() (*migrate.Migrate, error) {
 	}
 
 	driver, err := postgres.WithInstance(sql.conn.DB, &postgres.Config{
-		DatabaseName: sql.name,
+		DatabaseName: sql.cfg.name,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get DB instance: %w", err)
 	}
 
-	migrateClient, err := migrate.NewWithDatabaseInstance(sql.migrationPath, "postgres", driver)
+	migrateClient, err := migrate.NewWithDatabaseInstance(sql.cfg.migrationPath, "postgres", driver)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create migrate client: %w", err)
 	}
