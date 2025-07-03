@@ -1,0 +1,123 @@
+name: "Test Coverage Action"
+description: "Executa testes com cobertura e valida limite mínimo"
+
+inputs:
+  coverage-threshold:
+    description: "Limite mínimo de cobertura (0-100)"
+    required: false
+    default: "0"
+  test-packages:
+    description: "Pacotes para testar (padrão: ./internal/...)"
+    required: false
+    default: "./internal/..."
+  comment-on-pr:
+    description: "Comentar no PR com o relatório de cobertura"
+    required: false
+    default: "true"
+  github-token:
+    description: "Token do GitHub para comentar no PR"
+    required: false
+    default: "${{ github.token }}"
+
+outputs:
+  coverage-percentage:
+    description: "Percentual de cobertura obtido"
+    value: ${{ steps.coverage.outputs.percentage }}
+  coverage-status:
+    description: "Status da cobertura (Excelente/Boa/Baixa)"
+    value: ${{ steps.coverage.outputs.status }}
+  coverage-emoji:
+    description: "Emoji representando o status da cobertura"
+    value: ${{ steps.coverage.outputs.emoji }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install tparse
+      shell: bash
+      run: go install github.com/mfridman/tparse@latest
+
+    - name: Run tests with coverage
+      id: run-tests
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        go test -v -json -coverprofile=coverage.out ${{ inputs.test-packages }} > pkg.out
+
+    - name: Parse coverage and generate report
+      id: coverage
+      shell: bash
+      run: |
+        # Extrair a cobertura total
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+
+        # Determinar emoji e status baseado na cobertura
+        if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+          EMOJI="🟢"
+          STATUS="Excelente"
+        elif (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+          EMOJI="🟡"
+          STATUS="Boa"
+        else
+          EMOJI="🔴"
+          STATUS="Baixa"
+        fi
+
+        # Definir outputs
+        echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
+        echo "status=$STATUS" >> $GITHUB_OUTPUT
+        echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
+
+        # Salvar cobertura para uso posterior
+        echo "$COVERAGE" > coverage_percentage.txt
+
+        # Gerar relatório condensado
+        echo "## ${EMOJI} Relatório de Cobertura de Código" > coverage_report.md
+        echo "" >> coverage_report.md
+        echo "### 📊 **Cobertura Total: ${COVERAGE}%** (${STATUS})" >> coverage_report.md
+        echo "" >> coverage_report.md
+        echo "<details>" >> coverage_report.md
+        echo "<summary>Ver detalhes dos testes</summary>" >> coverage_report.md
+        echo "" >> coverage_report.md
+        tparse -format=markdown -file=pkg.out >> coverage_report.md
+        echo "" >> coverage_report.md
+        echo "</details>" >> coverage_report.md
+        echo "" >> coverage_report.md
+        echo "---" >> coverage_report.md
+        echo "*Relatório gerado automaticamente pelo GitHub Actions*" >> coverage_report.md
+
+    - name: Comment on PR
+      if: ${{ inputs.comment-on-pr == 'true' && github.event_name == 'pull_request' }}
+      shell: bash
+      run: |
+        # Verificar se estamos em um PR
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # Ler o relatório
+          REPORT=$(cat coverage_report.md)
+          
+          # Usar GitHub CLI para comentar no PR
+          echo "$REPORT" | gh pr comment ${{ github.event.pull_request.number }} --body-file -
+        else
+          echo "Não é um PR, pulando comentário"
+        fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Validate coverage threshold
+      id: validate
+      shell: bash
+      run: |
+        # Ler a cobertura salva
+        COVERAGE=$(cat coverage_percentage.txt)
+        THRESHOLD=${{ inputs.coverage-threshold }}
+
+        echo "📊 Cobertura atual: ${COVERAGE}%"
+        echo "🎯 Limite mínimo: ${THRESHOLD}%"
+
+        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          echo "❌ Cobertura de código ($COVERAGE%) está abaixo do limite mínimo ($THRESHOLD%)"
+          echo "::error::Cobertura de código ($COVERAGE%) está abaixo do limite mínimo ($THRESHOLD%)"
+          exit 1
+        fi
+
+        echo "✅ Cobertura de código ($COVERAGE%) está acima do limite mínimo ($THRESHOLD%)"
