@@ -28,9 +28,9 @@ func NewGetMonthlyIncome(db *db.Client) GetMonthlyIncome {
 			SELECT id, user_id, type, amount_cents, created_at 
 			FROM incomes
 			WHERE user_id IN (SELECT id FROM users WHERE group_id = $1)
-			AND extract(month from created_at) = $2
-			AND extract(year from created_at) = $3
-			AND deleted_at is null
+			AND EXTRACT(MONTH FROM created_at) = $2
+			AND EXTRACT(YEAR FROM created_at) = $3
+			AND deleted_at IS NULL
 		`, groupID, date.Month(), date.Year()); err != nil {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}

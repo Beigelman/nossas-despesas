@@ -32,25 +32,25 @@ func NewGetCategories(db *db.Client) GetCategories {
 	return func(ctx context.Context) ([]CategoryGroup, error) {
 		var categories []Category
 		if err := dbClient.SelectContext(ctx, &categories, `
-			select
+			SELECT
     			id,
 				name,
 				icon,
 				category_group_id
-			from categories c
-			where c.deleted_at is null
+			FROM categories c
+			WHERE c.deleted_at IS NULL
 		`); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}
 
 		var categoryGroups []CategoryGroup
 		if err := dbClient.SelectContext(ctx, &categoryGroups, `
-			select
+			SELECT
     			id,
 				name,
 				icon
-			from category_groups c
-			where c.deleted_at is null
+			FROM category_groups c
+			WHERE c.deleted_at IS NULL
 		`); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}

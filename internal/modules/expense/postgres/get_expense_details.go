@@ -36,11 +36,11 @@ func NewGetExpenseDetails(db *db.Client) GetExpenseDetails {
 	return func(ctx context.Context, expenseID int) ([]ExpenseDetails, error) {
 		var expenseDetails []ExpenseDetails
 		if err := dbClient.SelectContext(ctx, &expenseDetails, `
-			    select
+			    SELECT
     				id,
     				name,
-    				amount_cents as amount,
-    				refund_amount_cents as refund_amount,
+    				amount_cents AS amount,
+    				refund_amount_cents AS refund_amount,
     				description,
     				payer_id,
     				group_id,
@@ -51,9 +51,8 @@ func NewGetExpenseDetails(db *db.Client) GetExpenseDetails {
 	  				created_at,
 		  			updated_at,
 			  		deleted_at
-			    from expenses
-				  where id = $1
-			  	order by version 
+			    FROM expenses_latest
+				  WHERE id = $1
 		`, expenseID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}

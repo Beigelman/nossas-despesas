@@ -28,8 +28,8 @@ func (s *AuthRepositoryTestSuite) SetupSuite() {
 
 	_, err := s.db.Conn().Exec(`
    		INSERT INTO users (id, name, email, created_at, updated_at, deleted_at, version)
-		VALUES (1, 'john', 'john@email.com', now(), now(), now(), 0)`,
-	)
+			VALUES (1, 'john', 'john@email.com', NOW(), NOW(), NOW(), 0)
+	`)
 	s.NoError(err)
 }
 

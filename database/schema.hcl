@@ -105,6 +105,10 @@ table "expenses" {
   }
 }
 
+view "expenses_latest" {
+  schema = schema.public
+  as     = "SELECT DISTINCT ON (id) id, name, amount_cents, refund_amount_cents, description, group_id, category_id, split_ratio, split_type, payer_id, receiver_id, document_search, created_at, updated_at, deleted_at, version FROM expenses ORDER BY id DESC, version DESC"
+}
 
 table "groups" {
   schema = schema.public

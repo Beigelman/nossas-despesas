@@ -22,62 +22,54 @@ type (
 
 var (
 	expensesQueryWithSearch = `
-      with base as (
-				select
-    				distinct on (ex.id) ex.id as id,
-    				ex.name as name,
-    				ex.amount_cents amount,
-    				ex.refund_amount_cents as refund_amount,
-    				ex.description as description,
-    				ex.group_id as group_id,
-    				cat.id as category_id,
-					  cat.icon as category_icon,
-    				ex.payer_id as payer_id,
-    				ex.receiver_id as receiver_id,
-    				ex.split_ratio as split_ratio,
-            ex.split_type as split_type,
-					  ex.created_at as created_at,
-					  ex.updated_at as updated_at,
-					  ex.deleted_at as deleted_at,
-            ts_rank(ex.document_search, websearch_to_tsquery('portuguese', $5)) as rank
-				from expenses ex inner join categories cat on ex.category_id = cat.id
-				where ex.group_id = $1
-				and (ex.created_at < $2 or (ex.created_at = $2 and ex.id < $3))
-				and ex.document_search @@ websearch_to_tsquery('portuguese', $5)
-				order by ex.id desc, ex.version desc
-			)
-			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, split_type, created_at, updated_at, deleted_at from base b
-			where b.deleted_at is null
-			order by b.created_at desc, b.id desc, b.rank desc
-			limit $4
+		SELECT
+			ex.id AS id,
+			ex.name AS name,
+			ex.amount_cents amount,
+			ex.refund_amount_cents AS refund_amount,
+			ex.description AS description,
+			ex.group_id AS group_id,
+			cat.id AS category_id,
+			cat.icon AS category_icon,
+			ex.payer_id AS payer_id,
+			ex.receiver_id AS receiver_id,
+			ex.split_ratio AS split_ratio,
+			ex.split_type AS split_type,
+			ex.created_at AS created_at,
+			ex.updated_at AS updated_at,
+			ex.deleted_at AS deleted_at,
+			ts_rank(ex.document_search, websearch_to_tsquery('portuguese', $5)) AS rank
+		FROM expenses_latest ex INNER JOIN categories cat ON ex.category_id = cat.id
+		WHERE ex.group_id = $1
+		AND (ex.created_at < $2 OR (ex.created_at = $2 AND ex.id < $3))
+		AND ex.document_search @@ websearch_to_tsquery('portuguese', $5)
+		AND ex.deleted_at IS NULL
+		ORDER BY ex.created_at DESC, ex.id DESC, rank DESC
+		LIMIT $4
 		`
 	expensesQuery = `
-    with base as (
-				select
-    				distinct on (ex.id) ex.id as id,
-    				ex.name as name,
-    				ex.amount_cents amount,
-    				ex.refund_amount_cents as refund_amount,
-    				ex.description as description,
-    				ex.group_id as group_id,
-    				cat.id as category_id,
-					  cat.icon as category_icon,
-    				ex.payer_id as payer_id,
-    				ex.receiver_id as receiver_id,
-    				ex.split_ratio as split_ratio,
-            ex.split_type as split_type,
-					  ex.created_at as created_at,
-					  ex.updated_at as updated_at,
-					  ex.deleted_at as deleted_at
-				from expenses ex inner join categories cat on ex.category_id = cat.id
-				where ex.group_id = $1
-				and (ex.created_at < $2 or (ex.created_at = $2 and ex.id < $3))
-				order by ex.id desc, ex.version desc
-			)
-			select id, name, amount, refund_amount, description, category_id, payer_id, receiver_id, group_id, split_ratio, split_type, created_at, updated_at, deleted_at from base b
-			where b.deleted_at is null
-			order by b.created_at desc, b.id desc
-			limit $4
+		SELECT
+			ex.id AS id,
+			ex.name AS name,
+			ex.amount_cents amount,
+			ex.refund_amount_cents AS refund_amount,
+			ex.description AS description,
+			ex.group_id AS group_id,
+			cat.id AS category_id,
+			cat.icon AS category_icon,
+			ex.payer_id AS payer_id,
+			ex.receiver_id AS receiver_id,
+			ex.split_ratio AS split_ratio,
+			ex.split_type AS split_type,
+			ex.created_at AS created_at,
+			ex.updated_at AS updated_at,
+			ex.deleted_at AS deleted_at
+		FROM expenses_latest ex INNER JOIN categories cat ON ex.category_id = cat.id
+		WHERE ex.group_id = $1
+		AND (ex.created_at < $2 OR (ex.created_at = $2 AND ex.id < $3))
+		AND ex.deleted_at IS NULL
+		ORDER BY ex.created_at DESC, ex.id DESC
+		LIMIT $4
   `
 )
 

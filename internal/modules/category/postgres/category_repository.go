@@ -23,7 +23,7 @@ func NewCategoryRepository(db *db.Client) category.Repository {
 func (repo *CategoryRepository) GetNextID() category.ID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('categories_id_seq');").Scan(&nextValue); err != nil {
+	if err := repo.db.QueryRowx("SELECT NEXTVAL('categories_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.QueryRow: %w", err))
 	}
 
@@ -34,7 +34,7 @@ func (repo *CategoryRepository) GetByName(ctx context.Context, name string) (*ca
 	var model CategoryModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		SELECT id, name, icon, category_group_id,created_at, updated_at, deleted_at, version
+		SELECT id, name, icon, category_group_id, created_at, updated_at, deleted_at, version
 		FROM categories WHERE name = $1
 		AND deleted_at IS NULL
 		ORDER BY version DESC
@@ -86,7 +86,7 @@ func (repo *CategoryRepository) Store(ctx context.Context, entity *category.Cate
 func (repo *CategoryRepository) create(ctx context.Context, model CategoryModel) error {
 	if _, err := repo.db.NamedExecContext(ctx, `
 		INSERT INTO categories (id, name, icon, category_group_id, created_at, updated_at, deleted_at, version)
-		VALUES (:id, :name, :icon, :category_group_id,  :created_at, :updated_at, :deleted_at, :version)
+		VALUES (:id, :name, :icon, :category_group_id, :created_at, :updated_at, :deleted_at, :version)
 	`, model); err != nil {
 		return fmt.Errorf("db.Insert: %w", err)
 	}
@@ -97,7 +97,7 @@ func (repo *CategoryRepository) create(ctx context.Context, model CategoryModel)
 func (repo *CategoryRepository) update(ctx context.Context, model CategoryModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE categories SET name = :name, icon = :icon, category_group_id = :category_group_id, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
-		WHERE id = :id and version = :version
+		WHERE id = :id AND version = :version
 	`, model)
 	if err != nil {
 		return fmt.Errorf("db.Update: %w", err)

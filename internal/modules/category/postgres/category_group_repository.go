@@ -23,7 +23,7 @@ func NewCategoryGroupRepository(db *db.Client) category.GroupRepository {
 func (repo *CategoryGroupRepository) GetNextID() category.GroupID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('category_groups_id_seq');").Scan(&nextValue); err != nil {
+	if err := repo.db.QueryRowx("SELECT NEXTVAL('category_groups_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.QueryRow: %w", err))
 	}
 
@@ -97,7 +97,7 @@ func (repo *CategoryGroupRepository) create(ctx context.Context, model CategoryG
 func (repo *CategoryGroupRepository) update(ctx context.Context, model CategoryGroupModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE category_groups SET name = :name, icon = :icon, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
-		WHERE id = :id and version = :version
+		WHERE id = :id AND version = :version
 	`, model)
 	if err != nil {
 		return fmt.Errorf("db.Update: %w", err)

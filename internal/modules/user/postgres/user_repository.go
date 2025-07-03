@@ -24,7 +24,7 @@ func NewUserRepository(db *db.Client) user.Repository {
 func (repo *UserRepository) GetNextID() user.ID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('users_id_seq');").Scan(&nextValue); err != nil {
+	if err := repo.db.QueryRowx("SELECT NEXTVAL('users_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.Select: %w", err))
 	}
 
@@ -99,8 +99,8 @@ func (repo *UserRepository) create(ctx context.Context, model UserModel) error {
 
 func (repo *UserRepository) update(ctx context.Context, model UserModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
-    UPDATE users SET name = :name, group_id = :group_id, profile_picture = :profile_picture, flags = :flags, updated_at = now(), deleted_at = :deleted_at, version = version + 1
-		WHERE id = :id and version = :version
+    UPDATE users SET name = :name, group_id = :group_id, profile_picture = :profile_picture, flags = :flags, updated_at = NOW(), deleted_at = :deleted_at, version = version + 1
+		WHERE id = :id AND version = :version
 	`, model)
 	if err != nil {
 		return fmt.Errorf("db.Update: %w", err)

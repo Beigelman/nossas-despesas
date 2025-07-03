@@ -39,13 +39,13 @@ func NewGetGroup(db *db.Client) GetGroup {
 		var group Group
 
 		if err := dbClient.GetContext(ctx, &group, `
-			select
+			SELECT
     		id,
-			name,
-			created_at,
-			updated_at 
-			from groups
-			where id = $1
+				name,
+				created_at,
+				updated_at 
+			FROM groups
+			WHERE id = $1
 		`, groupID); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, except.NotFoundError("group not found")
@@ -55,16 +55,16 @@ func NewGetGroup(db *db.Client) GetGroup {
 
 		var members []Member
 		if err := dbClient.SelectContext(ctx, &members, `
-			select
+			SELECT
     		id,
-			name,
-			email,
-			group_id,
-			profile_picture,
-			created_at,
-			updated_at 
-			from users
-			where group_id = $1
+				name,
+				email,
+				group_id,
+				profile_picture,
+				created_at,
+				updated_at 
+			FROM users
+			WHERE group_id = $1
 		`, groupID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.Select: %w", err)
 		}

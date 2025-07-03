@@ -7,7 +7,7 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
+	mocks2 "github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -15,8 +15,8 @@ import (
 func TestCreateGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	groupRepo := mocks.NewMockgroupRepository(t)
-	userRepo := mocks.NewMockuserRepository(t)
+	groupRepo := mocks2.NewMockgroupRepository(t)
+	userRepo := mocks2.NewMockuserRepository(t)
 	usr := user.New(user.Attributes{
 		ID:    user.ID{Value: 1},
 		Name:  "test",
