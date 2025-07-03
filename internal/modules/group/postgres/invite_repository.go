@@ -117,7 +117,7 @@ func (repo *GroupInviteRepository) create(ctx context.Context, model GroupInvite
 func (repo *GroupInviteRepository) update(ctx context.Context, model GroupInviteModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE group_invites SET status = :status, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
-		WHERE id = :id and version = :version
+		WHERE id = :id AND version = :version
 	`, model)
 	if err != nil {
 		return fmt.Errorf("db.Update: %w", err)

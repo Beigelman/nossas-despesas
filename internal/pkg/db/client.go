@@ -71,7 +71,7 @@ func getDBName(connectionString string) string {
 func (sql *Client) Clean(tables ...string) error {
 	if len(tables) == 0 {
 		rows, err := sql.conn.Queryx(`
-			SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name != 'schema_migrations';
+			SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' AND table_name != 'schema_migrations';
 		`)
 		if err != nil {
 			return fmt.Errorf("failed to get DB tables: %w", err)

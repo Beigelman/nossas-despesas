@@ -33,7 +33,7 @@ if [ -z "${DB_CONNECTION_STRING}" ]; then
         echo "Using default DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}"
     else
         # Construct DB_CONNECTION_STRING
-        export DB_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+        export DB_CONNECTION_STRING="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
         echo "Constructed DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}"
     fi
 else

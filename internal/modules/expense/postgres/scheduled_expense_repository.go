@@ -20,7 +20,7 @@ func (repo *ScheduledExpenseRepository) GetNextID() expense.ScheduledExpenseID {
 
 	conn := repo.db.Conn()
 
-	if err := conn.QueryRowx("SELECT nextval('scheduled_expenses_id_seq');").Scan(&nextValue); err != nil {
+	if err := conn.QueryRowx("SELECT NEXTVAL('scheduled_expenses_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.QueryRow: %w", err))
 	}
 
