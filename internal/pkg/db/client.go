@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -19,6 +20,7 @@ type Client struct {
 func NewClient(connString string, options ...Option) (*Client, error) {
 	conn, err := sqlx.Connect("pgx", connString)
 	if err != nil {
+		slog.Error("sqlx.Connect", "error", err)
 		return nil, fmt.Errorf("sqlx.Connect: %w", err)
 	}
 
