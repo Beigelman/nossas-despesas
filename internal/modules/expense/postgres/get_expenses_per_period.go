@@ -43,27 +43,17 @@ func NewGetExpensesPerPeriod(db *db.Client) GetExpensesPerPeriod {
 		}
 
 		query := fmt.Sprintf(`
-			with base as (
-		    select
-		        distinct on (ex.id) ex.id as id,
-		        ex.amount_cents amount,
-				ex.category_id  as category_id,
-		        ex.created_at as created_at,
-		        ex.deleted_at as deleted_at
-		    from expenses ex
-		    	where ex.group_id = $1
-		    	and ex.created_at >= $2
-		    	and ex.created_at <= $3
-		    	order by ex.id desc, ex.version desc
-			)
-			select 
-				to_char(date_trunc('%s', b.created_at), '%s') as date, 
-				sum(amount) as amount, 
-				count(1) as quantity 
-			from base b
-			where b.deleted_at is null
-			group by 1
-			order by 1;
+			SELECT 
+				to_char(date_trunc('%s', ex.created_at), '%s') AS date, 
+				SUM(ex.amount_cents) AS amount, 
+				COUNT(1) AS quantity 
+			FROM expenses_latest ex
+			WHERE ex.group_id = $1
+			AND ex.created_at >= $2
+			AND ex.created_at <= $3
+			AND ex.deleted_at IS NULL
+			GROUP BY 1
+			ORDER BY 1;
 		`, trunc, format)
 
 		if err := dbClient.SelectContext(ctx, &expensesPerPeriod, query, params.GroupID, params.StartDate, params.EndDate); err != nil && !errors.Is(err, sql.ErrNoRows) {

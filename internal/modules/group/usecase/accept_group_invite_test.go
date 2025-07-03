@@ -8,7 +8,7 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/Beigelman/nossas-despesas/internal/tests/mocks"
+	mocks2 "github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -17,8 +17,8 @@ func TestAcceptGroupInvite(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	userRepo := mocks.NewMockuserRepository(t)
-	groupInviteRepo := mocks.NewMockgroupInviteRepository(t)
+	userRepo := mocks2.NewMockuserRepository(t)
+	groupInviteRepo := mocks2.NewMockgroupInviteRepository(t)
 
 	acceptGroupInvite := NewAcceptGroupInvite(userRepo, groupInviteRepo)
 	groupID := group.ID{Value: 1}

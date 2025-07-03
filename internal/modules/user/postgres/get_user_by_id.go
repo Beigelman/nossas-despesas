@@ -29,9 +29,9 @@ func NewGetUserByID(db *db.Client) GetUserByID {
 	return func(ctx context.Context, userID int) (*User, error) {
 		var user User
 		if err := dbClient.GetContext(ctx, &user, `
-			select id, name, email, profile_picture, group_id, flags, created_at, updated_at
-			from users
-			where id = $1	
+			SELECT id, name, email, profile_picture, group_id, flags, created_at, updated_at
+			FROM users
+			WHERE id = $1	
 		`, userID); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, except.NotFoundError("user not found")

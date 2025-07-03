@@ -42,30 +42,21 @@ func NewGetExpensesPerCategory(db *db.Client) GetExpensesPerCategory {
 	return func(ctx context.Context, params GetExpensesPerCategoryInput) ([]ExpensesPerCategory, error) {
 		var info []expensesPerCategoryInfo
 		if err := dbClient.SelectContext(ctx, &info, `
-			with base as (
-			    select
-			        distinct on (ex.id) ex.id as id,
-			        ex.amount_cents amount,
-			        ex.category_id  as category_id,
-			        ex.deleted_at as deleted_at
-			    from expenses ex
-			    where ex.group_id = $1
-			    and ex.created_at >= $2
-			    and ex.created_at <= $3
-			    order by ex.id desc, ex.version desc
-			)
-			select 
-				cat.name as category_name, 
-				cg.name as category_group_name, 
-				sum(amount) as amount 
-			from base b
-			inner join categories cat on b.category_id = cat.id
-			inner join category_groups cg on cg.id = cat.category_group_id
-			where b.deleted_at is null
-			and cg.deleted_at is null
-			and cat.deleted_at is null
-			group by 1, 2 
-			order by 2 desc;
+			SELECT 
+				cat.name AS category_name, 
+				cg.name AS category_group_name, 
+				SUM(ex.amount_cents) AS amount 
+			FROM expenses_latest ex
+			INNER JOIN categories cat ON ex.category_id = cat.id
+			INNER JOIN category_groups cg ON cg.id = cat.category_group_id
+			WHERE ex.group_id = $1
+			AND ex.created_at >= $2
+			AND ex.created_at <= $3
+			AND ex.deleted_at IS NULL
+			AND cg.deleted_at IS NULL
+			AND cat.deleted_at IS NULL
+			GROUP BY 1, 2 
+			ORDER BY 2 DESC;
 		`, params.GroupID, params.StartDate, params.EndDate); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
 		}

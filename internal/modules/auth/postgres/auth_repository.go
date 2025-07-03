@@ -23,7 +23,7 @@ func NewAuthRepository(db *db.Client) auth.Repository {
 func (repo *AuthRepository) GetNextID() auth.ID {
 	var nextValue int
 
-	if err := repo.db.QueryRowx("SELECT nextval('authentications_id_seq');").Scan(&nextValue); err != nil {
+	if err := repo.db.QueryRowx("SELECT NEXTVAL('authentications_id_seq');").Scan(&nextValue); err != nil {
 		panic(fmt.Errorf("db.Select: %w", err))
 	}
 
@@ -54,7 +54,7 @@ func (repo *AuthRepository) GetByEmail(ctx context.Context, email string, authTy
 
 	if err := repo.db.QueryRowxContext(ctx, `
 		SELECT id, email, password, provider_id, type, created_at, updated_at, deleted_at, version
-		FROM authentications WHERE email = $1 and type = $2
+		FROM authentications WHERE email = $1 AND type = $2
 		AND deleted_at IS NULL
 		ORDER BY version DESC
 		LIMIT 1
@@ -97,7 +97,7 @@ func (repo *AuthRepository) create(ctx context.Context, model AuthModel) error {
 func (repo *AuthRepository) update(ctx context.Context, model AuthModel) error {
 	result, err := repo.db.NamedExecContext(ctx, `
 		UPDATE authentications SET password = :password, updated_at = :updated_at, deleted_at = :deleted_at, version = version + 1
-		WHERE id = :id and version = :version
+		WHERE id = :id AND version = :version
 	`, model)
 	if err != nil {
 		return fmt.Errorf("db.Update: %w", err)

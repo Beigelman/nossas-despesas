@@ -36,32 +36,28 @@ func (repo *ExpenseRepository) BulkStore(ctx context.Context, expenses []expense
 func (repo *ExpenseRepository) GetByGroupDate(ctx context.Context, groupId group.ID, date time.Time) ([]expense.Expense, error) {
 	var models []ExpenseModel
 	if err := repo.db.SelectContext(ctx, &models, ` 
-			with base as (
-			select
-					e.id,
-					name, 
-							amount_cents, 
-							refund_amount_cents, 
-							description, 
-							group_id, 
-							category_id, 
-							payer_id,   
-							receiver_id, 
-							split_ratio, 
-							split_type, 
-							created_at, 
-							updated_at, 
-							deleted_at, 
-							version
-			from expenses e
-			join (select id, MAX(version) as latest_version from expenses where group_id = $1 group by id) lv 
-				on e.id = lv.id and e.version = lv.latest_version
-			where group_id = $1
-			and extract(month from created_at) = $2
-			and extract(year from created_at) = $3
-			order by id desc, version desc
-		)
-		select * from base where deleted_at is null
+		SELECT
+			id,
+			name, 
+			amount_cents, 
+			refund_amount_cents, 
+			description, 
+			group_id, 
+			category_id, 
+			payer_id,   
+			receiver_id, 
+			split_ratio, 
+			split_type, 
+			created_at, 
+			updated_at, 
+			deleted_at, 
+			version
+		FROM expenses_latest
+		WHERE group_id = $1
+		AND EXTRACT(MONTH FROM created_at) = $2
+		AND EXTRACT(YEAR FROM created_at) = $3
+		AND deleted_at IS NULL
+		ORDER BY id DESC
   `, groupId.Value, date.Month(), date.Year()); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -92,28 +88,24 @@ func (repo *ExpenseRepository) GetByID(ctx context.Context, id expense.ID) (*exp
 	var model ExpenseModel
 
 	if err := repo.db.QueryRowxContext(ctx, `
-		WITH base AS (
-			SELECT 
-        id, 
-        name, 
-        amount_cents, 
-        refund_amount_cents, 
-        description, 
-        group_id, 
-        category_id, 
-        payer_id,   
-        receiver_id, 
-        split_ratio, 
-        split_type, 
-        created_at, 
-        updated_at, 
-        deleted_at, 
-        version
-			FROM expenses WHERE id = $1
-			ORDER BY version DESC
-			LIMIT 1
-		)
-		SELECT * FROM base WHERE deleted_at IS NULL
+		SELECT 
+			id, 
+			name, 
+			amount_cents, 
+			refund_amount_cents, 
+			description, 
+			group_id, 
+			category_id, 
+			payer_id,   
+			receiver_id, 
+			split_ratio, 
+			split_type, 
+			created_at, 
+			updated_at, 
+			deleted_at, 
+			version
+		FROM expenses_latest 
+		WHERE id = $1 AND deleted_at IS NULL
 	`, id.Value).StructScan(&model); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

@@ -42,25 +42,26 @@ func NewGetIncomesPerPeriod(db *db.Client) GetIncomesPerPeriod {
 			format = "YYYY-MM-DD"
 		}
 
+		// TODO: Acho que esse base é desnecessário, pois o incomes_latest já tem o deleted_at
 		query := fmt.Sprintf(`
-			with base as (
-			    select
+			WITH base AS (
+			    SELECT
 			        amount_cents amount,
-			        created_at as created_at,
-			        deleted_at as deleted_at
-			    from incomes
-			    	where user_id in (select id from users where group_id = $1)
-			      	and created_at >= $2
-			      	and created_at <= $3
+			        created_at AS created_at,
+			        deleted_at AS deleted_at
+			    FROM incomes
+			    WHERE user_id IN (SELECT id FROM users WHERE group_id = $1)
+			    AND created_at >= $2
+			    AND created_at <= $3
 			)
-			select 
-				to_char(date_trunc('%s', b.created_at), '%s') as date, 
-				sum(amount) as amount,
-				count(1) as quantity
-			from base b
-			where b.deleted_at is null
-			group by 1
-			order by 1;
+			SELECT 
+				to_char(date_trunc('%s', b.created_at), '%s') AS date, 
+				SUM(amount) AS amount,
+				COUNT(1) AS quantity
+			FROM base b
+			WHERE b.deleted_at IS NULL
+			GROUP BY 1
+			ORDER BY 1;
 		`, trunc, format)
 		if err := dbClient.SelectContext(
 			ctx, &expensesPerMonth,
