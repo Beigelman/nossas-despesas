@@ -21,22 +21,32 @@ func NewGetGroupBalance(db *db.Client) GetGroupBalance {
 	return func(ctx context.Context, groupID int) ([]UserBalance, error) {
 		var balances []UserBalance
 		if err := dbClient.SelectContext(ctx, &balances, `
-			WITH balances AS (
+			WITH base AS (
+			    SELECT
+			        id,
+			        CASE WHEN refund_amount_cents IS NULL THEN amount_cents ELSE amount_cents - refund_amount_cents END AS amount_cents,
+			        group_id,
+			        split_ratio,
+			        payer_id,
+			        receiver_id,
+			        deleted_at
+			    FROM expenses_latest
+			    WHERE group_id = $1
+			    AND deleted_at IS NULL
+			), balances AS (
 			    SELECT
 			        user_id,
 			        balance,
 			        type
 			    FROM (
-					SELECT payer_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'payer' AS type
-					FROM expenses_latest
-					WHERE group_id = $1 AND deleted_at IS NULL
+					SELECT payer_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'payer' as type
+					FROM base
 					GROUP BY payer_id
 	
 					UNION ALL
 	
-					SELECT receiver_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'receiver' AS type
-					FROM expenses_latest
-					WHERE group_id = $1 AND deleted_at IS NULL
+					SELECT receiver_id AS user_id, SUM((amount_cents * (split_ratio->>'receiver')::numeric / 100)) AS balance, 'receiver' as type
+					FROM base
 					GROUP BY receiver_id
 			 	) AS balances
 			)
