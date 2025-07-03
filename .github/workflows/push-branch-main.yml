@@ -108,23 +108,23 @@ jobs:
           docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docker/${{ env.SERVICE }}:${{ steps.tag.outputs.tag }}"
           docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docker/${{ env.SERVICE }}:latest"
 
-      - name: Run Database Migrations
-        env:
-          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        run: |
-          # Instala go-migrate se necessário
-          if ! command -v migrate &> /dev/null; then
-            echo "Installing go-migrate..."
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
-            sudo mv migrate /usr/local/bin/migrate
-          fi
+      # - name: Run Database Migrations
+      #   env:
+      #     DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+      #   run: |
+      #     # Instala go-migrate se necessário
+      #     if ! command -v migrate &> /dev/null; then
+      #       echo "Installing go-migrate..."
+      #       curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
+      #       sudo mv migrate /usr/local/bin/migrate
+      #     fi
           
-          # Executa as migrations
-          echo "Running database migrations..."
-          chmod +x ./database/migrate.sh
-          ./database/migrate.sh up "./database/migrations"
+      #     # Executa as migrations
+      #     echo "Running database migrations..."
+      #     chmod +x ./database/migrate.sh
+      #     ./database/migrate.sh up "./database/migrations"
           
-          echo "Migrations completed successfully!"
+      #     echo "Migrations completed successfully!"
       - name: Deploy to Cloud Run
         id: deploy
         uses: "google-github-actions/deploy-cloudrun@v2"
