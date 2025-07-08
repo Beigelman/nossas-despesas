@@ -11,7 +11,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mocks2 "github.com/Beigelman/nossas-despesas/internal/shared/mocks"
+	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -19,11 +19,11 @@ import (
 func TestCreateExpense(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mocks2.NewMockuserRepository(t)
-	groupRepo := mocks2.NewMockgroupRepository(t)
-	categoryRepo := mocks2.NewMockcategoryRepository(t)
-	expenseRepo := mocks2.NewMockexpenseRepository(t)
-	incomeRepo := mocks2.NewMockincomeRepository(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	groupRepo := mocks.NewMockgroupRepository(t)
+	categoryRepo := mocks.NewMockcategoryRepository(t)
+	expenseRepo := mocks.NewMockexpenseRepository(t)
+	incomeRepo := mocks.NewMockincomeRepository(t)
 
 	grp := group.New(group.Attributes{
 		ID:   group.ID{Value: 1},
