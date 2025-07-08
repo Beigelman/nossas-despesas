@@ -8,16 +8,16 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mocks2 "github.com/Beigelman/nossas-despesas/internal/shared/mocks"
+	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSignInWithCredentials(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mocks2.NewMockuserRepository(t)
-	authRepo := mocks2.NewMockauthRepository(t)
-	tokenProvider := mocks2.NewMockserviceTokenProvider(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	authRepo := mocks.NewMockauthRepository(t)
+	tokenProvider := mocks.NewMockserviceTokenProvider(t)
 
 	usr := user.New(user.Attributes{
 		ID:             user.ID{Value: 3},

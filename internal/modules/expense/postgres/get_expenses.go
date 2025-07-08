@@ -36,14 +36,13 @@ var (
 			ex.split_type AS split_type,
 			ex.created_at AS created_at,
 			ex.updated_at AS updated_at,
-			ex.deleted_at AS deleted_at,
-			ts_rank(ex.document_search, websearch_to_tsquery('portuguese', $5)) AS rank
+			ex.deleted_at AS deleted_at
 		FROM expenses_latest ex INNER JOIN categories cat ON ex.category_id = cat.id
 		WHERE ex.group_id = $1
 		AND (ex.created_at < $2 OR (ex.created_at = $2 AND ex.id < $3))
 		AND ex.document_search @@ websearch_to_tsquery('portuguese', $5)
 		AND ex.deleted_at IS NULL
-		ORDER BY ex.created_at DESC, ex.id DESC, rank DESC
+		ORDER BY ex.created_at DESC, ex.id DESC
 		LIMIT $4
 		`
 	expensesQuery = `
