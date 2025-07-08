@@ -9,7 +9,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	mocks2 "github.com/Beigelman/nossas-despesas/internal/shared/mocks"
+	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -17,10 +17,10 @@ import (
 func TestInviteUserToGroup(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	userRepo := mocks2.NewMockuserRepository(t)
-	groupRepo := mocks2.NewMockgroupRepository(t)
-	groupInviteRepo := mocks2.NewMockgroupInviteRepository(t)
-	emailProvider := mocks2.NewMockserviceEmailProvider(t)
+	userRepo := mocks.NewMockuserRepository(t)
+	groupRepo := mocks.NewMockgroupRepository(t)
+	groupInviteRepo := mocks.NewMockgroupInviteRepository(t)
+	emailProvider := mocks.NewMockserviceEmailProvider(t)
 
 	grp := group.New(group.Attributes{
 		ID:   group.ID{Value: 1},
