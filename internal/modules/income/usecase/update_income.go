@@ -45,7 +45,7 @@ func NewUpdateIncome(
 			return nil, except.NotFoundError("user not found")
 		}
 
-		if !usr.HasFlag(user.EDIT_PARTNER_INCOME) && inc.UserID != p.UserID {
+		if !usr.HasFlag(user.EDIT_PARTNER_INCOME) && inc.UserID.Value != usr.ID.Value {
 			return nil, except.ForbiddenError("user mismatch")
 		}
 

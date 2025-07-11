@@ -20,12 +20,11 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 
 	code := http.StatusInternalServerError
 	message := http.StatusText(code)
-	errMsg := ""
+	errMsg := err.Error()
 	var e *except.HTTPError
 	if errors.As(err, &e) {
 		code = e.Code
 		message = e.Message.(string)
-		errMsg = e.Error()
 	}
 
 	hub := sentryfiber.GetHubFromContext(ctx)
@@ -60,7 +59,7 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		fmt.Sprintf("Error calling %s %s", ctx.Method(), ctx.Path()),
 		slog.String("request_id", requestId),
 		slog.Int("status_code", code),
-		slog.String("error", err.Error()),
+		slog.String("error", errMsg),
 	)
 
 	ctx.Set("Content-Type", "\"text/plain; charset=utf-8\"")
