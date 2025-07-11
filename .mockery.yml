@@ -12,3 +12,4 @@ packages:
   github.com/Beigelman/nossas-despesas/internal/modules/income:
   github.com/Beigelman/nossas-despesas/internal/modules/user:
   github.com/Beigelman/nossas-despesas/internal/shared/service:
+  github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub:

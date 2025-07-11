@@ -8,7 +8,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
-	"google.golang.org/api/idtoken"
 )
 
 type SignInWithGoogleParams struct {
@@ -23,46 +22,35 @@ type SignInWithGoogleResponse struct {
 
 type SignInWithGoogle func(ctx context.Context, p SignInWithGoogleParams) (*SignInWithGoogleResponse, error)
 
-func NewSignInWithGoogle(userRepo user.Repository, authRepo auth.Repository, tokenProvider service.TokenProvider) SignInWithGoogle {
+func NewSignInWithGoogle(userRepo user.Repository, authRepo auth.Repository, tokenProvider service.TokenProvider, googleValidator service.GoogleTokenValidator) SignInWithGoogle {
 	return func(ctx context.Context, p SignInWithGoogleParams) (*SignInWithGoogleResponse, error) {
-		token, err := idtoken.Validate(ctx, p.IdToken, "")
+		claims, err := googleValidator.ValidateToken(ctx, p.IdToken)
 		if err != nil {
-			return nil, fmt.Errorf("idtoken.Validate: %w", err)
+			return nil, fmt.Errorf("googleValidator.ValidateToken: %w", err)
 		}
 
-		email, ok := token.Claims["email"].(string)
-		if !ok {
+		if claims.Email == "" {
 			return nil, except.UnprocessableEntityError("email not found in token")
 		}
 
-		name, ok := token.Claims["name"].(string)
-		if !ok {
+		if claims.Name == "" {
 			return nil, except.UnprocessableEntityError("user name not found in token")
 		}
 
-		providerId, ok := token.Claims["sub"].(string)
-		if !ok {
+		if claims.Sub == "" {
 			return nil, except.UnprocessableEntityError("sub not found in token")
 		}
 
-		var profilePicture *string
-		picture, ok := token.Claims["picture"].(string)
-		if !ok {
-			profilePicture = nil
-		} else {
-			profilePicture = &picture
-		}
-
 		// Check se o usuário já existe
-		existingUser, err := userRepo.GetByEmail(ctx, email)
+		existingUser, err := userRepo.GetByEmail(ctx, claims.Email)
 		if err != nil {
 			return nil, fmt.Errorf("userRepo.GetByEmail: %w", err)
 		}
 
 		var usr *user.User
 		if existingUser != nil {
-			if existingUser.ProfilePicture == nil && profilePicture != nil {
-				existingUser.ProfilePicture = profilePicture
+			if existingUser.ProfilePicture == nil && claims.Picture != nil {
+				existingUser.ProfilePicture = claims.Picture
 				if err := userRepo.Store(ctx, existingUser); err != nil {
 					return nil, fmt.Errorf("userRepo.Store: %w", err)
 				}
@@ -71,9 +59,9 @@ func NewSignInWithGoogle(userRepo user.Repository, authRepo auth.Repository, tok
 		} else {
 			usr = user.New(user.Attributes{
 				ID:             userRepo.GetNextID(),
-				Name:           name,
-				Email:          email,
-				ProfilePicture: profilePicture,
+				Name:           claims.Name,
+				Email:          claims.Email,
+				ProfilePicture: claims.Picture,
 			})
 
 			if err := userRepo.Store(ctx, usr); err != nil {
@@ -82,16 +70,16 @@ func NewSignInWithGoogle(userRepo user.Repository, authRepo auth.Repository, tok
 		}
 
 		// Check se a autenticação já existe
-		existingAuth, err := authRepo.GetByEmail(ctx, email, auth.Types.Google)
+		existingAuth, err := authRepo.GetByEmail(ctx, claims.Email, auth.Types.Google)
 		if err != nil {
 			return nil, fmt.Errorf("authRepo.GetByEmail: %w", err)
 		}
 		// TODO: isso aqui faz sentido?? Não deveria ser == nil?
-		if existingAuth != nil {
+		if existingAuth == nil {
 			authentic := auth.NewGoogleAuth(auth.GoogleAuthAttributes{
 				ID:         authRepo.GetNextID(),
-				Email:      email,
-				ProviderID: providerId,
+				Email:      claims.Email,
+				ProviderID: claims.Sub,
 			})
 
 			if err := authRepo.Store(ctx, authentic); err != nil {
