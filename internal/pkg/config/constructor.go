@@ -35,6 +35,7 @@ type Config struct {
 	JWTSecret   string          `mapstructure:"JWT_SECRET"`
 	Mail        Mail            `mapstructure:",squash"`
 	Db          Db              `mapstructure:",squash"`
+	SentryDsn   string          `mapstructure:"SENTRY_DSN"`
 }
 
 func New(env env.Environment) Config {
