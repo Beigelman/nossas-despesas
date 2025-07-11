@@ -6,9 +6,10 @@ require (
 	cloud.google.com/go v0.121.3
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/ThreeDotsLabs/watermill-sql/v3 v3.0.1
+	github.com/getsentry/sentry-go/fiber v0.34.1
 	github.com/go-playground/validator/v10 v10.18.0
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/google/uuid v1.6.0
@@ -32,6 +33,7 @@ require (
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/ebitengine/purego v0.8.2 // indirect
+	github.com/getsentry/sentry-go v0.34.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -56,7 +58,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/cpuguy83/dockercfg v0.3.2 // indirect
@@ -78,14 +80,14 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/klauspost/compress v1.17.4 // indirect
+	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lib/pq v1.10.9
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/magiconair/properties v1.8.10 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
@@ -109,7 +111,7 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.51.0 // indirect
+	github.com/valyala/fasthttp v1.57.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0 // indirect
 	go.opentelemetry.io/otel v1.36.0 // indirect

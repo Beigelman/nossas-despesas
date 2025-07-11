@@ -13,6 +13,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
+	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -34,6 +35,10 @@ var Module = eon.NewModule("Server", func(ctx context.Context, c *di.Container, 
 		server.Use(cors.New())
 		server.Use(recover.New())
 		server.Use(requestid.New())
+		server.Use(sentryfiber.New(sentryfiber.Options{
+			Repanic:         true,
+			WaitForDelivery: true,
+		}))
 		server.Use(middleware.LogRequest(cfg.Env, info.ServiceName))
 
 		server.Get("health-check", func(c *fiber.Ctx) error { return c.SendString("OK") })
