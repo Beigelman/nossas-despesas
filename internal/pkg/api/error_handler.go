@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+	"github.com/getsentry/sentry-go"
+	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,6 +27,34 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		message = e.Message.(string)
 		errMsg = e.Error()
 	}
+
+	hub := sentryfiber.GetHubFromContext(ctx)
+	if hub == nil {
+		hub = sentry.CurrentHub()
+	}
+
+	hub.WithScope(func(scope *sentry.Scope) {
+		scope.AddEventProcessor(func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+			hint.Context = ctx.Context()
+			for _, e := range event.Exception {
+				if e.Stacktrace != nil {
+					e.Stacktrace.Frames = e.Stacktrace.Frames[:len(e.Stacktrace.Frames)-2]
+				}
+			}
+			return event
+		})
+
+		scope.SetTag("request_id", requestId)
+		scope.SetContext("error", sentry.Context{
+			"code":    code,
+			"message": message,
+			"error":   errMsg,
+			"method":  ctx.Method(),
+			"path":    ctx.Path(),
+		})
+
+		hub.CaptureException(err)
+	})
 
 	slog.Error(
 		fmt.Sprintf("Error calling %s %s", ctx.Method(), ctx.Path()),

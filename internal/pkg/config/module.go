@@ -10,6 +10,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
+	"github.com/getsentry/sentry-go"
 )
 
 const configPath = "./internal/pkg/config/config.yml"
@@ -32,12 +33,26 @@ var Module = eon.NewModule("Config", func(ctx context.Context, c *di.Container, 
 		return &cfg, nil
 	})
 
+	// Setup Logger
 	lc.OnBooted(eon.HookOrders.PREPEND, func() error {
 		cfg := di.Resolve[*Config](c)
 		if cfg.Env == env.Development {
 			slog.SetDefault(logger.NewDevelopment(cfg.LogLevel))
 		} else {
 			slog.SetDefault(logger.NewProduction(cfg.LogLevel))
+		}
+
+		return nil
+	})
+
+	// Setup Sentry
+	lc.OnBooted(eon.HookOrders.PREPEND, func() error {
+		cfg := di.Resolve[*Config](c)
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:              cfg.SentryDsn,
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			return fmt.Errorf("sentry.Init: %w", err)
 		}
 
 		return nil
