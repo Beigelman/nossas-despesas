@@ -3,10 +3,10 @@ package controller_test
 import (
 	"context"
 	"errors"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
 	"testing"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
