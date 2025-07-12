@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 )
 
 type GenerateExpensesFromScheduledUseCase func(ctx context.Context) (expensesCreated int, err error)

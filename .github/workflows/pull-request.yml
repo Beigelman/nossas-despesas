@@ -39,5 +39,7 @@ jobs:
       - name: Run tests with coverage
         id: test-coverage
         uses: ./.github/actions/test-coverage
+        with:
+          test-packages: ./internal/modules/...
 
 

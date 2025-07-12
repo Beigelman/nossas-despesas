@@ -10,8 +10,8 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
+	vo "github.com/Beigelman/nossas-despesas/internal/pkg/email"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	vo "github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 	"github.com/google/uuid"
 )

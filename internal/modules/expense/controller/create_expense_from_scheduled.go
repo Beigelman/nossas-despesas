@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
 )
 
 type CreateExpenseFromScheduled func(ctx context.Context) error

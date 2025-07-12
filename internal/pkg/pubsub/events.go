@@ -9,7 +9,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 )
 
-// TODO: mover para dentro de algum package de domínio
 type Event struct {
 	Type    string
 	GroupID group.ID

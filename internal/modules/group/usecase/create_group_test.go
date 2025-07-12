@@ -1,4 +1,4 @@
-package usecase
+package usecase_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
@@ -23,11 +24,11 @@ func TestCreateGroup(t *testing.T) {
 		Email: "",
 	})
 
-	useCase := NewCreateGroup(userRepo, groupRepo)
+	useCase := usecase.NewCreateGroup(userRepo, groupRepo)
 
 	t.Run("userRepo.GetByID returns error", func(t *testing.T) {
 		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(nil, errors.New("test error")).Once()
-		grp, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, usecase.CreateGroupInput{
 			Name:   "my new group",
 			UserID: usr.ID,
 		})
@@ -38,7 +39,7 @@ func TestCreateGroup(t *testing.T) {
 	t.Run("user already in a group", func(t *testing.T) {
 		usr.GroupID = &group.ID{Value: 1}
 		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
-		grp, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, usecase.CreateGroupInput{
 			Name:   "my new group",
 			UserID: usr.ID,
 		})
@@ -51,7 +52,7 @@ func TestCreateGroup(t *testing.T) {
 		userRepo.EXPECT().GetByID(ctx, usr.ID).Return(usr, nil).Once()
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
-		grp, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, usecase.CreateGroupInput{
 			Name:   "my new group",
 			UserID: usr.ID,
 		})
@@ -65,7 +66,7 @@ func TestCreateGroup(t *testing.T) {
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
 		userRepo.EXPECT().Store(ctx, mock.Anything).Return(errors.New("test error")).Once()
-		grp, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, usecase.CreateGroupInput{
 			Name:   "my new group",
 			UserID: usr.ID,
 		})
@@ -79,7 +80,7 @@ func TestCreateGroup(t *testing.T) {
 		groupRepo.EXPECT().GetNextID().Return(group.ID{Value: 1}).Once()
 		groupRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
 		userRepo.EXPECT().Store(ctx, mock.Anything).Return(nil).Once()
-		grp, err := useCase(ctx, CreateGroupInput{
+		grp, err := useCase(ctx, usecase.CreateGroupInput{
 			Name:   "my new group",
 			UserID: usr.ID,
 		})

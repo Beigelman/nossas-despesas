@@ -1,4 +1,3 @@
-// TODO: move this to auth package
 package jwt
 
 import (

@@ -17,56 +17,55 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRefreshTokenHandler(t *testing.T) {
+func TestSignInWithGoogleHandler(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
 		name         string
 		body         any
-		usecase      usecase.RefreshAuthToken
+		usecase      usecase.SignInWithGoogle
 		expectedCode int
 		assertBody   func(t *testing.T, resp *http.Response)
 	}{
 		{
 			name: "success",
-			body: controller.RefreshAuthTokenRequest{RefreshToken: "tok"},
-			usecase: func(ctx context.Context, p usecase.RefreshAuthTokenParams) (*usecase.RefreshAuthTokenResponse, error) {
-				usr := user.New(user.Attributes{ID: user.ID{Value: 4}, Name: "John", Email: "john@example.com"})
-				return &usecase.RefreshAuthTokenResponse{User: usr, Token: "token", RefreshToken: "refresh"}, nil
+			body: controller.SignInWithGoogleRequest{Token: "idtoken"},
+			usecase: func(ctx context.Context, p usecase.SignInWithGoogleParams) (*usecase.SignInWithGoogleResponse, error) {
+				usr := user.New(user.Attributes{ID: user.ID{Value: 3}, Name: "John", Email: "john@example.com"})
+				return &usecase.SignInWithGoogleResponse{User: usr, Token: "token", RefreshToken: "refresh"}, nil
 			},
 			expectedCode: fiber.StatusCreated,
 			assertBody: func(t *testing.T, resp *http.Response) {
 				var res api.Response[controller.UserLogIn]
 				assert.NoError(t, json.NewDecoder(resp.Body).Decode(&res))
-				assert.Equal(t, 4, res.Data.User.ID)
-				assert.Equal(t, "refresh", res.Data.RefreshToken)
+				assert.Equal(t, 3, res.Data.User.ID)
+				assert.Equal(t, "token", res.Data.Token)
 			},
 		},
 		{
 			name: "validation error",
 			body: map[string]string{},
-			usecase: func(ctx context.Context, p usecase.RefreshAuthTokenParams) (*usecase.RefreshAuthTokenResponse, error) {
+			usecase: func(ctx context.Context, p usecase.SignInWithGoogleParams) (*usecase.SignInWithGoogleResponse, error) {
 				return nil, nil
 			},
 			expectedCode: fiber.StatusBadRequest,
 		},
 		{
 			name: "usecase error",
-			body: controller.RefreshAuthTokenRequest{RefreshToken: "tok"},
-			usecase: func(ctx context.Context, p usecase.RefreshAuthTokenParams) (*usecase.RefreshAuthTokenResponse, error) {
-				return nil, except.UnauthorizedError()
+			body: controller.SignInWithGoogleRequest{Token: "idtoken"},
+			usecase: func(ctx context.Context, p usecase.SignInWithGoogleParams) (*usecase.SignInWithGoogleResponse, error) {
+				return nil, except.ForbiddenError()
 			},
-			expectedCode: fiber.StatusUnauthorized,
+			expectedCode: fiber.StatusForbidden,
 		},
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			app := fiber.New(fiber.Config{ErrorHandler: api.ErrorHandler})
-			handler := controller.NewRefreshAuthToken(tt.usecase)
-			app.Post("/refresh", handler)
+			handler := controller.NewSignInWithGoogle(tt.usecase)
+			app.Post("/google", handler)
 
 			var body []byte
 			switch v := tt.body.(type) {
@@ -76,7 +75,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 				body, _ = json.Marshal(v)
 			}
 
-			req := httptest.NewRequest("POST", "/refresh", bytes.NewBuffer(body))
+			req := httptest.NewRequest("POST", "/google", bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
 
 			resp, err := app.Test(req)
@@ -86,6 +85,7 @@ func TestRefreshTokenHandler(t *testing.T) {
 			if tt.assertBody != nil {
 				tt.assertBody(t, resp)
 			}
+			assert.NoError(t, resp.Body.Close())
 		})
 	}
 }
