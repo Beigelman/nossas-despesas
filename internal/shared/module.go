@@ -6,11 +6,11 @@ import (
 
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/email"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/jwt"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/jwt"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 )
 
