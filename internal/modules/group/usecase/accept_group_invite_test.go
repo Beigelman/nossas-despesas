@@ -1,4 +1,4 @@
-package usecase
+package usecase_test
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
+	"github.com/Beigelman/nossas-despesas/internal/modules/group/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
@@ -20,10 +21,10 @@ func TestAcceptGroupInvite(t *testing.T) {
 	userRepo := mocks.NewMockuserRepository(t)
 	groupInviteRepo := mocks.NewMockgroupInviteRepository(t)
 
-	acceptGroupInvite := NewAcceptGroupInvite(userRepo, groupInviteRepo)
+	acceptGroupInvite := usecase.NewAcceptGroupInvite(userRepo, groupInviteRepo)
 	groupID := group.ID{Value: 1}
 	userID := user.ID{Value: 1}
-	input := AcceptGroupInviteInput{
+	input := usecase.AcceptGroupInviteInput{
 		Email: "test@gmail.com",
 		Token: "token",
 	}

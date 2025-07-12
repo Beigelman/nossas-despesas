@@ -35,13 +35,13 @@ mock:
 	mockery
 
 unit:
-		go test -v $$(go list ./internal/... | grep -e handler -e usecase -e pkg)
+		go test -v $$(go list ./internal/modules/... | grep -e handler -e usecase -e pkg)
 
 integration:
-		go test -v $$(go list ./internal/... | grep -e postgres)
+		go test -v $$(go list ./internal/modules/... | grep -e postgres)
 
 test:
-		go test -json -cover ./internal/... | tparse
+		go test -json -cover ./internal/modules/... | tparse
 
 # Scripts
 create-users:

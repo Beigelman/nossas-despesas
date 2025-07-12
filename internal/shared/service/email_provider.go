@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/email"
 )
 
 type EmailProvider interface {

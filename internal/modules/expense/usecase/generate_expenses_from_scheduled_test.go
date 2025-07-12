@@ -12,7 +12,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/Beigelman/nossas-despesas/internal/shared/infra/pubsub"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

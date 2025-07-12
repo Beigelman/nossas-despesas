@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	email "github.com/Beigelman/nossas-despesas/internal/shared/infra/email"
+	email "github.com/Beigelman/nossas-despesas/internal/pkg/email"
 	mock "github.com/stretchr/testify/mock"
 )
 
