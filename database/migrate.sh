@@ -40,14 +40,36 @@ else
     echo "Using existing DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}"
 fi
 
-# Run migrations using go-migrate in the specified direction and path
-migrate -path "$MIGRATION_PATH" -database "${DB_CONNECTION_STRING}" "$MIGRATION_DIRECTION"
-
-# Check if migrate succeeded
-# shellcheck disable=SC2181
-if [ $? -eq 0 ]; then
-    echo "Migrations applied successfully"
+# Adiciona parâmetros para resolver problemas de prepared statement no PostgreSQL da nuvem
+if [[ "${DB_CONNECTION_STRING}" == *"?"* ]]; then
+    # Se já tem parâmetros, adiciona os novos com &
+    ENHANCED_DB_CONNECTION_STRING="${DB_CONNECTION_STRING}&x-migrations-table=schema_migrations&x-migrations-table-quoted=false&statement_timeout=0&lock_timeout=0"
 else
-    echo "Failed to apply migrations."
-    exit 1
+    # Se não tem parâmetros, adiciona com ?
+    ENHANCED_DB_CONNECTION_STRING="${DB_CONNECTION_STRING}?x-migrations-table=schema_migrations&x-migrations-table-quoted=false&statement_timeout=0&lock_timeout=0"
 fi
+
+echo "Enhanced connection string (masked): ${ENHANCED_DB_CONNECTION_STRING//:*@/:***@}"
+
+# Configura retry para resolver problemas temporários de conexão
+RETRY_ATTEMPTS=3
+RETRY_COUNT=0
+
+while [ $RETRY_COUNT -lt $RETRY_ATTEMPTS ]; do
+    echo "Migration attempt $((RETRY_COUNT + 1)) of $RETRY_ATTEMPTS..."
+    
+    # Run migrations using go-migrate in the specified direction and path
+    if migrate -path "$MIGRATION_PATH" -database "${ENHANCED_DB_CONNECTION_STRING}" "$MIGRATION_DIRECTION"; then
+        echo "Migrations applied successfully"
+        exit 0
+    else
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [ $RETRY_COUNT -lt $RETRY_ATTEMPTS ]; then
+            echo "Migration failed. Retrying in 5 seconds... (attempt $RETRY_COUNT/$RETRY_ATTEMPTS)"
+            sleep 5
+        fi
+    fi
+done
+
+echo "Failed to apply migrations after $RETRY_ATTEMPTS attempts."
+exit 1
