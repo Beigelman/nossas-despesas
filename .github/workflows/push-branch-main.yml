@@ -115,13 +115,18 @@ jobs:
           # Instala go-migrate se necessário
           if ! command -v migrate &> /dev/null; then
             echo "Installing go-migrate..."
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz
+            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
             sudo mv migrate /usr/local/bin/migrate
           fi
           
           # Executa as migrations
           echo "Running database migrations..."
           chmod +x ./database/migrate.sh
+          
+          # Define variáveis adicionais para resolver problemas de prepared statement
+          export MIGRATION_TIMEOUT=30s
+          export MIGRATION_RETRY_ATTEMPTS=3
+          
           ./database/migrate.sh up "./database/migrations"
           
           echo "Migrations completed successfully!"
