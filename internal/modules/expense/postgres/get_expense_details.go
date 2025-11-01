@@ -51,7 +51,7 @@ func NewGetExpenseDetails(db *db.Client) GetExpenseDetails {
 	  				created_at,
 		  			updated_at,
 			  		deleted_at
-			    FROM expenses_latest
+			    FROM expenses
 				  WHERE id = $1
 		`, expenseID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("db.SelectContext: %w", err)
