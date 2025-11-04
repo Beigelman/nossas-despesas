@@ -1,55 +1,56 @@
-# Etapa de build com Poetry
+# Build stage with Poetry
 FROM python:3.11-slim AS builder
 
-# Instalar Poetry com versão específica para reprodutibilidade
-RUN pip install --no-cache-dir poetry==1.7.1
+# Install Poetry with a specific version for reproducibility
+# Using a version that supports package-mode (1.5.0+)
+RUN pip install --no-cache-dir poetry==2.2.1
 
-# Configurar Poetry para não criar venv (já estamos no container)
+# Configure Poetry to not create a venv (we are already in the container)
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VENV_IN_PROJECT=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Definir diretório de trabalho
+# Set working directory
 WORKDIR /app
 
-# Copiar arquivos de configuração do Poetry
+# Copy Poetry configuration files
 COPY machine_learn/pyproject.toml machine_learn/poetry.lock ./
 
-# Instalar dependências
-RUN poetry install --only=main && rm -rf $POETRY_CACHE_DIR
+# Configure Poetry to create venv in project
+RUN poetry config virtualenvs.in-project true && \
+    poetry config virtualenvs.create true
 
-# Etapa de produção
+# Install dependencies
+RUN poetry install --only=main --no-root && rm -rf $POETRY_CACHE_DIR
+
+# Production stage
 FROM python:3.11-slim AS runtime
 
-# Criar usuário não-root para segurança
+# Create non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Definir diretório de trabalho
+# Set working directory
 WORKDIR /app
 
-# Copiar o ambiente virtual do builder
+# Copy the virtual environment from the builder
 COPY --from=builder /app/.venv /app/.venv
 
-# Certificar que usamos o venv
+# Ensure we use the venv
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# Copiar código da aplicação (inclui modelos em src/models)
+# Copy application code (includes models in src/models)
 COPY machine_learn/src ./src
 
-# Criar diretório para modelos e ajustar permissões ANTES de mudar usuário
+# Create directory for models and adjust permissions BEFORE switching user
 RUN mkdir -p src/models && chown -R appuser:appuser /app
 
-# Usar usuário não-root
+# Use non-root user
 USER appuser
 
-# Expor porta
+# Expose port
 EXPOSE 8000
 
-# Healthcheck para monitoramento
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
-
-# Comando para executar a aplicação
+# Command to run the application
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
