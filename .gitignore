@@ -1,5 +1,55 @@
-database/data
-database/_data
-scripts/data
-.idea
-coverage.*
+# Backend (Go)
+backend/database/data
+backend/database/_data
+backend/scripts/data
+backend/coverage.*
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# ML Service (Python)
+machine_learn/__pycache__/
+machine_learn/**/__pycache__/
+machine_learn/*.py[cod]
+machine_learn/**/*.py[cod]
+machine_learn/*$py.class
+machine_learn/.Python
+machine_learn/venv/
+machine_learn/env/
+machine_learn/ENV/
+machine_learn/.venv/
+machine_learn/dist/
+machine_learn/build/
+machine_learn/*.egg-info/
+
+# Modelos treinados (específicos do ML service)
+machine_learn/src/models/*.pkl
+machine_learn/src/models/*.joblib
+machine_learn/training/models/*.pkl
+machine_learn/training/models/*.joblib
+
+# Dados de treino (se necessário)
+machine_learn/training/data/*.csv
+machine_learn/data/
+
+# Logs e experimentos ML
+machine_learn/logs/
+machine_learn/experiments/
+machine_learn/mlruns/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
