@@ -26,15 +26,9 @@ migrate-force:
 
 # Tests and format
 format:
-	goimports -w -l ./internal
-	gofmt -w ./internal
+	go tool golangci-lint fmt ./internal ./scripts
 
-lint-safe:
-	go tool golangci-lint run --enable-only=gofmt,goimports,whitespace,misspell --fix
-
-lint-full:
-	@echo "⚠️  AVISO: O lint completo tem problemas após a reestruturação do monorepo"
-	@echo "📝 Use 'make lint-safe' para linters básicos ou 'make format' para formatação"
+lint:
 	go tool golangci-lint run --fix
 
 mock:
