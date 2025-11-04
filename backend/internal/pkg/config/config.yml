@@ -1,0 +1,27 @@
+default: &default
+  LOG_LEVEL: "info"
+  PORT: 8080
+  JWT_SECRET: "my_secret"
+  MAIL_API_KEY: c22e9891bcc32334d85d77fb9cf9cd8a
+  DB_HOST: localhost
+  DB_NAME: app
+  DB_USER: root
+  DB_PASSWORD: root
+  DB_PORT: 5432
+  DB_MAX_IDLE_CONNS: 5
+  DB_MAX_OPEN_CONNS: 5
+  DB_MAX_LIFE_TIME: 1m
+  DB_MAX_IDLE_TIME: 10m
+  SENTRY_DSN: "https://8a9350a230e34d7235bd5eba76eef9c8@o4509646894333952.ingest.us.sentry.io/4509646907506688"
+
+development:
+  <<: *default
+
+stg:
+  <<: [*default]
+
+prd:
+  <<: [*default]
+
+test:
+  <<: *default
