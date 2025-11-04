@@ -53,3 +53,5 @@ machine_learn/mlruns/
 # OS
 .DS_Store
 Thumbs.db
+
+.actignore

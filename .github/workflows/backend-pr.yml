@@ -43,5 +43,5 @@ jobs:
         id: test-coverage
         uses: ./.github/actions/test-coverage
         with:
-          test-packages: ./backend/internal/modules/...
+          test-packages: ./internal/modules/...
           working-directory: backend
