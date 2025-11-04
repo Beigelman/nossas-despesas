@@ -36,6 +36,7 @@ func TestRouter(t *testing.T) {
 		h("getExpenseDetails"),
 		h("generateExpensesFromScheduled"),
 		h("createScheduledExpense"),
+		h("predictExpenseCategory"),
 		mockAuthMiddleware,
 	)
 
@@ -84,6 +85,7 @@ func TestRouterAuthMiddleware(t *testing.T) {
 		h("getExpensesPerCategory"),
 		h("getExpensesPerPeriod"),
 		h("getExpenseDetails"),
+		h("predictExpenseCategory"),
 		h("generateExpensesFromScheduled"),
 		h("createScheduledExpense"),
 		mockAuthMiddleware,
@@ -93,12 +95,13 @@ func TestRouterAuthMiddleware(t *testing.T) {
 	routes := app.GetRoutes()
 
 	// Verifica se temos o número correto de rotas
-	assert.GreaterOrEqual(t, len(routes), 9, "Deve ter pelo menos 9 rotas registradas")
+	assert.GreaterOrEqual(t, len(routes), 10, "Deve ter pelo menos 10 rotas registradas")
 
 	// Verifica se todas as rotas principais estão presents
 	expectedRoutes := []string{
 		"POST /api/v1/expenses/",
 		"GET /api/v1/expenses/",
+		"POST /api/v1/expenses/predict",
 		"GET /api/v1/expenses/:expense_id/details",
 		"PATCH /api/v1/expenses/:expense_id",
 		"DELETE /api/v1/expenses/:expense_id",
