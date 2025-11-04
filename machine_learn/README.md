@@ -113,6 +113,40 @@ df_with_predictions = predict_batch(df)
 print(df_with_predictions)
 ```
 
+## Testes
+
+O projeto inclui uma suíte completa de testes para a API. Os testes são executados usando pytest.
+
+### Executando os Testes
+
+```bash
+# Executar todos os testes
+poetry run pytest
+
+# Executar com verbose (mostra mais detalhes)
+poetry run pytest -v
+
+# Executar com cobertura de código
+poetry run pytest --cov=src --cov-report=html
+
+# Executar um arquivo de teste específico
+poetry run pytest tests/test_app.py
+
+# Executar uma classe de teste específica
+poetry run pytest tests/test_app.py::TestPredictEndpoint
+```
+
+### Estrutura dos Testes
+
+Os testes estão organizados em:
+
+- `tests/test_app.py` - Testes para os endpoints da API (GET /, GET /health, POST /predict, POST /predict/batch)
+- `tests/test_models.py` - Testes para validação dos modelos Pydantic (request/response)
+- `tests/test_predict.py` - Testes para as funções de predição (load_model, predict_category, predict_batch)
+- `tests/conftest.py` - Fixtures compartilhadas e configurações de teste
+
+Os testes usam mocks para evitar a necessidade de ter o modelo treinado disponível durante a execução dos testes.
+
 ## Pipeline de Machine Learning
 
 O pipeline implementado:

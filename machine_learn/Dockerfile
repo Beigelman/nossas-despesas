@@ -13,7 +13,10 @@ ENV POETRY_NO_INTERACTION=1 \
 WORKDIR /app
 
 # Copiar arquivos de configuração do Poetry
-COPY machine_learn/pyproject.toml machine_learn/poetry.lock ./
+COPY pyproject.toml poetry.lock ./
+
+# Configurar Poetry para criar venv no projeto
+RUN poetry config virtualenvs.in-project true
 
 # Instalar dependências
 RUN poetry install --only=main && rm -rf $POETRY_CACHE_DIR
@@ -38,8 +41,7 @@ COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Copiar código da aplicação
-COPY machine_learn/src ./src
-COPY machine_learn/training ./training
+COPY src ./src
 
 # Criar diretório para modelos se não existir
 RUN mkdir -p src/models && chown -R appuser:appuser /app
