@@ -37,6 +37,7 @@ type Config struct {
 	Mail        Mail            `mapstructure:",squash"`
 	Db          Db              `mapstructure:",squash"`
 	SentryDsn   string          `mapstructure:"SENTRY_DSN"`
+	PredictURL  string          `mapstructure:"PREDICT_URL"`
 }
 
 func New(env env.Environment) Config {

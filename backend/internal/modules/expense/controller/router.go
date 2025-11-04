@@ -15,6 +15,7 @@ func Router(
 	getExpensesPerCategoryHandler GetExpensesPerCategory,
 	getExpensesPerPeriodHandler GetExpensesPerPeriod,
 	getExpenseDetailsHandler GetExpenseDetails,
+	predictExpenseCategoryHandler PredictExpenseCategory,
 	generateExpensesFromScheduledHandler GenerateExpensesFromScheduled,
 	createScheduledExpenseHandler CreateScheduledExpense,
 	authMiddleware middleware.AuthMiddleware,
@@ -27,6 +28,7 @@ func Router(
 	expense := v1.Group("expenses")
 	expense.Post("/", authMiddleware, createExpenseHandler)
 	expense.Get("/", authMiddleware, getExpensesHandler)
+	expense.Post("/predict", authMiddleware, predictExpenseCategoryHandler)
 	expense.Get("/:expense_id/details", authMiddleware, getExpenseDetailsHandler)
 	expense.Patch("/:expense_id", authMiddleware, updateExpenseHandler)
 	expense.Delete("/:expense_id", authMiddleware, deleteExpenseHandler)

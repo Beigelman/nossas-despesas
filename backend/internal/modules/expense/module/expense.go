@@ -20,6 +20,7 @@ var Module = eon.NewModule("Expense", func(ctx context.Context, c *di.Container,
 	di.Provide(c, usecase.NewRecalculateExpensesSplitRatio)
 	di.Provide(c, usecase.NewCreateScheduledExpense)
 	di.Provide(c, usecase.NewGenerateExpensesFromScheduledUseCase)
+	di.Provide(c, usecase.NewPredictExpenseCategory)
 	di.Provide(c, postgres.NewGetExpenses)
 	di.Provide(c, postgres.NewGetExpenseDetails)
 	di.Provide(c, postgres.NewGetExpensesPerPeriod)
@@ -35,6 +36,7 @@ var Module = eon.NewModule("Expense", func(ctx context.Context, c *di.Container,
 	di.Provide(c, controller.NewGenerateExpensesFromScheduled)
 	di.Provide(c, controller.NewCreateScheduledExpense)
 	di.Provide(c, controller.NewCreateExpenseFromScheduled)
+	di.Provide(c, controller.NewPredictExpenseCategory)
 	// Register routes
 	lc.OnBooted(eon.HookOrders.APPEND, func() error {
 		return di.Call(c, controller.Router)
