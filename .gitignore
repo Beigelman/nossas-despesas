@@ -37,7 +37,7 @@ machine_learn/training/models/*.joblib
 
 # Dados de treino (se necessário)
 machine_learn/training/data/*.csv
-machine_learn/data/
+**/data/**/*.csv
 
 # Logs e experimentos ML
 machine_learn/logs/
