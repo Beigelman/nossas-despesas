@@ -18,6 +18,10 @@ inputs:
     description: "Token do GitHub para comentar no PR"
     required: false
     default: "${{ github.token }}"
+  working-directory:
+    description: "Diretório de trabalho para executar os testes"
+    required: false
+    default: "."
 
 outputs:
   coverage-percentage:
@@ -47,15 +51,17 @@ runs:
     - name: Parse coverage and generate report
       id: coverage
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         # Extrair a cobertura total
         COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
 
-        # Determinar emoji e status baseado na cobertura
-        if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+        # Determinar emoji e status baseado na cobertura (usando awk para comparação de floats)
+        COVERAGE_INT=$(echo "$COVERAGE" | awk '{printf "%.0f", $1}')
+        if [ "$COVERAGE_INT" -ge 80 ]; then
           EMOJI="🟢"
           STATUS="Excelente"
-        elif (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+        elif [ "$COVERAGE_INT" -ge 60 ]; then
           EMOJI="🟡"
           STATUS="Boa"
         else
@@ -89,14 +95,24 @@ runs:
     - name: Comment on PR
       if: ${{ inputs.comment-on-pr == 'true' && github.event_name == 'pull_request' }}
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         # Verificar se estamos em um PR
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          # Ler o relatório
+          # Verificar se gh está disponível
+          if ! command -v gh &> /dev/null; then
+            echo "⚠️  GitHub CLI (gh) não está disponível, pulando comentário no PR"
+            exit 0
+          fi
+
+          # Ler o relatório do working-directory
           REPORT=$(cat coverage_report.md)
-          
+
           # Usar GitHub CLI para comentar no PR
-          echo "$REPORT" | gh pr comment ${{ github.event.pull_request.number }} --body-file -
+          echo "$REPORT" | gh pr comment ${{ github.event.pull_request.number }} --body-file - || {
+            echo "⚠️  Falha ao comentar no PR, mas continuando..."
+            exit 0
+          }
         else
           echo "Não é um PR, pulando comentário"
         fi
@@ -106,6 +122,7 @@ runs:
     - name: Validate coverage threshold
       id: validate
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         # Ler a cobertura salva
         COVERAGE=$(cat coverage_percentage.txt)
@@ -114,7 +131,10 @@ runs:
         echo "📊 Cobertura atual: ${COVERAGE}%"
         echo "🎯 Limite mínimo: ${THRESHOLD}%"
 
-        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+        # Comparar usando awk para suportar floats
+        COVERAGE_INT=$(echo "$COVERAGE" | awk '{printf "%.0f", $1}')
+        THRESHOLD_INT=$(echo "$THRESHOLD" | awk '{printf "%.0f", $1}')
+        if [ "$COVERAGE_INT" -lt "$THRESHOLD_INT" ]; then
           echo "❌ Cobertura de código ($COVERAGE%) está abaixo do limite mínimo ($THRESHOLD%)"
           echo "::error::Cobertura de código ($COVERAGE%) está abaixo do limite mínimo ($THRESHOLD%)"
           exit 1

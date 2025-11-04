@@ -1,0 +1,45 @@
+package postgres
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+
+	"github.com/lib/pq"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
+)
+
+type User struct {
+	ID             int            `db:"id" json:"id"`
+	Name           string         `db:"name" json:"name"`
+	Email          string         `db:"email" json:"email"`
+	GroupID        *int           `db:"group_id" json:"group_id,omitempty"`
+	ProfilePicture *string        `db:"profile_picture" json:"profile_picture,omitempty"`
+	Flags          pq.StringArray `db:"flags"`
+	CreatedAt      string         `db:"created_at" json:"created_at"`
+	UpdatedAt      string         `db:"updated_at" json:"updated_at"`
+}
+
+type GetUserByID func(ctx context.Context, userID int) (*User, error)
+
+func NewGetUserByID(db *db.Client) GetUserByID {
+	dbClient := db.Conn()
+	return func(ctx context.Context, userID int) (*User, error) {
+		var user User
+		if err := dbClient.GetContext(ctx, &user, `
+			SELECT id, name, email, profile_picture, group_id, flags, created_at, updated_at
+			FROM users
+			WHERE id = $1	
+		`, userID); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, except.NotFoundError("user not found")
+			}
+			return nil, fmt.Errorf("db.GetContext: %w", err)
+		}
+
+		return &user, nil
+	}
+}
