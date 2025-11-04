@@ -126,4 +126,3 @@ func TestPredictExpenseCategoryHandler(t *testing.T) {
 		})
 	}
 }
-
