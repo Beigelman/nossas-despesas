@@ -29,12 +29,6 @@ machine_learn/dist/
 machine_learn/build/
 machine_learn/*.egg-info/
 
-# Modelos treinados (específicos do ML service)
-machine_learn/src/models/*.pkl
-machine_learn/src/models/*.joblib
-machine_learn/training/models/*.pkl
-machine_learn/training/models/*.joblib
-
 # Dados de treino (se necessário)
 machine_learn/training/data/*.csv
 **/data/**/*.csv
