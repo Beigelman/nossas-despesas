@@ -3,10 +3,11 @@ package cmd
 import (
 	"os"
 
+	"github.com/spf13/cobra"
+
 	"github.com/Beigelman/nossas-despesas/scripts/cmd/createusers"
 	"github.com/Beigelman/nossas-despesas/scripts/cmd/importincomes"
 	"github.com/Beigelman/nossas-despesas/scripts/cmd/importsplit"
-	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands

@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/schollz/progressbar/v3"
+	"github.com/spf13/cobra"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
-	"github.com/schollz/progressbar/v3"
-	"github.com/spf13/cobra"
 )
 
 var cmd = &cobra.Command{

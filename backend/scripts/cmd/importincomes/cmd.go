@@ -6,6 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/schollz/progressbar/v3"
+	"github.com/spf13/cobra"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/income/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
@@ -13,8 +16,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
-	"github.com/schollz/progressbar/v3"
-	"github.com/spf13/cobra"
 )
 
 var cmd = &cobra.Command{
