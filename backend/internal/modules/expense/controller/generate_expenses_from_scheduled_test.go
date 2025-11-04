@@ -7,12 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
-	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 )
 
 func TestGenerateExpensesFromScheduledHandler(t *testing.T) {

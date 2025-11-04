@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type Provider struct {

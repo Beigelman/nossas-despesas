@@ -5,8 +5,6 @@ db:
 dev: db
 	ENV=development go run main.go
 
-
-
 # Migrations
 migrate-diff:
 	atlas migrate diff $(name) -c file://database/atlas.hcl --env local
@@ -32,15 +30,15 @@ format:
 	gofmt -w ./internal
 
 lint-safe:
-	golangci-lint run --enable-only=gofmt,goimports,whitespace,misspell --fix
+	go tool golangci-lint run --enable-only=gofmt,goimports,whitespace,misspell --fix
 
 lint-full:
 	@echo "⚠️  AVISO: O lint completo tem problemas após a reestruturação do monorepo"
 	@echo "📝 Use 'make lint-safe' para linters básicos ou 'make format' para formatação"
-	golangci-lint run --fix
+	go tool golangci-lint run --fix
 
 mock:
-	mockery
+	go tool mockery
 
 unit:
 		go test -v $$(go list ./internal/modules/... | grep -e handler -e usecase -e pkg)

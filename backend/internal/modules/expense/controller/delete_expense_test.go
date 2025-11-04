@@ -7,6 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
@@ -15,9 +19,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestDeleteExpenseHandler(t *testing.T) {

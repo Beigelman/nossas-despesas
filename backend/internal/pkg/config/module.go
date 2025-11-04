@@ -6,11 +6,12 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/getsentry/sentry-go"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
-	"github.com/getsentry/sentry-go"
 )
 
 const configPath = "./internal/pkg/config/config.yml"

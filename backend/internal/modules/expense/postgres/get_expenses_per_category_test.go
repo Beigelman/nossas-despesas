@@ -5,10 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/suite"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
 	"github.com/Beigelman/nossas-despesas/internal/shared/fixture"
-	"github.com/stretchr/testify/suite"
 )
 
 type GetExpensesPerCategoryTestSuite struct {

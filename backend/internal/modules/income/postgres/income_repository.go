@@ -8,10 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/income"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/jmoiron/sqlx"
 )
 
 type IncomeRepository struct {

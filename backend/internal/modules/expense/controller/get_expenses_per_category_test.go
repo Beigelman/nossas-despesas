@@ -9,11 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
 )
 
 // Mock do postgres.GetExpensesPerCategory

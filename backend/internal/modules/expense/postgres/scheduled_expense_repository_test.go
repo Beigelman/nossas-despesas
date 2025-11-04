@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/category"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
@@ -14,7 +16,6 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
-	"github.com/stretchr/testify/suite"
 )
 
 type ScheduledExpenseRepositoryTestSuite struct {

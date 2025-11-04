@@ -3,8 +3,9 @@ package controller
 import (
 	"fmt"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/usecase"
 )
 
 type GenerateExpensesFromScheduled func(ctx *fiber.Ctx) error

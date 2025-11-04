@@ -6,10 +6,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/getsentry/sentry-go"
 	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {

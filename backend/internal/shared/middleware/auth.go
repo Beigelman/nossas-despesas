@@ -3,9 +3,10 @@ package middleware
 import (
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
-	"github.com/gofiber/fiber/v2"
 )
 
 type AuthMiddleware func(ctx *fiber.Ctx) error

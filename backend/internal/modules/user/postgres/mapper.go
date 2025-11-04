@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/lib/pq"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
-	"github.com/lib/pq"
 )
 
 func toEntity(model UserModel) *user.User {

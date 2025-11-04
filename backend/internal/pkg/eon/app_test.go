@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 )
 
 type PrintTest func() string

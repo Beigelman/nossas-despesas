@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
 )
 
 func Router(

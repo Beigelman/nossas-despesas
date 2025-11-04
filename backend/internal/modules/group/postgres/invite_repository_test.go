@@ -5,12 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/dbtest"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/suite"
 )
 
 type GroupInviteRepositoryTestSuite struct {

@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/gofiber/fiber/v2"
 )
 
 type (

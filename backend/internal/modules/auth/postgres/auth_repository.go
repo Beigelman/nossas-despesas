@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/jmoiron/sqlx"
 )
 
 type AuthRepository struct {

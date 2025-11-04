@@ -3,8 +3,9 @@ package config
 import (
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/spf13/viper"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
 type Db struct {

@@ -3,9 +3,10 @@ package db
 import (
 	"fmt"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
 func (sql *Client) MigrateUp() error {

@@ -5,12 +5,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
-	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
+	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
 )
 
 func TestCreateExpenseFromScheduledHandler(t *testing.T) {

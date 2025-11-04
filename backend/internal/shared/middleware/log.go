@@ -5,8 +5,9 @@ import (
 	"log/slog"
 	"regexp"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
 func LogRequest(environment env.Environment, serviceName string) func(ctx *fiber.Ctx) error {

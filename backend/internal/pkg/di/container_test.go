@@ -4,8 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 )
 
 type Shape interface {

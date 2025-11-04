@@ -6,9 +6,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 var (

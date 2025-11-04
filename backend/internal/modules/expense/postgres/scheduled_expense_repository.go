@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
-	"github.com/jmoiron/sqlx"
 )
 
 type ScheduledExpenseRepository struct {

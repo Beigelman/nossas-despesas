@@ -3,9 +3,10 @@ package controller_test
 import (
 	"testing"
 
-	"github.com/Beigelman/nossas-despesas/internal/modules/auth/controller"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/auth/controller"
 )
 
 func TestRouter(t *testing.T) {

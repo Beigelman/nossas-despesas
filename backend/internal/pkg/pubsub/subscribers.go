@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/ThreeDotsLabs/watermill"
 	pubsubSql "github.com/ThreeDotsLabs/watermill-sql/v3/pkg/sql"
 	"github.com/ThreeDotsLabs/watermill/message"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 )
 
 type Subscriber interface {

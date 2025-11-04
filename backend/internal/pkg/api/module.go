@@ -9,15 +9,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
-	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
 	sentryfiber "github.com/getsentry/sentry-go/fiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
+	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
 )
 
 var Module = eon.NewModule("Server", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {

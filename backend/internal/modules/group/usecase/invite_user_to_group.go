@@ -8,12 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	vo "github.com/Beigelman/nossas-despesas/internal/pkg/email"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
-	"github.com/google/uuid"
 )
 
 type (

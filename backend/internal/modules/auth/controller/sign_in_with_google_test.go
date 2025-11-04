@@ -8,13 +8,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/controller"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth/usecase"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestSignInWithGoogleHandler(t *testing.T) {

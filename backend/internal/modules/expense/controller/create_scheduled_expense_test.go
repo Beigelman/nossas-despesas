@@ -10,13 +10,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/controller"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/except"
 	"github.com/Beigelman/nossas-despesas/internal/shared/mocks"
-	"github.com/gofiber/fiber/v2"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestCreateScheduledExpenseHandler(t *testing.T) {

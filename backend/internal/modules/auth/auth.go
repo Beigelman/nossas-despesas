@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/ddd"
 )
 
 type Type string

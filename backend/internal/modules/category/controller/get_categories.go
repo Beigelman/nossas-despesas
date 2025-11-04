@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
-	"github.com/gofiber/fiber/v2"
 )
 
 type GetCategories func(ctx *fiber.Ctx) error
