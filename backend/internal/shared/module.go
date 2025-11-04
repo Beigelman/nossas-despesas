@@ -10,6 +10,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/jwt"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/predict"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/pubsub"
 	"github.com/Beigelman/nossas-despesas/internal/shared/service"
 )
@@ -18,12 +19,18 @@ var Module = eon.NewModule("Shared Clients", func(ctx context.Context, c *di.Con
 	di.Provide(c, func(cfg *config.Config) service.TokenProvider {
 		return jwt.NewJWTProvider(cfg.JWTSecret)
 	})
+
 	di.Provide(c, func(cfg *config.Config) service.EmailProvider {
 		if cfg.Env == env.Development {
 			return email.NewMailTrapEmailProvider(cfg.Mail.ApiKey)
 		}
 		return email.NewResendEmailProvider(cfg.Mail.ApiKey)
 	})
+
+	di.Provide(c, func(cfg *config.Config) service.Predicter {
+		return predict.NewClient(cfg.PredictURL)
+	})
+
 	di.Provide(c, service.NewGoogleTokenValidator)
 	di.Provide(c, pubsub.NewSqlPublisher)
 	di.Provide(c, pubsub.NewSqlSubscriber)
