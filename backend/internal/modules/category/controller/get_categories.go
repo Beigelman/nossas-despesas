@@ -1,0 +1,24 @@
+package controller
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/Beigelman/nossas-despesas/internal/modules/category/postgres"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
+)
+
+type GetCategories func(ctx *fiber.Ctx) error
+
+func NewGetCategories(getCategories postgres.GetCategories) GetCategories {
+	return func(ctx *fiber.Ctx) error {
+		categories, err := getCategories(ctx.Context())
+		if err != nil {
+			return fmt.Errorf("query.getCategories: %w", err)
+		}
+
+		return ctx.Status(http.StatusOK).JSON(api.NewResponse(http.StatusOK, categories))
+	}
+}
