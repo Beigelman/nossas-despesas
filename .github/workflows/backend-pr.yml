@@ -1,8 +1,11 @@
-name: Nossas Despesas Pull Request
+name: Backend Pull Request
 
 on:
   pull_request:
     branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-pr.yml"
 
 permissions:
   pull-requests: write
@@ -34,12 +37,11 @@ jobs:
         with:
           version: v2.1.6
           args: --timeout=5m
-          working-directory: .
+          working-directory: backend
 
       - name: Run tests with coverage
         id: test-coverage
         uses: ./.github/actions/test-coverage
         with:
-          test-packages: ./internal/modules/...
-
-
+          test-packages: ./backend/internal/modules/...
+          working-directory: backend
