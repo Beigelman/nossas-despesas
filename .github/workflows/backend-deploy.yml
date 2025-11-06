@@ -151,6 +151,7 @@ jobs:
             JWT_KEY=${{ secrets.JWT_KEY }}
             DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
             MAIL_API_KEY=${{ secrets.MAIL_API_KEY }}
+            PREDICT_URL=${{ secrets.PREDICT_URL }}
 
       - name: Show Output
         run: |
