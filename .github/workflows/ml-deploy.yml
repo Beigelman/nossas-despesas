@@ -134,7 +134,8 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docker/${{ env.SERVICE }}:${{ steps.tag.outputs.tag }}
           flags: | 
-            --service-account=default@${{ env.PROJECT_ID }}.iam.gserviceaccount.com 
+            --service-account=default@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
+            --no-allow-unauthenticated
             --port=8000
           env_vars: |
             ENV=${{ env.ENV }}
