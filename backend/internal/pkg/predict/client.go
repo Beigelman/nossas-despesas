@@ -5,17 +5,51 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/go-resty/resty/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/idtoken"
+	"google.golang.org/api/option"
 )
 
 type Client struct {
 	httpClient *resty.Client
 }
 
-func NewClient(url string) *Client {
-	return &Client{
-		httpClient: resty.New().SetBaseURL(url),
+func NewClient(ctx context.Context, url string, environment env.Environment) (*Client, error) {
+	if url == "" {
+		return nil, fmt.Errorf("url is required")
 	}
+
+	var tokenSource oauth2.TokenSource
+	if environment == env.Production {
+		credentials, err := google.FindDefaultCredentials(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("google.FindDefaultCredentials: %w", err)
+		}
+
+		tokenSource, err = idtoken.NewTokenSource(ctx, url, option.WithCredentials(credentials))
+		if err != nil {
+			return nil, fmt.Errorf("idtoken.NewTokenSource: %w", err)
+		}
+	} else {
+		tokenSource = oauth2.StaticTokenSource(&oauth2.Token{
+			TokenType:   "Bearer",
+			AccessToken: "fake-token",
+		})
+	}
+
+	return &Client{
+		httpClient: resty.New().SetBaseURL(url).OnBeforeRequest(func(_ *resty.Client, r *resty.Request) error {
+			token, err := tokenSource.Token()
+			if err != nil {
+				return fmt.Errorf("tokenSource.Token: %w", err)
+			}
+			r.SetHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
+			return nil
+		}),
+	}, nil
 }
 
 type predictResponse struct {
