@@ -11,10 +11,10 @@ class PredictExpenseCategoryRequest(BaseModel):
     """Modelo de requisição para predição de categoria."""
 
     name: str = Field(..., description="Nome da despesa", example="Farmácia")
-    amount_cents: float = Field(..., description="Valor em centavos", example=5000.0)
+    amount_cents: int = Field(..., description="Valor em centavos", example=5000)
 
     class Config:
-        json_schema_extra = {"example": {"name": "Farmácia", "amount_cents": 5000.0}}
+        json_schema_extra = {"example": {"name": "Farmácia", "amount_cents": 5000}}
 
 
 class PredictExpenseCategoryBatchRequest(BaseModel):
@@ -30,7 +30,7 @@ class PredictionResponse(BaseModel):
 
     category_id: int = Field(..., description="ID da categoria predita")
     name: str = Field(..., description="Nome da despesa")
-    amount_cents: float = Field(..., description="Valor em centavos")
+    amount_cents: int = Field(..., description="Valor em centavos")
 
 
 class BatchPredictionResponse(BaseModel):
