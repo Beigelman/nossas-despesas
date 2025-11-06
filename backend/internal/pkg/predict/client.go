@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/go-resty/resty/v2"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/idtoken"
 	"google.golang.org/api/option"
+
+	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
 
 type Client struct {
