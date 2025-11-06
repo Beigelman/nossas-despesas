@@ -27,8 +27,8 @@ var Module = eon.NewModule("Shared Clients", func(ctx context.Context, c *di.Con
 		return email.NewResendEmailProvider(cfg.Mail.ApiKey)
 	})
 
-	di.Provide(c, func(cfg *config.Config) service.Predicter {
-		return predict.NewClient(cfg.PredictURL)
+	di.Provide(c, func(cfg *config.Config) (service.Predicter, error) {
+		return predict.NewClient(ctx, cfg.PredictURL, cfg.Env)
 	})
 
 	di.Provide(c, service.NewGoogleTokenValidator)
