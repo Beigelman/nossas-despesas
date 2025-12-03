@@ -29,7 +29,7 @@ format:
 	go tool golangci-lint fmt ./internal ./scripts
 
 lint:
-	go tool golangci-lint run --fix
+	go tool golangci-lint run
 
 mock:
 	go tool mockery
