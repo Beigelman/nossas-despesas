@@ -136,6 +136,7 @@ jobs:
           ./database/migrate.sh up "./database/migrations"
           
           echo "Migrations completed successfully!"
+          
       - name: Deploy to Cloud Run
         id: deploy
         uses: "google-github-actions/deploy-cloudrun@v2"
