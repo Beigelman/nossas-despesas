@@ -11,7 +11,7 @@ RUN apk --update add ca-certificates
 COPY backend/ .
 # Compile o aplicativo Go para um binário estático.
 # Note que CGO está desabilitado para garantir um binário estático
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd
 
 # Etapa de execução
 FROM scratch
@@ -19,8 +19,6 @@ FROM scratch
 COPY --from=builder /app/main .
 # Copie o arquivo de certificado SSL para o contêiner
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-# Copie o arquivo de configuração para o contêiner
-COPY backend/internal/pkg/config/config.yml /internal/pkg/config/config.yml
 # Copia templates para o contêiner
 COPY backend/templates /templates
 # Comando para executar o binário

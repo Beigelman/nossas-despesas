@@ -25,6 +25,24 @@ func ProvideNamed(ctnr *Container, name string, resolver any) {
 	}
 }
 
+// Concrete binds a concrete object to the container. It is useful when you want to bind a primitive type.
+// It is a shortcut for Singleton(func() t { return object })
+func Concrete[t any](ctnr *Container, object t) {
+	err := ctnr.singletonLazy(func() t { return object })
+	if err != nil {
+		panic(err)
+	}
+}
+
+// NamedConcrete binds a concrete object to the container with a name. It is useful when you want to bind a primitive type.
+// Its a shortcut for NamedSingleton(name, func() t { return object })
+func NamedConcrete[t any](ctnr *Container, name string, value t) {
+	err := ctnr.namedSingletonLazy(name, func() t { return value })
+	if err != nil {
+		panic(err)
+	}
+}
+
 // NamedResolve takes abstraction and its name and fills it with the related concrete.
 func NamedResolve[T any](ctnr *Container, name string) T {
 	var obj T

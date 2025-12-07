@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+	backend "github.com/Beigelman/nossas-despesas"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/email"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
@@ -16,18 +16,18 @@ import (
 )
 
 var Module = eon.NewModule("Shared Clients", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
-	di.Provide(c, func(cfg *config.Config) service.TokenProvider {
+	di.Provide(c, func(cfg *backend.Config) service.TokenProvider {
 		return jwt.NewJWTProvider(cfg.JWTSecret)
 	})
 
-	di.Provide(c, func(cfg *config.Config) service.EmailProvider {
+	di.Provide(c, func(cfg *backend.Config) service.EmailProvider {
 		if cfg.Env == env.Development {
 			return email.NewMailTrapEmailProvider(cfg.Mail.ApiKey)
 		}
 		return email.NewResendEmailProvider(cfg.Mail.ApiKey)
 	})
 
-	di.Provide(c, func(cfg *config.Config) (service.Predicter, error) {
+	di.Provide(c, func(cfg *backend.Config) (service.Predicter, error) {
 		return predict.NewClient(ctx, cfg.PredictURL, cfg.Env)
 	})
 

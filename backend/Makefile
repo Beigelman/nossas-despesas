@@ -3,7 +3,7 @@ db:
 	docker compose up db -d
 # Run
 dev: db
-	ENV=development go run main.go
+	ENV=development go run ./cmd/main.go
 
 # Migrations
 migrate-diff:
