@@ -149,10 +149,18 @@ jobs:
             --allow-unauthenticated
           env_vars: |
             ENV=${{ env.ENV }}
-            JWT_KEY=${{ secrets.JWT_KEY }}
+            JWT_SECRET=${{ secrets.JWT_KEY }}
             DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
             MAIL_API_KEY=${{ secrets.MAIL_API_KEY }}
             PREDICT_URL=${{ secrets.PREDICT_URL }}
+            LOG_LEVEL=INFO
+            PORT=8080
+            DB_MAX_IDLE_CONNS=5
+            DB_MAX_OPEN_CONNS=5
+            DB_MAX_LIFE_TIME_MINUTES=1
+            DB_MAX_IDLE_TIME_MINUTES=10
+            SENTRY_DSN="https://8a9350a230e34d7235bd5eba76eef9c8@o4509646894333952.ingest.us.sentry.io/4509646907506688"
+
 
       - name: Show Output
         run: |

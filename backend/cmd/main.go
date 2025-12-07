@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 
+	nossasdespesas "github.com/Beigelman/nossas-despesas"
 	auth "github.com/Beigelman/nossas-despesas/internal/modules/auth/module"
 	category "github.com/Beigelman/nossas-despesas/internal/modules/category/module"
 	expense "github.com/Beigelman/nossas-despesas/internal/modules/expense/module"
@@ -14,6 +15,7 @@ import (
 	"github.com/Beigelman/nossas-despesas/internal/pkg/api"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
+	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/logger"
@@ -23,14 +25,20 @@ import (
 func main() {
 	environment := env.MustParse(os.Getenv("ENV"))
 
+	cfg := nossasdespesas.MustNewConfig(environment)
+
 	var lgr *slog.Logger
 	if environment == env.Development {
-		lgr = logger.NewDevelopment()
+		lgr = logger.NewDevelopment(cfg.LogLevel)
 	} else {
-		lgr = logger.NewProduction()
+		lgr = logger.NewProduction(cfg.LogLevel)
 	}
+	slog.SetDefault(lgr)
 
-	app := eon.New("Nossas Despesas", eon.WithLogger(lgr))
+	ctnr := di.New()
+	di.Concrete(ctnr, cfg)
+
+	app := eon.New(cfg.ServiceName, eon.WithLogger(lgr), eon.WithIoC(ctnr))
 
 	if err := app.BootStrap(
 		// Common Modules

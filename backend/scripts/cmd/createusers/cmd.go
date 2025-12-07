@@ -6,13 +6,13 @@ import (
 
 	"github.com/spf13/cobra"
 
+	nossasdespesas "github.com/Beigelman/nossas-despesas"
 	"github.com/Beigelman/nossas-despesas/internal/modules/auth"
 	authrepo "github.com/Beigelman/nossas-despesas/internal/modules/auth/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/group"
 	grouprepo "github.com/Beigelman/nossas-despesas/internal/modules/group/postgres"
 	"github.com/Beigelman/nossas-despesas/internal/modules/user"
 	userrepo "github.com/Beigelman/nossas-despesas/internal/modules/user/postgres"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 )
@@ -30,10 +30,9 @@ var cmd = &cobra.Command{
 func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	cfg := config.New(env.Environment(environment))
-	cfg.SetConfigPath("./internal/config/config.yml")
-	if err := cfg.LoadConfig(); err != nil {
-		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
+	cfg, err := nossasdespesas.NewConfig(env.Environment(environment))
+	if err != nil {
+		panic(fmt.Errorf("nossasdespesas.New: %w", err))
 	}
 
 	database, err := db.NewClient(cfg.DBConnectionString())

@@ -15,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+	nossasdespesas "github.com/Beigelman/nossas-despesas"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 	"github.com/Beigelman/nossas-despesas/internal/shared/middleware"
@@ -26,7 +26,7 @@ var Module = eon.NewModule("Server", func(ctx context.Context, c *di.Container, 
 
 	di.Provide(c, middleware.NewAuthMiddleware)
 
-	di.Provide(c, func(cfg *config.Config) *fiber.App {
+	di.Provide(c, func(cfg *nossasdespesas.Config) *fiber.App {
 		server = fiber.New(fiber.Config{
 			AppName:      info.ServiceName,
 			ReadTimeout:  5 * time.Second,
@@ -49,7 +49,7 @@ var Module = eon.NewModule("Server", func(ctx context.Context, c *di.Container, 
 
 	lc.OnReady(eon.HookOrders.APPEND, func() error {
 		go func() {
-			cfg := di.Resolve[*config.Config](c)
+			cfg := di.Resolve[*nossasdespesas.Config](c)
 			if err := server.Listen(fmt.Sprintf(":%s", cfg.Port)); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				log.Fatal(fmt.Errorf("server.Listen: %w", err))
 			}

@@ -3,18 +3,19 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
+	nossasdespesas "github.com/Beigelman/nossas-despesas"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/di"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/eon"
 )
 
 var Module = eon.NewModule("Database", func(ctx context.Context, c *di.Container, lc eon.LifeCycleManager, info eon.Info) {
-	di.Provide(c, func(cfg *config.Config) (*Client, error) {
+	di.Provide(c, func(cfg *nossasdespesas.Config) (*Client, error) {
 		dbClient, err := NewClient(
 			cfg.DBConnectionString(),
-			WithConnMaxIdleTime(cfg.Db.MaxIdleTime),
-			WithConnMaxLifeTime(cfg.Db.MaxLifeTime),
+			WithConnMaxIdleTime(time.Duration(cfg.Db.MaxIdleTimeMinutes)*time.Minute),
+			WithConnMaxLifeTime(time.Duration(cfg.Db.MaxLifeTimeMinutes)*time.Minute),
 			WithMaxIdleConns(cfg.Db.MaxIdleConns),
 			WithMaxOpenConns(cfg.Db.MaxOpenConns),
 		)

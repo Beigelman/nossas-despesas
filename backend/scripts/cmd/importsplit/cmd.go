@@ -7,8 +7,8 @@ import (
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 
+	nossasdespesas "github.com/Beigelman/nossas-despesas"
 	"github.com/Beigelman/nossas-despesas/internal/modules/expense/postgres"
-	"github.com/Beigelman/nossas-despesas/internal/pkg/config"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/db"
 	"github.com/Beigelman/nossas-despesas/internal/pkg/env"
 	"github.com/Beigelman/nossas-despesas/scripts/utils"
@@ -27,10 +27,9 @@ var (
 func run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	cfg := config.New(env.Environment(environment))
-	cfg.SetConfigPath("./internal/config/config.yml")
-	if err := cfg.LoadConfig(); err != nil {
-		panic(fmt.Errorf("cfg.LoadConfig: %w", err))
+	cfg, err := nossasdespesas.NewConfig(env.Environment(environment))
+	if err != nil {
+		panic(fmt.Errorf("nossasdespesas.New: %w", err))
 	}
 
 	database, err := db.NewClient(cfg.DBConnectionString())

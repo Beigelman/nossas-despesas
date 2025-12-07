@@ -1,8 +1,9 @@
+**/.env*
 # Backend (Go)
 backend/database/data
 backend/database/_data
 backend/scripts/data
-backend/coverage.*
+backend/coverage.*    
 
 # Go specific
 *.exe
