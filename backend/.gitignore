@@ -1,0 +1,14 @@
+/database/data
+/database/_data
+/scripts/data
+/coverage.*    
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
