@@ -1,51 +1,12 @@
 **/.env*
-# Backend (Go)
-backend/database/data
-backend/database/_data
-backend/scripts/data
-backend/coverage.*    
 
-# Go specific
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-go.work
-
-# ML Service (Python)
-machine_learn/__pycache__/
-machine_learn/**/__pycache__/
-machine_learn/*.py[cod]
-machine_learn/**/*.py[cod]
-machine_learn/*$py.class
-machine_learn/.Python
-machine_learn/venv/
-machine_learn/env/
-machine_learn/ENV/
-machine_learn/.venv/
-machine_learn/dist/
-machine_learn/build/
-machine_learn/*.egg-info/
-
-# Dados de treino (se necessário)
-machine_learn/training/data/*.csv
-**/data/**/*.csv
-
-# Logs e experimentos ML
-machine_learn/logs/
-machine_learn/experiments/
-machine_learn/mlruns/
-
-# IDE
+###### IDE ######
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+##### OS ######
 .DS_Store
 Thumbs.db
 

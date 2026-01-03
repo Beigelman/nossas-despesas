@@ -1,1 +1,22 @@
+/__pycache__/
+/**/__pycache__/
+/*.py[cod]
+/**/*.py[cod]
+/*$py.class
+/.Python
+/venv/
+/env/
+/ENV/
+/.venv/
+/dist/
+/build/
+/*.egg-info/
 
+# Dados de treino (se necessário)
+/training/data/*.csv
+**/data/**/*.csv
+
+# Logs e experimentos ML
+/logs/
+/experiments/
+/mlruns/
