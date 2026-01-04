@@ -7,27 +7,32 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL',
-}).format
-
-function formatCurrency(valueInCents?: number) {
-  if (valueInCents === undefined) {
-    return currencyFormatter(0)
-  }
-  return currencyFormatter(valueInCents / 100)
+function getCurrencyFormatter(locale = 'pt-BR') {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: locale === 'en' ? 'USD' : 'BRL',
+  }).format
 }
 
-const moneyMask = (value = '') => {
+function formatCurrency(valueInCents?: number, locale = 'pt-BR') {
+  const formatter = getCurrencyFormatter(locale)
+  if (valueInCents === undefined) {
+    return formatter(0)
+  }
+  return formatter(valueInCents / 100)
+}
+
+const moneyMask = (value = '', locale = 'pt-BR') => {
   if (value === '') {
-    return '0,00'
+    return locale === 'en' ? '0.00' : '0,00'
   }
 
   value = value.replace('.', '').replace(',', '').replace(/\D/g, '')
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(
-    parseFloat(value) / 100,
-  )
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: locale === 'en' ? 'USD' : 'BRL',
+    minimumFractionDigits: 2,
+  }).format(parseFloat(value) / 100)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

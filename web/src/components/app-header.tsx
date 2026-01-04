@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 
+import { LanguageSelector } from '@/components/language-selector'
 import { MainNav } from '@/components/main-nav'
 import { MobileNav } from '@/components/mobile-nav'
 import { ModeToggle } from '@/components/mode-toggle'
@@ -19,6 +20,7 @@ function AppHeader() {
         <MobileNav />
         <div className="flex flex-1 items-center justify-end space-x-2 md:justify-end">
           {pathname?.startsWith('/expenses') && <SearchBar />}
+          <LanguageSelector />
           <ModeToggle />
           <UserNav />
         </div>

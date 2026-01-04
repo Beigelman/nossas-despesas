@@ -1,6 +1,9 @@
+'use client'
+
 import { format, getMonth, setMonth, setYear } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { enUS, ptBR } from 'date-fns/locale'
 import { CalendarDaysIcon } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -16,20 +19,23 @@ type YearMonthPickerProps = {
 
 function YearMonthPicker({ selectedDate, onSelectDate }: YearMonthPickerProps) {
   const [open, setOpen] = useState(false)
+  const locale = useLocale()
+  const t = useTranslations()
+  const dateLocale = locale === 'en' ? enUS : ptBR
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i)
   const months = [
-    { month: 'Jan', number: 0 },
-    { month: 'Fev', number: 1 },
-    { month: 'Mar', number: 2 },
-    { month: 'Abr', number: 3 },
-    { month: 'Mai', number: 4 },
-    { month: 'Jun', number: 5 },
-    { month: 'Jul', number: 6 },
-    { month: 'Ago', number: 7 },
-    { month: 'Set', number: 8 },
-    { month: 'Out', number: 9 },
-    { month: 'Nov', number: 10 },
-    { month: 'Dez', number: 11 },
+    { month: locale === 'en' ? 'Jan' : 'Jan', number: 0 },
+    { month: locale === 'en' ? 'Feb' : 'Fev', number: 1 },
+    { month: locale === 'en' ? 'Mar' : 'Mar', number: 2 },
+    { month: locale === 'en' ? 'Apr' : 'Abr', number: 3 },
+    { month: locale === 'en' ? 'May' : 'Mai', number: 4 },
+    { month: locale === 'en' ? 'Jun' : 'Jun', number: 5 },
+    { month: locale === 'en' ? 'Jul' : 'Jul', number: 6 },
+    { month: locale === 'en' ? 'Aug' : 'Ago', number: 7 },
+    { month: locale === 'en' ? 'Sep' : 'Set', number: 8 },
+    { month: locale === 'en' ? 'Oct' : 'Out', number: 9 },
+    { month: locale === 'en' ? 'Nov' : 'Nov', number: 10 },
+    { month: locale === 'en' ? 'Dec' : 'Dez', number: 11 },
   ]
 
   return (
@@ -37,7 +43,7 @@ function YearMonthPicker({ selectedDate, onSelectDate }: YearMonthPickerProps) {
       <PopoverTrigger asChild>
         <Button className="w-[240px] justify-start text-left" variant="outline">
           <CalendarDaysIcon className="mr-1 h-4 w-4 -translate-x-1" />
-          {selectedDate ? format(selectedDate, 'MMM-yyyy', { locale: ptBR }) : 'Escolha uma data'}
+          {selectedDate ? format(selectedDate, 'MMM-yyyy', { locale: dateLocale }) : t('date.chooseDate')}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="flex w-auto space-x-4 p-2">

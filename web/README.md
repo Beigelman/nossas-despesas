@@ -250,17 +250,6 @@ Ensure all environment variables are set in Vercel:
 - Add all variables from `.env.local`
 - Configure for Production, Preview, and Development environments
 
-## Testing
-
-Currently, the project doesn't have automated tests. To add tests:
-
-```bash
-# Install testing dependencies
-pnpm add -D @testing-library/react @testing-library/jest-dom jest
-
-# Run tests (when implemented)
-pnpm test
-```
 
 ## Code Quality
 
@@ -277,22 +266,6 @@ Uses ESLint with Next.js and custom configurations.
 ```bash
 pnpm exec tsc --noEmit
 ```
-
-Validates TypeScript types without emitting files.
-
-## Performance Optimization
-
-- **Image Optimization**: Next.js Image component
-- **Code Splitting**: Automatic with App Router
-- **Static Generation**: Where applicable
-- **Server Components**: Used for better performance
-- **Client Components**: Only when interactivity is needed
-
-## Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-- PWA features require HTTPS in production
 
 ## Contributing
 

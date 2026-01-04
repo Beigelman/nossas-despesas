@@ -46,7 +46,7 @@ export const nextAuthOptions: AuthOptions = {
         return token
       }
 
-      if (!token.session) {
+      if (user && !token.session) {
         token.session = user
         return token
       }

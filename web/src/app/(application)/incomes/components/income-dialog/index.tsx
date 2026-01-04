@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -45,6 +46,7 @@ type IncomeDialogProps = {
 
 function IncomeDialog({ children, income, type, date }: IncomeDialogProps) {
   const [open, setOpen] = useState(false)
+  const t = useTranslations()
 
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const { createIncome, updateIncome } = useIncome()
@@ -61,7 +63,7 @@ function IncomeDialog({ children, income, type, date }: IncomeDialogProps) {
     },
   })
 
-  const title = useMemo(() => (type === 'create' ? 'Adicionar nova receita' : 'Atualizar receita'), [type])
+  const title = useMemo(() => (type === 'create' ? t('incomes.addIncome') : t('incomes.updateIncome')), [type, t])
 
   useEffect(() => {
     form.setValue('amount', income?.amount ? `${income?.amount}` : '')
@@ -110,10 +112,10 @@ function IncomeDialog({ children, income, type, date }: IncomeDialogProps) {
               </div>
               <DialogFooter>
                 <div className="mt-4 flex flex-row-reverse gap-2">
-                  <Button type="submit">Salvar</Button>
+                  <Button type="submit">{t('common.save')}</Button>
                   <DialogClose>
                     <Button type="button" variant="secondary" className="w-full md:w-fit">
-                      Cancelar
+                      {t('common.cancel')}
                     </Button>
                   </DialogClose>
                 </div>
@@ -143,10 +145,10 @@ function IncomeDialog({ children, income, type, date }: IncomeDialogProps) {
             <DrawerFooter className="mt-4 gap-2">
               <DrawerClose>
                 <Button type="button" variant="secondary" className="w-full md:w-fit">
-                  Cancelar
+                  {t('common.cancel')}
                 </Button>
               </DrawerClose>
-              <Button type="submit">Salvar</Button>
+              <Button type="submit">{t('common.save')}</Button>
             </DrawerFooter>
           </form>
         </Form>

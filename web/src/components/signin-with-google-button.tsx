@@ -1,6 +1,7 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -9,13 +10,14 @@ import { Spinning } from './ui/spinning'
 
 function SignInWithGoogleButton() {
   const [loading, setLoading] = useState(false)
+  const t = useTranslations()
 
   async function handleLogin() {
     setLoading(true)
     try {
       await signIn('google')
     } catch (error) {
-      toast.error('Erro ao logar com Google')
+      toast.error(t('auth.googleSignInError'))
       setLoading(false)
     }
   }
@@ -27,7 +29,7 @@ function SignInWithGoogleButton() {
       ) : (
         <>
           <GoogleIcon size={25} />
-          <span className="ml-2">Entrar com Google</span>
+          <span className="ml-2">{t('auth.signInWithGoogle')}</span>
         </>
       )}
     </Button>

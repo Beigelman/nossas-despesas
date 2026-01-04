@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import { Metadata, Viewport } from 'next'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { getLocale } from 'next-intl/server'
 
 import { Toaster } from '@/components/ui/sonner'
 import { getServerSession } from '@/lib/auth/get-server-session'
@@ -60,8 +61,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     redirect('/expenses')
   }
 
+  const locale = await getLocale()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head />
       <body className="h-screen w-full">
         <Providers>{children}</Providers>

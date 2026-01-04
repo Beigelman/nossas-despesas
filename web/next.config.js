@@ -8,8 +8,12 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   scope: '/app',
 })
 
+const createNextIntlPlugin = require('next-intl/plugin')('src/i18n/request.ts')
+
 const nextConfig = {
   // next.js config
 }
 
-module.exports = isPWAEnabled ? withPWA(nextConfig) : nextConfig
+const configWithPWA = isPWAEnabled ? withPWA(nextConfig) : nextConfig
+
+module.exports = createNextIntlPlugin(configWithPWA)

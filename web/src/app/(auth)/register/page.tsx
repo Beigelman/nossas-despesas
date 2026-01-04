@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -22,6 +23,7 @@ export default function SignUpPage() {
   })
 
   const router = useRouter()
+  const t = useTranslations()
 
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
     const result = await signIn('signup', {
@@ -47,8 +49,8 @@ export default function SignUpPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <CardHeader className="space-y-1">
-                <CardTitle className="text-center text-2xl">Criar conta</CardTitle>
-                <CardDescription className="text-center">Preencha todos os dados abaixo</CardDescription>
+                <CardTitle className="text-center text-2xl">{t('auth.createAccount')}</CardTitle>
+                <CardDescription className="text-center">{t('auth.createAccountDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <div className="grid gap-2">
@@ -57,7 +59,7 @@ export default function SignUpPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nome</FormLabel>
+                        <FormLabel>{t('auth.name')}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -72,7 +74,7 @@ export default function SignUpPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('auth.email')}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -87,7 +89,7 @@ export default function SignUpPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Senha</FormLabel>
+                        <FormLabel>{t('auth.password')}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -102,7 +104,7 @@ export default function SignUpPage() {
                     name="passwordConfirmation"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirmar senha</FormLabel>
+                        <FormLabel>{t('auth.confirmPassword')}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -114,12 +116,12 @@ export default function SignUpPage() {
               </CardContent>
               <CardFooter className="flex flex-col">
                 <Button type="submit" className="w-full">
-                  Cadastrar
+                  {t('auth.register')}
                 </Button>
                 <p className="mt-3 text-center text-xs text-gray-700">
-                  Já tem um conta?{' '}
+                  {t('auth.alreadyHaveAccount')}{' '}
                   <Link href={'/login'}>
-                    <span className=" text-blue-600 hover:underline">Faça o seu login</span>
+                    <span className=" text-blue-600 hover:underline">{t('auth.signInLink')}</span>
                   </Link>
                 </p>
                 <Separator className="my-3" />
