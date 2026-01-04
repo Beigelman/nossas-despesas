@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 import { useMemo } from 'react'
 
@@ -11,6 +12,7 @@ import { cn } from '@/lib/utils'
 function MainNav() {
   const pathname = usePathname()
   const { theme } = useTheme()
+  const t = useTranslations()
 
   const systemTheme = useMemo(() => {
     let system = 'light'
@@ -29,7 +31,7 @@ function MainNav() {
           width={24}
           height={24}
         />
-        <span className="hidden sm:inline-block">Nossas Despesas</span>
+        <span className="hidden sm:inline-block">{t('common.appName')}</span>
       </Link>
       <nav className="flex items-center gap-6 text-sm">
         <Link
@@ -39,7 +41,7 @@ function MainNav() {
             pathname === '/expenses' ? 'text-foreground' : 'text-foreground/60',
           )}
         >
-          Despesas
+          {t('nav.expenses')}
         </Link>
         <Link
           href="/incomes"
@@ -48,7 +50,7 @@ function MainNav() {
             pathname?.startsWith('/incomes') ? 'text-foreground' : 'text-foreground/60',
           )}
         >
-          Receitas
+          {t('nav.incomes')}
         </Link>
         <Link
           href="/insights"
@@ -57,7 +59,7 @@ function MainNav() {
             pathname?.startsWith('/insights') ? 'text-foreground' : 'text-foreground/60',
           )}
         >
-          Insights
+          {t('nav.insights')}
         </Link>
       </nav>
     </div>

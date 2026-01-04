@@ -1,6 +1,7 @@
 'use client'
 
 import { PlusIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { ImportExpensesButton } from '@/app/(application)/expenses/components/import-exepenses-button'
 import { Overview } from '@/app/(application)/expenses/components/overview'
@@ -10,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { ExpensesList } from './components/expenses-list'
 
 export default function Expenses() {
+  const t = useTranslations()
+
   return (
     <div className="mx-auto flex w-screen flex-col-reverse md:w-max md:flex-row">
       <div className="flex h-full w-full flex-col gap-2 py-3 md:w-[500px] lg:w-[750px]">
@@ -24,7 +27,7 @@ export default function Expenses() {
               <span
                 className={`hidden w-0 translate-x-32 whitespace-nowrap transition-all duration-500 group-hover:w-32 group-hover:translate-x-0 md:block`}
               >
-                Adicionar despesa
+                {t('expenses.addExpense')}
               </span>
             </Button>
           </SaveExpenseButton>

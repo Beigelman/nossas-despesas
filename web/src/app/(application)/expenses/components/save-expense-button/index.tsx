@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -51,6 +52,7 @@ type SaveExpenseButtonProps = {
 
 function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) {
   const [open, setOpen] = useState(false)
+  const t = useTranslations()
 
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const { group, me, partner } = useGroup()
@@ -77,11 +79,14 @@ function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) 
   const watchedDescription = form.watch('description')
   const watchedAmount = form.watch('amount')
 
-  const title = useMemo(() => (type === 'create' ? 'Adicionar uma nova despesa' : 'Atualizar despesa'), [type])
+  const title = useMemo(
+    () => (type === 'create' ? t('expenses.addNewExpense') : t('expenses.updateExpense')),
+    [type, t],
+  )
 
   const description = useMemo(
-    () => (type === 'create' ? `No grupo ${group?.name}` : `${expense?.name}`),
-    [expense, group, type],
+    () => (type === 'create' ? t('expenses.inGroup', { groupName: group?.name ?? '' }) : `${expense?.name ?? ''}`),
+    [expense, group, type, t],
   )
 
   useEffect(() => {
@@ -218,9 +223,9 @@ function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) 
                   />
                 </div>
                 <div className="mx-auto flex items-center space-x-1">
-                  <span className="mt-1 text-sm">Pago por</span>
+                  <span className="mt-1 text-sm">{t('expenses.paidBy')}</span>
                   <PayerSelector form={form} user={me} partner={partner} />
-                  <span className="mt-1 text-sm">dividido</span>
+                  <span className="mt-1 text-sm">{t('expenses.split')}</span>
                   <SplitRatioSelector form={form} />
                 </div>
                 <DateSelector form={form} />
@@ -228,10 +233,10 @@ function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) 
               </div>
               <DialogFooter>
                 <div className="mt-4 flex flex-row-reverse gap-2">
-                  <Button type="submit">Salvar</Button>
+                  <Button type="submit">{t('common.save')}</Button>
                   <DialogClose>
                     <Button type="button" variant="secondary" className="w-full md:w-fit">
-                      Cancelar
+                      {t('common.cancel')}
                     </Button>
                   </DialogClose>
                 </div>
@@ -272,9 +277,9 @@ function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) 
                 />
               </div>
               <div className="mx-auto flex items-center space-x-1">
-                <span className="text-md mt-1">Pago por</span>
+                <span className="text-md mt-1">{t('expenses.paidBy')}</span>
                 <PayerSelector form={form} user={me} partner={partner} />
-                <span className="text-md mt-1">dividido</span>
+                <span className="text-md mt-1">{t('expenses.split')}</span>
                 <SplitRatioSelector form={form} />
               </div>
               <DateSelector form={form} />
@@ -282,10 +287,10 @@ function SaveExpenseButton({ children, expense, type }: SaveExpenseButtonProps) 
             </div>
             <DrawerFooter>
               <div className="mt-4 flex flex-col-reverse gap-2">
-                <Button type="submit">Salvar</Button>
+                <Button type="submit">{t('common.save')}</Button>
                 <DrawerClose>
                   <Button type="button" variant="secondary" className="w-full md:w-fit">
-                    Cancelar
+                    {t('common.cancel')}
                   </Button>
                 </DrawerClose>
               </div>

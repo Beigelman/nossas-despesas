@@ -3,6 +3,7 @@
 import { BarChartBigIcon, DollarSign, LogInIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { cn } from '@/lib/utils'
 
@@ -12,6 +13,7 @@ type SidebarProps = React.HTMLAttributes<HTMLDivElement>
 
 export function Sidebar({ className }: SidebarProps) {
   const path = usePathname()
+  const t = useTranslations()
 
   return (
     <div className={cn('flex flex-col gap-2 p-2', className)}>
@@ -21,7 +23,7 @@ export function Sidebar({ className }: SidebarProps) {
           className="flex w-full items-center justify-start"
         >
           <DollarSign size={20} />
-          <span className="ml-2 text-sm">Despesas</span>
+          <span className="ml-2 text-sm">{t('nav.expenses')}</span>
         </Button>
       </Link>
       <Link href={'/incomes'}>
@@ -30,7 +32,7 @@ export function Sidebar({ className }: SidebarProps) {
           className="flex w-full items-center justify-start"
         >
           <LogInIcon size={20} />
-          <span className="ml-2 text-sm">Receitas</span>
+          <span className="ml-2 text-sm">{t('nav.incomes')}</span>
         </Button>
       </Link>
       <Link href={'/insights'}>
@@ -39,7 +41,7 @@ export function Sidebar({ className }: SidebarProps) {
           className="flex w-full items-center justify-start"
         >
           <BarChartBigIcon size={20} />
-          <span className="ml-2 text-sm">Insights</span>
+          <span className="ml-2 text-sm">{t('nav.insights')}</span>
         </Button>
       </Link>
     </div>

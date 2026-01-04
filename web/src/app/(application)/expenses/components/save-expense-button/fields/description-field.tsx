@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -10,6 +13,8 @@ type DescriptionFieldProps = {
 }
 
 function DescriptionField({ form }: DescriptionFieldProps) {
+  const t = useTranslations()
+
   return (
     <FormField
       name="description"
@@ -17,7 +22,13 @@ function DescriptionField({ form }: DescriptionFieldProps) {
       render={({ field }) => (
         <FormItem>
           <FormControl>
-            <Input autoFocus placeholder="Insira a sua descrição" {...field} variant="outline" autoCapitalize="words" />
+            <Input
+              autoFocus
+              placeholder={t('expenses.descriptionPlaceholder')}
+              {...field}
+              variant="outline"
+              autoCapitalize="words"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

@@ -1,3 +1,6 @@
+'use client'
+
+import { useLocale } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -11,6 +14,9 @@ type AmountFieldProps = {
 }
 
 function AmountField({ form }: AmountFieldProps) {
+  const locale = useLocale()
+  const placeholder = locale === 'en' ? '$0.00' : 'R$ 0,00'
+
   return (
     <FormField
       name="amount"
@@ -19,10 +25,10 @@ function AmountField({ form }: AmountFieldProps) {
         <FormItem className="flex flex-col">
           <FormControl>
             <Input
-              placeholder="R$ 0,00"
+              placeholder={placeholder}
               inputMode="decimal"
               onChange={(event) => field.onChange(event.currentTarget.value.replace(/\D/g, ''))}
-              value={moneyMask(field.value)}
+              value={moneyMask(field.value, locale)}
               variant="outline"
             />
           </FormControl>

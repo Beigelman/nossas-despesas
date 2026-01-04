@@ -4,6 +4,7 @@ import { Menu } from 'lucide-react'
 import Image from 'next/image'
 import Link, { LinkProps } from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils'
 function MobileNav() {
   const [open, setOpen] = React.useState(false)
   const { theme } = useTheme()
+  const t = useTranslations()
 
   const systemTheme = React.useMemo(() => {
     let system = 'light'
@@ -43,18 +45,18 @@ function MobileNav() {
             width={24}
             height={24}
           />
-          <span className="ml-2 font-bold">Nossas Despesas</span>
+          <span className="ml-2 font-bold">{t('common.appName')}</span>
         </MobileLink>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-3">
             <MobileLink href={'/expenses'} onOpenChange={setOpen}>
-              Despesas
+              {t('nav.expenses')}
             </MobileLink>
             <MobileLink href={'/incomes'} onOpenChange={setOpen}>
-              Receitas
+              {t('nav.incomes')}
             </MobileLink>
             <MobileLink href={'/insights'} onOpenChange={setOpen}>
-              Insights
+              {t('nav.insights')}
             </MobileLink>
           </div>
         </ScrollArea>

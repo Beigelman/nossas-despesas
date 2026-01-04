@@ -1,6 +1,7 @@
 'use client'
 
 import { PencilIcon, Trash2Icon } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { IncomeDialog } from '@/app/(application)/incomes/components/income-dialog'
@@ -17,6 +18,8 @@ import { DeleteIncomeButton } from './components/delete-income-button'
 
 export default function Incomes() {
   const [date, setDate] = useState(new Date())
+  const t = useTranslations()
+  const locale = useLocale()
 
   const { getMember, me } = useGroup()
   const { incomes, totalIncome, isLoading } = useIncome(date)
@@ -26,16 +29,16 @@ export default function Incomes() {
       <div className="flex justify-between">
         <YearMonthPicker selectedDate={date} onSelectDate={setDate} />
         <IncomeDialog type="create" date={date}>
-          <Button>Nova receita</Button>
+          <Button>{t('incomes.addIncome')}</Button>
         </IncomeDialog>
       </div>
       <Table className="w-full">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">Nome</TableHead>
-            <TableHead className="w-[200px]">Tipo</TableHead>
-            <TableHead className="w-[200px]">Valor</TableHead>
-            <TableHead className="w-[100px]">Ação</TableHead>
+            <TableHead className="w-[200px]">{t('auth.name')}</TableHead>
+            <TableHead className="w-[200px]">{t('incomes.category')}</TableHead>
+            <TableHead className="w-[200px]">{t('incomes.amount')}</TableHead>
+            <TableHead className="w-[100px]">{t('common.edit')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -44,7 +47,7 @@ export default function Incomes() {
             <TableRow key={income.id}>
               <TableCell>{getMember(income.userId)?.name}</TableCell>
               <TableCell>{incomeLabel(income.type)}</TableCell>
-              <TableCell>{formatCurrency(income.amount)}</TableCell>
+              <TableCell>{formatCurrency(income.amount, locale)}</TableCell>
               <TableCell>
                 {(me?.flags?.find((f) => f === 'edit_partner_income') || income.userId === me?.id) && (
                   <>
@@ -70,7 +73,7 @@ export default function Incomes() {
               <TableCell className="font-bold" colSpan={2}>
                 Total
               </TableCell>
-              <TableCell className="font-bold">{formatCurrency(totalIncome)}</TableCell>
+              <TableCell className="font-bold">{formatCurrency(totalIncome, locale)}</TableCell>
               <TableCell />
             </TableRow>
           </TableFooter>

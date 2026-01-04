@@ -1,0 +1,133 @@
+{
+  "common": {
+    "appName": "Nossas Despesas",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "update": "Atualizar",
+    "search": "Buscar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "close": "Fechar",
+    "select": "Selecionar",
+    "noData": "Nenhum dado disponível"
+  },
+  "nav": {
+    "expenses": "Despesas",
+    "incomes": "Receitas",
+    "insights": "Insights"
+  },
+  "auth": {
+    "welcome": "Bem vindo(a)!",
+    "signInDescription": "Por favor autentique-se com alguma das opções abaixo",
+    "signInWithGoogle": "Entrar com Google",
+    "signOut": "Sair",
+    "createAccount": "Criar conta",
+    "createAccountDescription": "Preencha todos os dados abaixo",
+    "name": "Nome",
+    "email": "Email",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "register": "Cadastrar",
+    "alreadyHaveAccount": "Já tem um conta?",
+    "signInLink": "Faça o seu login",
+    "googleSignInError": "Erro ao logar com Google"
+  },
+  "expenses": {
+    "title": "Despesas",
+    "addExpense": "Adicionar despesa",
+    "addNewExpense": "Adicionar uma nova despesa",
+    "updateExpense": "Atualizar despesa",
+    "inGroup": "No grupo {groupName}",
+    "description": "Descrição",
+    "amount": "Valor",
+    "category": "Categoria",
+    "date": "Data",
+    "paidBy": "Pago por",
+    "split": "dividido",
+    "refund": "Reembolso",
+    "refundAmount": "Valor do reembolso",
+    "deleteExpense": "Excluir despesa",
+    "confirmDelete": "Tem certeza que deseja excluir esta despesa?",
+    "import": "Importar despesas",
+    "selectFile": "Selecionar arquivo",
+    "dragDropFile": "Arraste e solte ou selecione um arquivo",
+    "fileUploadDescription": "Aceitamos arquivos CSV ou PDF. Organizamos automaticamente colunas de data, descrição e valor.",
+    "splitType": {
+      "proportional": "Proporcional",
+      "equal": "Igual",
+      "full": "Completo",
+      "proportionalLabel": "proporcionalmente",
+      "equalLabel": "igualmente",
+      "transfer": "transferência",
+      "transferLabel": "transferência"
+    },
+    "descriptionPlaceholder": "Insira a sua descrição"
+  },
+  "incomes": {
+    "title": "Receitas",
+    "addIncome": "Adicionar receita",
+    "updateIncome": "Atualizar receita",
+    "description": "Descrição",
+    "amount": "Valor",
+    "category": "Categoria",
+    "date": "Data",
+    "user": "Usuário",
+    "deleteIncome": "Excluir receita",
+    "confirmDelete": "Tem certeza que deseja excluir esta receita?"
+  },
+  "insights": {
+    "title": "Insights",
+    "expensesByPeriod": "Despesas por período"
+  },
+  "groups": {
+    "createGroup": "Criar grupo",
+    "inviteToGroup": "Convidar para o grupo",
+    "groupName": "Nome do grupo"
+  },
+  "validation": {
+    "required": "Este campo é obrigatório",
+    "invalidEmail": "Email inválido",
+    "invalidNumber": "Número inválido",
+    "minLength": "Mínimo de {min} caracteres",
+    "maxLength": "Máximo de {max} caracteres"
+  },
+  "landing": {
+    "title": "Despesas compartilhadas de forma simples.",
+    "subtitle": "Divida despesas com o seu parceiro(a) de forma simples e eficiente.",
+    "getStarted": "Comece agora",
+    "features": {
+      "easyToUse": {
+        "badge": "Fácil de usar",
+        "title": "Divida suas despesas em apenas alguns cliques.",
+        "description": "Nossa interface intuitiva torna fácil a divisão de despesas com o seu parceiro(a). Sem mais dor de cabeça no final do mês."
+      },
+      "fairAndTransparent": {
+        "badge": "Justo & Transparente",
+        "title": "Garanta que cada parte pague sua parte justa.",
+        "description": "Com o Nossas Despesas, você pode garantir que todos paguem sua parte justa. Nosso aplicativo calcula a divisão com base nas despesas que cada pessoa incorreu, podendo dividir igualmente ou proporcionalmente a sua renda."
+      },
+      "secureAndReliable": {
+        "badge": "Seguro & Confiável",
+        "title": "Proteja suas informações com segurança de ponta.",
+        "description": "Seus dados estão seguros conosco. Utilizamos medidas de segurança de ponta para proteger suas informações e garantir a confiabilidade de nossa plataforma."
+      }
+    },
+    "footer": {
+      "copyright": "© 2024 ExpenseSplit. All rights reserved.",
+      "termsOfService": "Terms of Service",
+      "privacy": "Privacy"
+    },
+    "signUpLogIn": "Sign Up / Log In"
+  },
+  "date": {
+    "chooseDate": "Escolha uma data",
+    "today": "Hoje",
+    "yesterday": "Ontem"
+  }
+}
+

@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -11,14 +14,18 @@ type SplitRatioSelectorProps = {
 }
 
 function SplitRatioSelector({ form }: SplitRatioSelectorProps) {
+  const t = useTranslations()
+
   function splitTypeLabel(splitType: string) {
     switch (splitType) {
       case 'equal':
-        return 'igualmente'
+        return t('expenses.splitType.equalLabel')
       case 'proportional':
-        return 'proporcionalmente'
+        return t('expenses.splitType.proportionalLabel')
       case 'transfer':
-        return 'transferência'
+        return t('expenses.splitType.transferLabel')
+      default:
+        return ''
     }
   }
 
@@ -35,9 +42,9 @@ function SplitRatioSelector({ form }: SplitRatioSelectorProps) {
               </CustomSelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="equal">igualmente</SelectItem>
-              <SelectItem value="proportional">proporcionalmente</SelectItem>
-              <SelectItem value="transfer">transferência</SelectItem>
+              <SelectItem value="equal">{t('expenses.splitType.equalLabel')}</SelectItem>
+              <SelectItem value="proportional">{t('expenses.splitType.proportionalLabel')}</SelectItem>
+              <SelectItem value="transfer">{t('expenses.splitType.transferLabel')}</SelectItem>
             </SelectContent>
           </Select>
         </FormItem>

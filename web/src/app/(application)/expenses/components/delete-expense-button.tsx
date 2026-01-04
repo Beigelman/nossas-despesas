@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -33,6 +36,7 @@ function DeleteExpenseButton({ expense, children }: DeleteExpenseButtonProps) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const { deleteExpense } = useExpenses('')
+  const t = useTranslations()
 
   if (isDesktop) {
     return (
@@ -40,17 +44,17 @@ function DeleteExpenseButton({ expense, children }: DeleteExpenseButtonProps) {
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Deseja continuar?</DialogTitle>
-            <DialogDescription>{`Deletar despesa ${expense.name}`}</DialogDescription>
+            <DialogTitle>{t('expenses.confirmDelete')}</DialogTitle>
+            <DialogDescription>{`${t('expenses.deleteExpense')}: ${expense.name}`}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
             <DialogClose>
               <Button variant="secondary" className="w-full md:w-fit">
-                Cancelar
+                {t('common.cancel')}
               </Button>
             </DialogClose>
             <Button variant="destructive" onClick={() => deleteExpense(expense.id)}>
-              Deletar
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -63,17 +67,17 @@ function DeleteExpenseButton({ expense, children }: DeleteExpenseButtonProps) {
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Deseja continuar?</DrawerTitle>
-          <DrawerDescription>{`Deletar despesa ${expense.name}`}</DrawerDescription>
+          <DrawerTitle>{t('expenses.confirmDelete')}</DrawerTitle>
+          <DrawerDescription>{`${t('expenses.deleteExpense')}: ${expense.name}`}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
           <DrawerClose>
             <Button variant="secondary" className="w-full md:w-fit">
-              Cancelar
+              {t('common.cancel')}
             </Button>
           </DrawerClose>
           <Button variant="destructive" onClick={() => deleteExpense(expense.id)}>
-            Deletar
+            {t('common.delete')}
           </Button>
         </DrawerFooter>
       </DrawerContent>
