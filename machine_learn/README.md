@@ -1,193 +1,355 @@
-# Pipeline de Treinamento - Classificação de Categorias de Despesas
+# ML Service - Nossas Despesas
 
-Este projeto contém um pipeline de machine learning para prever a categoria (`category_id`) de uma despesa baseado no nome da despesa e no valor em centavos.
+The Machine Learning service provides automatic expense category classification using trained models. It's built with FastAPI and Python, offering both real-time and batch prediction capabilities.
 
-## Estrutura
+## Overview
+
+This service predicts the `category_id` of an expense based on:
+- **Expense name** (text): The description or name of the expense
+- **Amount in cents** (numeric): The expense value in cents
+
+The service uses a trained machine learning model (currently SVM with RBF kernel) to classify expenses into predefined categories.
+
+## Technology Stack
+
+- **Framework**: FastAPI
+- **Language**: Python 3.9+
+- **ML Libraries**: scikit-learn, pandas, numpy
+- **Model Persistence**: joblib
+- **Optional**: XGBoost, LightGBM (for improved performance)
+- **Package Management**: Poetry
+- **Testing**: pytest, pytest-asyncio, httpx
+
+## Project Structure
 
 ```
-training/
-├── data/
-│   └── training_data.csv    # Dados de treinamento
-├── models/                   # Modelos treinados (criado após treinamento)
-├── train_model.py          # Script de treinamento
-├── predict.py              # Script para fazer predições
-├── pyproject.toml          # Configuração do Poetry
-├── poetry.lock             # Lock file do Poetry (gerado automaticamente)
-├── requirements.txt        # Dependências Python (legado)
-└── README.md              # Este arquivo
+machine_learn/
+├── src/
+│   ├── api/
+│   │   ├── app.py              # FastAPI application
+│   │   ├── models.py            # Pydantic request/response models
+│   │   └── predict.py           # Prediction functions
+│   ├── models/                  # Trained model files
+│   │   └── svm_rbf.pkl         # Current production model
+│   └── main.py                  # Application entry point
+├── training/
+│   ├── train_model.py          # Model training script
+│   └── data/                    # Training data (if available)
+│       └── training_data.csv
+├── tests/
+│   ├── conftest.py             # Pytest configuration and fixtures
+│   ├── test_app.py             # API endpoint tests
+│   └── test_predict.py          # Prediction function tests
+├── pyproject.toml               # Poetry dependencies
+├── pytest.ini                   # Pytest configuration
+└── Dockerfile                   # Container configuration
 ```
 
-## Instalação
+## Getting Started
 
-Este projeto usa [Poetry](https://python-poetry.org/) para gerenciamento de dependências.
+### Prerequisites
 
-1. Instale o Poetry (se ainda não tiver instalado):
+- Python 3.9 or higher
+- Poetry (for dependency management)
+
+### Installation
+
+1. **Install Poetry** (if not already installed):
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   cd machine_learn
+   
+   # Basic installation (without XGBoost and LightGBM)
+   poetry install
+   
+   # Full installation (with XGBoost and LightGBM for better performance)
+   poetry install --extras full
+   ```
+
+3. **Activate Poetry shell** (optional):
+   ```bash
+   poetry shell
+   ```
+
+### Running the Service
+
+Start the FastAPI server:
 
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+# With Poetry shell activated
+uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Or directly with Poetry
+poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Ou no Windows (PowerShell):
-```powershell
-(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+The API will be available at:
+- **API**: `http://localhost:8000`
+- **Interactive Docs**: `http://localhost:8000/docs`
+- **Alternative Docs**: `http://localhost:8000/redoc`
+
+## API Endpoints
+
+### `GET /`
+Root endpoint with API information and available endpoints.
+
+**Response**:
+```json
+{
+  "message": "API de Predição de Categorias de Despesas",
+  "version": "1.0.0",
+  "endpoints": {
+    "/predict": "POST - Predição única de categoria",
+    "/predict/batch": "POST - Predição em lote de categorias",
+    "/health": "GET - Status de saúde da API",
+    "/docs": "GET - Documentação interativa da API"
+  }
+}
 ```
 
-2. Instale as dependências:
+### `GET /health`
+Health check endpoint.
+
+**Response**:
+```json
+{
+  "status": "healthy",
+  "model_loaded": true
+}
+```
+
+### `POST /predict`
+Predict category for a single expense.
+
+**Request**:
+```json
+{
+  "name": "Farmácia",
+  "amount_cents": 5000
+}
+```
+
+**Response**:
+```json
+{
+  "category_id": 5,
+  "name": "Farmácia",
+  "amount_cents": 5000
+}
+```
+
+### `POST /predict/batch`
+Predict categories for multiple expenses in batch.
+
+**Request**:
+```json
+{
+  "expenses": [
+    {"name": "Farmácia", "amount_cents": 5000},
+    {"name": "Gasolina", "amount_cents": 25000},
+    {"name": "Aluguel", "amount_cents": 350000}
+  ]
+}
+```
+
+**Response**:
+```json
+{
+  "predictions": [
+    {"category_id": 5, "name": "Farmácia", "amount_cents": 5000},
+    {"category_id": 3, "name": "Gasolina", "amount_cents": 25000},
+    {"category_id": 1, "name": "Aluguel", "amount_cents": 350000}
+  ]
+}
+```
+
+## Model Training
+
+### Training Pipeline
+
+The training script (`training/train_model.py`) implements a comprehensive ML pipeline:
+
+1. **Data Loading**: Loads training data from CSV
+2. **Preprocessing**:
+   - Removes null values
+   - Normalizes data types
+   - Handles class imbalance
+3. **Feature Engineering**:
+   - **Text (name)**: TF-IDF vectorization with n-grams (1-2), max 500 features
+   - **Numeric (amount_cents)**: StandardScaler normalization
+4. **Model Training**: Tests multiple algorithms:
+   - Random Forest
+   - Gradient Boosting
+   - Logistic Regression
+   - SVM (RBF) - Currently best performing
+   - K-Nearest Neighbors
+   - XGBoost (if available)
+   - LightGBM (if available)
+5. **Evaluation**: Compares models using accuracy, F1-score (macro and weighted)
+6. **Model Persistence**: Saves the best model to `src/models/`
+
+### Running Training
+
+1. **Prepare training data**:
+   - Place CSV file at `training/data/training_data.csv`
+   - Required columns: `name`, `amount_cents`, `category_id`
+
+2. **Run training**:
+   ```bash
+   cd training
+   poetry run python train_model.py
+   ```
+
+3. **Model output**:
+   - Best model saved to `src/models/svm_rbf.pkl` (or best performing)
+   - Default model saved to `src/models/category_classifier.pkl`
+
+### Training Data Format
+
+The training CSV should have the following structure:
+
+```csv
+name,amount_cents,category_id
+Farmácia,5000,5
+Gasolina,25000,3
+Aluguel,350000,1
+...
+```
+
+## Model Architecture
+
+### Current Production Model
+
+**SVM (RBF Kernel)**:
+- **Text Processing**: TF-IDF with 1-2 n-grams, 500 max features
+- **Numeric Processing**: StandardScaler
+- **Classifier**: Support Vector Machine with RBF kernel
+- **Probability**: Enabled for confidence scores
+
+### Feature Engineering
+
+1. **Text Features (name)**:
+   - TF-IDF vectorization
+   - N-gram range: (1, 2)
+   - Maximum features: 500
+   - Lowercase conversion
+   - Accent stripping (Unicode)
+
+2. **Numeric Features (amount_cents)**:
+   - StandardScaler normalization
+   - Handles various expense amounts
+
+### Model Selection
+
+The training script automatically:
+- Tests multiple algorithms
+- Compares performance metrics
+- Selects the best model based on accuracy and F1-score
+- Saves the best model for production use
+
+## Testing
+
+### Running Tests
 
 ```bash
-# Instalação básica (sem XGBoost e LightGBM)
-poetry install
-
-# Instalação completa (com XGBoost e LightGBM para melhor performance)
-poetry install --extras full
-```
-
-3. Ative o ambiente virtual do Poetry:
-
-```bash
-poetry shell
-```
-
-Ou execute comandos diretamente com Poetry:
-
-```bash
-poetry run python train_model.py
-```
-
-## Uso
-
-### Treinamento do Modelo
-
-Execute o script de treinamento:
-
-```bash
-# Com Poetry shell ativado
-python train_model.py
-
-# Ou usando Poetry diretamente
-poetry run python train_model.py
-```
-
-O script irá:
-1. Carregar os dados de `data/training_data.csv`
-2. Preprocessar os dados (limpar valores nulos, normalizar tipos)
-3. Dividir os dados em conjunto de treino (80%) e validação (20%)
-4. Criar um pipeline que:
-   - Processa o texto do nome usando TF-IDF
-   - Normaliza o valor em centavos
-   - Treina um classificador Random Forest
-5. Avaliar o modelo e mostrar métricas
-6. Salvar o modelo treinado em `models/category_classifier.pkl`
-
-### Fazer Predições
-
-#### Via linha de comando:
-
-```bash
-# Com Poetry shell ativado
-python predict.py "Farmácia" 5000
-
-# Ou usando Poetry diretamente
-poetry run python predict.py "Farmácia" 5000
-```
-
-#### Via código Python:
-
-```python
-from predict import predict_category
-
-# Predição única
-category_id = predict_category("Farmácia", 5000)
-print(f"Categoria predita: {category_id}")
-
-# Predição em lote
-import pandas as pd
-from predict import predict_batch
-
-df = pd.DataFrame({
-    'name': ['Farmácia', 'Gasolina', 'Aluguel'],
-    'amount_cents': [5000, 25000, 350000]
-})
-
-df_with_predictions = predict_batch(df)
-print(df_with_predictions)
-```
-
-## Testes
-
-O projeto inclui uma suíte completa de testes para a API. Os testes são executados usando pytest.
-
-### Executando os Testes
-
-```bash
-# Executar todos os testes
+# Run all tests
 poetry run pytest
 
-# Executar com verbose (mostra mais detalhes)
+# Run with verbose output
 poetry run pytest -v
 
-# Executar com cobertura de código
+# Run with code coverage
 poetry run pytest --cov=src --cov-report=html
 
-# Executar um arquivo de teste específico
+# Run specific test file
 poetry run pytest tests/test_app.py
 
-# Executar uma classe de teste específica
+# Run specific test class
 poetry run pytest tests/test_app.py::TestPredictEndpoint
 ```
 
-### Estrutura dos Testes
+### Test Structure
 
-Os testes estão organizados em:
+- **`tests/test_app.py`**: Tests for API endpoints (GET /, GET /health, POST /predict, POST /predict/batch)
+- **`tests/test_predict.py`**: Tests for prediction functions (load_model, predict_category, predict_batch)
+- **`tests/conftest.py`**: Shared fixtures and test configuration
 
-- `tests/test_app.py` - Testes para os endpoints da API (GET /, GET /health, POST /predict, POST /predict/batch)
-- `tests/test_models.py` - Testes para validação dos modelos Pydantic (request/response)
-- `tests/test_predict.py` - Testes para as funções de predição (load_model, predict_category, predict_batch)
-- `tests/conftest.py` - Fixtures compartilhadas e configurações de teste
+Tests use mocks to avoid requiring a trained model during test execution.
 
-Os testes usam mocks para evitar a necessidade de ter o modelo treinado disponível durante a execução dos testes.
+## Development
 
-## Pipeline de Machine Learning
+### Code Organization
 
-O pipeline implementado:
+- **`src/api/app.py`**: FastAPI application setup and route definitions
+- **`src/api/models.py`**: Pydantic models for request/response validation
+- **`src/api/predict.py`**: Core prediction logic and model loading
+- **`training/train_model.py`**: Model training pipeline
 
-1. **Feature Engineering:**
-   - **Texto (name)**: Usa TF-IDF com n-grams (1-2), máximo de 500 features
-   - **Numérico (amount_cents)**: Normalização usando StandardScaler
+### Adding New Models
 
-2. **Classificador:**
-   - Random Forest com 200 árvores
-   - Profundidade máxima de 20
-   - Otimizado para classificação multiclasse
+To add a new model to the training pipeline:
 
-## Métricas de Avaliação
+1. Import the model class in `training/train_model.py`
+2. Add it to the `create_models()` function
+3. The training script will automatically test it and compare performance
 
-O script de treinamento mostra:
-- Acurácia no conjunto de validação
-- Relatório de classificação completo (precision, recall, F1-score)
-- Matriz de confusão
+### Model Versioning
 
-## Melhorias Futuras
+Models are saved with descriptive names based on the algorithm:
+- `svm_rbf.pkl` - SVM with RBF kernel
+- `random_forest.pkl` - Random Forest
+- `category_classifier.pkl` - Default/best model
 
-Possíveis melhorias que podem ser implementadas:
+## Deployment
 
-1. **Feature Engineering:**
-   - Extrair palavras-chave específicas do nome
-   - Criar features binárias para valores comuns
-   - Normalização mais sofisticada do texto (remover acentos, normalizar variações)
+The service is deployed to **Google Cloud Run** as a containerized application.
 
-2. **Modelos Alternativos:**
-   - XGBoost ou LightGBM para melhor performance
-   - Ensemble de múltiplos modelos
-   - Modelos de deep learning (LSTM/Transformer) para processamento de texto
+### Docker Build
 
-3. **Otimização:**
-   - Busca de hiperparâmetros usando GridSearchCV ou RandomizedSearchCV
-   - Validação cruzada para melhor avaliação
-   - Tratamento de classes desbalanceadas
+```bash
+docker build -t nossas-despesas-ml .
+docker run -p 8000:8000 nossas-despesas-ml
+```
 
-4. **Deploy:**
-   - API REST usando Flask/FastAPI
-   - Integração com cloud functions
-   - Versionamento de modelos
+### Environment Variables
 
+The service doesn't require environment variables for basic operation. The model path is hardcoded to `src/models/svm_rbf.pkl`.
+
+### Production Considerations
+
+- **Model Loading**: Model is loaded once at startup for performance
+- **Error Handling**: All endpoints include proper error handling
+- **Health Checks**: `/health` endpoint for monitoring
+- **Logging**: FastAPI's built-in logging for request tracking
+
+## Future Improvements
+
+### Model Enhancements
+- Hyperparameter tuning with GridSearchCV/RandomizedSearchCV
+- Cross-validation for better evaluation
+- Handling class imbalance with SMOTE or class weights
+- Deep learning models (LSTM/Transformer) for text processing
+
+### Feature Engineering
+- Extract specific keywords from expense names
+- Create binary features for common values
+- More sophisticated text normalization
+- Feature selection to reduce dimensionality
+
+### Infrastructure
+- Model versioning system
+- A/B testing for model comparison
+- Model retraining pipeline
+- Monitoring and metrics collection
+
+## Contributing
+
+1. Follow Python best practices (PEP 8)
+2. Write tests for new features
+3. Update documentation as needed
+4. Run `poetry run pytest` before committing
+5. Ensure code passes linting (flake8, mypy)
